@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\DistributionDestinationController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MedicineCategoryController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockDistributionController;
 use App\Http\Controllers\StockMonitoringController;
@@ -16,9 +18,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified', 'active'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)
+    ->middleware(['auth', 'verified', 'active'])
+    ->name('dashboard');
 
 Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -44,6 +46,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('stock-monitoring/current-stock', [StockMonitoringController::class, 'currentStock'])->name('stock-monitoring.current-stock');
         Route::get('stock-monitoring/batches', [StockMonitoringController::class, 'batches'])->name('stock-monitoring.batches');
         Route::get('stock-monitoring/stock-card', [StockMonitoringController::class, 'stockCard'])->name('stock-monitoring.stock-card');
+        Route::get('reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
+        Route::get('reports/receipts', [ReportController::class, 'receipts'])->name('reports.receipts');
+        Route::get('reports/distributions', [ReportController::class, 'distributions'])->name('reports.distributions');
+        Route::get('reports/adjustments', [ReportController::class, 'adjustments'])->name('reports.adjustments');
     });
 });
 

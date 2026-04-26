@@ -36,7 +36,7 @@
         [
             'title' => 'Lainnya',
             'items' => [
-                ['label' => 'Laporan', 'href' => '#'],
+                ['label' => 'Laporan', 'href' => route('reports.stock'), 'active' => request()->routeIs('reports.*')],
                 ['label' => 'Pengguna', 'href' => '#'],
                 ['label' => 'Log Aktivitas', 'href' => '#'],
             ],
