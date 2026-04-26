@@ -35,11 +35,15 @@
         ],
         [
             'title' => 'Lainnya',
-            'items' => [
+            'items' => array_values(array_filter([
                 ['label' => 'Laporan', 'href' => route('reports.stock'), 'active' => request()->routeIs('reports.*')],
-                ['label' => 'Pengguna', 'href' => '#'],
-                ['label' => 'Log Aktivitas', 'href' => '#'],
-            ],
+                Auth::user()?->isAdmin()
+                    ? ['label' => 'Pengguna', 'href' => route('users.index'), 'active' => request()->routeIs('users.*')]
+                    : null,
+                (Auth::user()?->isAdmin() || Auth::user()?->hasRole('pimpinan'))
+                    ? ['label' => 'Log Aktivitas', 'href' => route('activity-logs.index'), 'active' => request()->routeIs('activity-logs.*')]
+                    : null,
+            ])),
         ],
     ];
 @endphp

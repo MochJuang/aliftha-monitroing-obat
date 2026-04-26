@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\DistributionDestinationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MedicineCategoryController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\StockDistributionController;
 use App\Http\Controllers\StockMonitoringController;
 use App\Http\Controllers\StockReceiptController;
 use App\Http\Controllers\StockSourceController;
+use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +30,8 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::middleware('role:admin')->group(function () {
-        // Route admin-only berikutnya ditambahkan di sini.
+        Route::resource('users', UserManagementController::class)->except(['destroy']);
+        Route::patch('users/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
     });
 
     Route::middleware('role:admin,petugas_gudang')->group(function () {
@@ -50,6 +53,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('reports/receipts', [ReportController::class, 'receipts'])->name('reports.receipts');
         Route::get('reports/distributions', [ReportController::class, 'distributions'])->name('reports.distributions');
         Route::get('reports/adjustments', [ReportController::class, 'adjustments'])->name('reports.adjustments');
+    });
+
+    Route::middleware('role:admin,pimpinan')->group(function () {
+        Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     });
 });
 
