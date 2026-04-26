@@ -4,6 +4,8 @@ use App\Http\Controllers\DistributionDestinationController;
 use App\Http\Controllers\MedicineCategoryController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StockDistributionController;
+use App\Http\Controllers\StockReceiptController;
 use App\Http\Controllers\StockSourceController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +33,8 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('medicines', MedicineController::class);
         Route::resource('stock-sources', StockSourceController::class);
         Route::resource('distribution-destinations', DistributionDestinationController::class);
+        Route::resource('stock-receipts', StockReceiptController::class);
+        Route::resource('stock-distributions', StockDistributionController::class);
     });
 });
 
