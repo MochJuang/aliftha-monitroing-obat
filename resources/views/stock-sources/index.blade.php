@@ -7,26 +7,27 @@
             <a href="{{ route('stock-sources.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Tambah Sumber</a>
         </div>
 
-        <form method="GET" action="{{ route('stock-sources.index') }}" class="mt-6 grid gap-3 lg:grid-cols-[1fr_180px_auto]">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama atau contact person..." class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-            <select name="type" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+        <form method="GET" action="{{ route('stock-sources.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
+            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama atau contact person..." class="w-full min-w-0 flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+            <select name="type" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 xl:w-48 xl:shrink-0">
                 <option value="">Semua jenis</option>
                 <option value="dinkes" @selected($type === 'dinkes')>Dinkes</option>
                 <option value="bkkbn" @selected($type === 'bkkbn')>BKKBN</option>
                 <option value="supplier" @selected($type === 'supplier')>Supplier</option>
                 <option value="lainnya" @selected($type === 'lainnya')>Lainnya</option>
             </select>
-            <button type="submit" class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Filter</button>
+            <button type="submit" class="shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 xl:min-w-32">Filter</button>
         </form>
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <div class="overflow-x-auto">
+            <table class="min-w-[900px] w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-slate-50 text-left text-slate-500">
                     <tr>
                         <th class="px-4 py-3 font-semibold">Nama</th>
-                        <th class="px-4 py-3 font-semibold">Jenis</th>
-                        <th class="px-4 py-3 font-semibold">Contact person</th>
-                        <th class="px-4 py-3 font-semibold">Telepon</th>
+                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Jenis</th>
+                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Contact person</th>
+                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Telepon</th>
                         <th class="px-4 py-3 font-semibold text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -34,11 +35,11 @@
                     @forelse ($sources as $source)
                         <tr>
                             <td class="px-4 py-3 font-medium text-slate-900">{{ $source->name }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ strtoupper($source->source_type) }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ $source->contact_person ?: '-' }}</td>
-                            <td class="px-4 py-3 text-slate-600">{{ $source->phone ?: '-' }}</td>
+                            <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ strtoupper($source->source_type) }}</td>
+                            <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $source->contact_person ?: '-' }}</td>
+                            <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $source->phone ?: '-' }}</td>
                             <td class="px-4 py-3">
-                                <div class="flex justify-end gap-2">
+                                <div class="flex justify-end gap-2 whitespace-nowrap">
                                     <a href="{{ route('stock-sources.show', $source) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
                                     <a href="{{ route('stock-sources.edit', $source) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
                                     <form method="POST" action="{{ route('stock-sources.destroy', $source) }}" onsubmit="return confirm('Hapus sumber obat ini?')">
@@ -54,6 +55,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
 
         <div class="mt-6">{{ $sources->links() }}</div>
