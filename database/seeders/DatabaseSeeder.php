@@ -22,6 +22,9 @@ class DatabaseSeeder extends Seeder
             StockSourceSeeder::class,
             DistributionDestinationSeeder::class,
             MedicineSeeder::class,
+            StockReceiptSeeder::class,
+            StockDistributionSeeder::class,
+            StockAdjustmentSeeder::class,
         ]);
     }
 }

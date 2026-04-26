@@ -1,0 +1,7 @@
+flowchart TD
+    A["Master Data Barang"] --> B["Barang Masuk"]
+    A --> C["Barang Keluar"]
+    B --> D["Stok Tersimpan"]
+    C --> D
+    D --> E["Monitoring"]
+    E --> F["Laporan"]

@@ -1,0 +1,7 @@
+flowchart LR
+    A["View"] --> B["Controller"]
+    B --> C["Model"]
+    C --> D["Database"]
+    D --> C
+    C --> B
+    B --> A
