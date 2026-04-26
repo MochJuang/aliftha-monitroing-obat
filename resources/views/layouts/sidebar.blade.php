@@ -28,7 +28,7 @@
         [
             'title' => 'Monitoring',
             'items' => [
-                ['label' => 'Stok Terkini', 'href' => '#'],
+                ['label' => 'Stok Terkini', 'href' => route('stock-monitoring.current-stock'), 'active' => request()->routeIs('stock-monitoring.current-stock')],
                 ['label' => 'Batch & Kedaluwarsa', 'href' => '#'],
                 ['label' => 'Kartu Stok', 'href' => '#'],
             ],

@@ -6,6 +6,7 @@ use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockDistributionController;
+use App\Http\Controllers\StockMonitoringController;
 use App\Http\Controllers\StockReceiptController;
 use App\Http\Controllers\StockSourceController;
 use App\Http\Controllers\UnitController;
@@ -37,6 +38,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('stock-receipts', StockReceiptController::class);
         Route::resource('stock-distributions', StockDistributionController::class);
         Route::resource('stock-adjustments', StockAdjustmentController::class)->only(['index', 'create', 'store', 'show']);
+    });
+
+    Route::middleware('role:admin,petugas_gudang,pimpinan')->group(function () {
+        Route::get('stock-monitoring/current-stock', [StockMonitoringController::class, 'currentStock'])->name('stock-monitoring.current-stock');
     });
 });
 
