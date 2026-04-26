@@ -130,6 +130,82 @@ class StockMonitoringController extends Controller
         ));
     }
 
+    public function batches(Request $request): View
+    {
+        $search = trim((string) $request->string('search'));
+        $status = trim((string) $request->string('status'));
+        $categoryId = trim((string) $request->string('category_id'));
+
+        $today = now()->startOfDay();
+        $almostExpiredDate = now()->addDays(30)->endOfDay();
+
+        $batches = MedicineBatch::query()
+            ->with([
+                'medicine.category',
+                'medicine.unit',
+                'receiptItem.stockReceipt.source',
+            ])
+            ->where('qty_remaining', '>', 0)
+            ->when($search !== '', function (Builder $query) use ($search) {
+                $query->where(function (Builder $inner) use ($search) {
+                    $inner->where('batch_number', 'like', "%{$search}%")
+                        ->orWhereHas('medicine', function (Builder $medicineQuery) use ($search) {
+                            $medicineQuery->where('code', 'like', "%{$search}%")
+                                ->orWhere('name', 'like', "%{$search}%")
+                                ->orWhere('brand', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('receiptItem.stockReceipt.source', fn (Builder $sourceQuery) => $sourceQuery->where('name', 'like', "%{$search}%"));
+                });
+            })
+            ->when($categoryId !== '', fn (Builder $query) => $query->whereHas('medicine', fn (Builder $medicineQuery) => $medicineQuery->where('category_id', $categoryId)))
+            ->when($status !== '', function (Builder $query) use ($status, $today, $almostExpiredDate) {
+                match ($status) {
+                    'expired' => $query->whereDate('expired_at', '<', $today->toDateString()),
+                    'almost_expired' => $query->whereBetween('expired_at', [$today->toDateString(), $almostExpiredDate->toDateString()]),
+                    'safe' => $query->whereDate('expired_at', '>', $almostExpiredDate->toDateString()),
+                    default => null,
+                };
+            })
+            ->orderBy('expired_at')
+            ->orderBy('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        $summary = [
+            'total_batches' => MedicineBatch::query()->where('qty_remaining', '>', 0)->count(),
+            'expired_batches' => MedicineBatch::query()
+                ->where('qty_remaining', '>', 0)
+                ->whereDate('expired_at', '<', $today->toDateString())
+                ->count(),
+            'almost_expired_batches' => MedicineBatch::query()
+                ->where('qty_remaining', '>', 0)
+                ->whereBetween('expired_at', [$today->toDateString(), $almostExpiredDate->toDateString()])
+                ->count(),
+            'safe_batches' => MedicineBatch::query()
+                ->where('qty_remaining', '>', 0)
+                ->whereDate('expired_at', '>', $almostExpiredDate->toDateString())
+                ->count(),
+            'expired_stock_qty' => (int) MedicineBatch::query()
+                ->where('qty_remaining', '>', 0)
+                ->whereDate('expired_at', '<', $today->toDateString())
+                ->sum('qty_remaining'),
+        ];
+
+        $categories = DB::table('medicine_categories')
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get();
+
+        return view('stock-monitoring.batches', compact(
+            'batches',
+            'summary',
+            'categories',
+            'search',
+            'status',
+            'categoryId'
+        ));
+    }
+
     private function buildCurrentStockSubquery(string $today): Builder
     {
         return MedicineBatch::query()

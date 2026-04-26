@@ -42,6 +42,7 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     Route::middleware('role:admin,petugas_gudang,pimpinan')->group(function () {
         Route::get('stock-monitoring/current-stock', [StockMonitoringController::class, 'currentStock'])->name('stock-monitoring.current-stock');
+        Route::get('stock-monitoring/batches', [StockMonitoringController::class, 'batches'])->name('stock-monitoring.batches');
     });
 });
 
