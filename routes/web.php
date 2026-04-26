@@ -1,6 +1,11 @@
 <?php
 
+use App\Http\Controllers\DistributionDestinationController;
+use App\Http\Controllers\MedicineCategoryController;
+use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StockSourceController;
+use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,8 +25,12 @@ Route::middleware(['auth', 'active'])->group(function () {
         // Route admin-only berikutnya ditambahkan di sini.
     });
 
-    Route::middleware('role:admin,petugas_gudang,pimpinan')->group(function () {
-        // Route internal aplikasi berikutnya ditambahkan di sini.
+    Route::middleware('role:admin,petugas_gudang')->group(function () {
+        Route::resource('medicine-categories', MedicineCategoryController::class);
+        Route::resource('units', UnitController::class);
+        Route::resource('medicines', MedicineController::class);
+        Route::resource('stock-sources', StockSourceController::class);
+        Route::resource('distribution-destinations', DistributionDestinationController::class);
     });
 });
 
