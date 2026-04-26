@@ -22,7 +22,7 @@
             'items' => [
                 ['label' => 'Stok Masuk', 'href' => route('stock-receipts.index'), 'active' => request()->routeIs('stock-receipts.*')],
                 ['label' => 'Stok Keluar', 'href' => route('stock-distributions.index'), 'active' => request()->routeIs('stock-distributions.*')],
-                ['label' => 'Penyesuaian Stok', 'href' => '#'],
+                ['label' => 'Penyesuaian Stok', 'href' => route('stock-adjustments.index'), 'active' => request()->routeIs('stock-adjustments.*')],
             ],
         ],
         [
