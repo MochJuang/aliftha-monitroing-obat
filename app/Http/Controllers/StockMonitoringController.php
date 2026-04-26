@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Medicine;
 use App\Models\MedicineBatch;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -206,6 +208,77 @@ class StockMonitoringController extends Controller
         ));
     }
 
+    public function stockCard(Request $request): View
+    {
+        $medicineId = trim((string) $request->string('medicine_id'));
+        $batchNumber = trim((string) $request->string('batch_number'));
+        $dateFrom = trim((string) $request->string('date_from'));
+        $dateTo = trim((string) $request->string('date_to'));
+
+        $medicines = Medicine::query()
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get(['id', 'code', 'name']);
+
+        $selectedMedicine = $medicineId !== ''
+            ? Medicine::query()->with(['category', 'unit'])->find($medicineId)
+            : null;
+
+        $summary = [
+            'opening_balance' => 0,
+            'total_in' => 0,
+            'total_out' => 0,
+            'total_adjustment' => 0,
+            'closing_balance' => 0,
+        ];
+
+        $movements = collect();
+
+        if ($selectedMedicine) {
+            $openingBalance = $this->calculateOpeningBalance(
+                $selectedMedicine->id,
+                $dateFrom !== '' ? $dateFrom : null,
+                $batchNumber !== '' ? $batchNumber : null
+            );
+
+            $movements = $this->buildStockCardMovements(
+                $selectedMedicine->id,
+                $dateFrom !== '' ? $dateFrom : null,
+                $dateTo !== '' ? $dateTo : null,
+                $batchNumber !== '' ? $batchNumber : null
+            );
+
+            $runningBalance = $openingBalance;
+            $movements = $movements->map(function (array $movement) use (&$runningBalance) {
+                $runningBalance += $movement['net_qty'];
+                $movement['running_balance'] = $runningBalance;
+
+                return $movement;
+            });
+
+            $summary = [
+                'opening_balance' => $openingBalance,
+                'total_in' => (int) $movements->sum('qty_in'),
+                'total_out' => (int) $movements->sum('qty_out'),
+                'total_adjustment' => (int) $movements->sum('adjustment_qty'),
+                'closing_balance' => $runningBalance,
+            ];
+        }
+
+        $paginatedMovements = $this->paginateCollection($movements, 10, $request, 'movements_page');
+
+        return view('stock-monitoring.stock-card', compact(
+            'medicines',
+            'selectedMedicine',
+            'summary',
+            'paginatedMovements',
+            'medicineId',
+            'batchNumber',
+            'dateFrom',
+            'dateTo'
+        ));
+    }
+
     private function buildCurrentStockSubquery(string $today): Builder
     {
         return MedicineBatch::query()
@@ -213,5 +286,172 @@ class StockMonitoringController extends Controller
             ->whereColumn('medicine_id', 'medicines.id')
             ->where('qty_remaining', '>', 0)
             ->whereDate('expired_at', '>=', $today);
+    }
+
+    private function calculateOpeningBalance(int $medicineId, ?string $dateFrom, ?string $batchNumber): int
+    {
+        if (! $dateFrom) {
+            return 0;
+        }
+
+        $receiptTotal = DB::table('stock_receipt_items')
+            ->join('stock_receipts', 'stock_receipts.id', '=', 'stock_receipt_items.receipt_id')
+            ->when($batchNumber, fn ($query) => $query->where('stock_receipt_items.batch_number', $batchNumber))
+            ->where('stock_receipt_items.medicine_id', $medicineId)
+            ->where('stock_receipts.status', 'posted')
+            ->whereDate('stock_receipts.received_date', '<', $dateFrom)
+            ->sum('stock_receipt_items.quantity');
+
+        $distributionTotal = DB::table('stock_distribution_items')
+            ->join('stock_distributions', 'stock_distributions.id', '=', 'stock_distribution_items.distribution_id')
+            ->join('medicine_batches', 'medicine_batches.id', '=', 'stock_distribution_items.batch_id')
+            ->when($batchNumber, fn ($query) => $query->where('medicine_batches.batch_number', $batchNumber))
+            ->where('stock_distribution_items.medicine_id', $medicineId)
+            ->where('stock_distributions.status', 'posted')
+            ->whereDate('stock_distributions.distributed_date', '<', $dateFrom)
+            ->sum('stock_distribution_items.quantity');
+
+        $adjustmentTotal = DB::table('stock_adjustment_items')
+            ->join('stock_adjustments', 'stock_adjustments.id', '=', 'stock_adjustment_items.adjustment_id')
+            ->join('medicine_batches', 'medicine_batches.id', '=', 'stock_adjustment_items.batch_id')
+            ->when($batchNumber, fn ($query) => $query->where('medicine_batches.batch_number', $batchNumber))
+            ->where('stock_adjustment_items.medicine_id', $medicineId)
+            ->whereDate('stock_adjustments.adjustment_date', '<', $dateFrom)
+            ->sum('stock_adjustment_items.difference_qty');
+
+        return (int) $receiptTotal - (int) $distributionTotal + (int) $adjustmentTotal;
+    }
+
+    private function buildStockCardMovements(int $medicineId, ?string $dateFrom, ?string $dateTo, ?string $batchNumber): Collection
+    {
+        $receiptMovements = DB::table('stock_receipt_items')
+            ->join('stock_receipts', 'stock_receipts.id', '=', 'stock_receipt_items.receipt_id')
+            ->join('stock_sources', 'stock_sources.id', '=', 'stock_receipts.source_id')
+            ->where('stock_receipt_items.medicine_id', $medicineId)
+            ->where('stock_receipts.status', 'posted')
+            ->when($batchNumber, fn ($query) => $query->where('stock_receipt_items.batch_number', $batchNumber))
+            ->when($dateFrom, fn ($query) => $query->whereDate('stock_receipts.received_date', '>=', $dateFrom))
+            ->when($dateTo, fn ($query) => $query->whereDate('stock_receipts.received_date', '<=', $dateTo))
+            ->orderBy('stock_receipts.received_date')
+            ->orderBy('stock_receipt_items.id')
+            ->get([
+                'stock_receipt_items.id as row_id',
+                'stock_receipts.received_date as movement_date',
+                'stock_receipts.receipt_number as reference_number',
+                'stock_receipt_items.batch_number',
+                'stock_receipt_items.quantity',
+                'stock_receipt_items.notes',
+                'stock_sources.name as counterpart_name',
+            ])
+            ->map(fn ($item) => [
+                'movement_date' => $item->movement_date,
+                'sort_type' => 1,
+                'row_id' => 'receipt-'.$item->row_id,
+                'type' => 'stok_masuk',
+                'reference_number' => $item->reference_number,
+                'batch_number' => $item->batch_number,
+                'counterpart_name' => $item->counterpart_name,
+                'notes' => $item->notes,
+                'qty_in' => (int) $item->quantity,
+                'qty_out' => 0,
+                'adjustment_qty' => 0,
+                'net_qty' => (int) $item->quantity,
+            ]);
+
+        $distributionMovements = DB::table('stock_distribution_items')
+            ->join('stock_distributions', 'stock_distributions.id', '=', 'stock_distribution_items.distribution_id')
+            ->join('distribution_destinations', 'distribution_destinations.id', '=', 'stock_distributions.destination_id')
+            ->join('medicine_batches', 'medicine_batches.id', '=', 'stock_distribution_items.batch_id')
+            ->where('stock_distribution_items.medicine_id', $medicineId)
+            ->where('stock_distributions.status', 'posted')
+            ->when($batchNumber, fn ($query) => $query->where('medicine_batches.batch_number', $batchNumber))
+            ->when($dateFrom, fn ($query) => $query->whereDate('stock_distributions.distributed_date', '>=', $dateFrom))
+            ->when($dateTo, fn ($query) => $query->whereDate('stock_distributions.distributed_date', '<=', $dateTo))
+            ->orderBy('stock_distributions.distributed_date')
+            ->orderBy('stock_distribution_items.id')
+            ->get([
+                'stock_distribution_items.id as row_id',
+                'stock_distributions.distributed_date as movement_date',
+                'stock_distributions.distribution_number as reference_number',
+                'medicine_batches.batch_number',
+                'stock_distribution_items.quantity',
+                'stock_distribution_items.notes',
+                'distribution_destinations.name as counterpart_name',
+            ])
+            ->map(fn ($item) => [
+                'movement_date' => $item->movement_date,
+                'sort_type' => 2,
+                'row_id' => 'distribution-'.$item->row_id,
+                'type' => 'stok_keluar',
+                'reference_number' => $item->reference_number,
+                'batch_number' => $item->batch_number,
+                'counterpart_name' => $item->counterpart_name,
+                'notes' => $item->notes,
+                'qty_in' => 0,
+                'qty_out' => (int) $item->quantity,
+                'adjustment_qty' => 0,
+                'net_qty' => -1 * (int) $item->quantity,
+            ]);
+
+        $adjustmentMovements = DB::table('stock_adjustment_items')
+            ->join('stock_adjustments', 'stock_adjustments.id', '=', 'stock_adjustment_items.adjustment_id')
+            ->join('medicine_batches', 'medicine_batches.id', '=', 'stock_adjustment_items.batch_id')
+            ->where('stock_adjustment_items.medicine_id', $medicineId)
+            ->when($batchNumber, fn ($query) => $query->where('medicine_batches.batch_number', $batchNumber))
+            ->when($dateFrom, fn ($query) => $query->whereDate('stock_adjustments.adjustment_date', '>=', $dateFrom))
+            ->when($dateTo, fn ($query) => $query->whereDate('stock_adjustments.adjustment_date', '<=', $dateTo))
+            ->orderBy('stock_adjustments.adjustment_date')
+            ->orderBy('stock_adjustment_items.id')
+            ->get([
+                'stock_adjustment_items.id as row_id',
+                'stock_adjustments.adjustment_date as movement_date',
+                'stock_adjustments.adjustment_number as reference_number',
+                'stock_adjustments.adjustment_type',
+                'medicine_batches.batch_number',
+                'stock_adjustment_items.difference_qty',
+                'stock_adjustment_items.reason',
+            ])
+            ->map(fn ($item) => [
+                'movement_date' => $item->movement_date,
+                'sort_type' => 3,
+                'row_id' => 'adjustment-'.$item->row_id,
+                'type' => 'adjustment',
+                'reference_number' => $item->reference_number,
+                'batch_number' => $item->batch_number,
+                'counterpart_name' => ucfirst((string) $item->adjustment_type),
+                'notes' => $item->reason,
+                'qty_in' => (int) $item->difference_qty > 0 ? (int) $item->difference_qty : 0,
+                'qty_out' => (int) $item->difference_qty < 0 ? abs((int) $item->difference_qty) : 0,
+                'adjustment_qty' => (int) $item->difference_qty,
+                'net_qty' => (int) $item->difference_qty,
+            ]);
+
+        return $receiptMovements
+            ->concat($distributionMovements)
+            ->concat($adjustmentMovements)
+            ->sortBy([
+                ['movement_date', 'asc'],
+                ['sort_type', 'asc'],
+                ['row_id', 'asc'],
+            ])
+            ->values();
+    }
+
+    private function paginateCollection(Collection $items, int $perPage, Request $request, string $pageName = 'page'): LengthAwarePaginator
+    {
+        $page = LengthAwarePaginator::resolveCurrentPage($pageName);
+        $results = $items->forPage($page, $perPage)->values();
+
+        return new LengthAwarePaginator(
+            $results,
+            $items->count(),
+            $perPage,
+            $page,
+            [
+                'path' => $request->url(),
+                'pageName' => $pageName,
+                'query' => $request->query(),
+            ]
+        );
     }
 }
