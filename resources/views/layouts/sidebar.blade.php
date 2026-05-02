@@ -40,8 +40,6 @@
             'title' => 'Monitoring',
             'items' => [
                 ['label' => 'Stok Terkini', 'href' => route('stock-monitoring.current-stock'), 'active' => request()->routeIs('stock-monitoring.current-stock')],
-                ['label' => 'Batch & Kedaluwarsa', 'href' => route('stock-monitoring.batches'), 'active' => request()->routeIs('stock-monitoring.batches')],
-                ['label' => 'Kartu Stok', 'href' => route('stock-monitoring.stock-card'), 'active' => request()->routeIs('stock-monitoring.stock-card')],
                 ['label' => 'Penyesuaian Stok', 'href' => route('stock-adjustments.index'), 'active' => request()->routeIs('stock-adjustments.*')],
             ],
         ],

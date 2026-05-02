@@ -158,8 +158,8 @@
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Mutasi Terbaru</p>
                 <h3 class="mt-2 text-xl font-semibold text-slate-900">Transaksi stok paling baru</h3>
             </div>
-            <a href="{{ route('stock-monitoring.stock-card') }}" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
-                Buka Kartu Stok
+            <a href="{{ route('medicines.index') }}" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                Buka Data Obat
             </a>
         </div>
 

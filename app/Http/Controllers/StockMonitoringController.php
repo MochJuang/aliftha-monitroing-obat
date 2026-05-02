@@ -89,6 +89,8 @@ class StockMonitoringController extends Controller
             ->paginate(10)
             ->withQueryString();
 
+        $this->attachBatchDetailsToCurrentStock($medicines, $today, $almostExpiredDate);
+
         $summaryBaseQuery = Medicine::query()
             ->where('is_active', true)
             ->select([
@@ -286,6 +288,45 @@ class StockMonitoringController extends Controller
             ->whereColumn('medicine_id', 'medicines.id')
             ->where('qty_remaining', '>', 0)
             ->whereDate('expired_at', '>=', $today);
+    }
+
+    private function attachBatchDetailsToCurrentStock(LengthAwarePaginator $medicines, string $today, string $almostExpiredDate): void
+    {
+        $medicineIds = $medicines->getCollection()->pluck('id')->filter()->all();
+
+        if ($medicineIds === []) {
+            return;
+        }
+
+        $batchMap = MedicineBatch::query()
+            ->with(['receiptItem.stockReceipt.source'])
+            ->whereIn('medicine_id', $medicineIds)
+            ->where('qty_remaining', '>', 0)
+            ->whereDate('expired_at', '>=', $today)
+            ->orderBy('expired_at')
+            ->orderBy('id')
+            ->get()
+            ->groupBy('medicine_id');
+
+        $medicines->setCollection(
+            $medicines->getCollection()->map(function ($medicine) use ($batchMap, $almostExpiredDate) {
+                $medicine->batch_details = ($batchMap->get($medicine->id) ?? collect())
+                    ->map(fn (MedicineBatch $batch) => [
+                        'batch_number' => $batch->batch_number,
+                        'expired_at' => $batch->expired_at->format('d M Y'),
+                        'qty_received' => (int) $batch->qty_received,
+                        'qty_remaining' => (int) $batch->qty_remaining,
+                        'source_name' => $batch->receiptItem?->stockReceipt?->source?->name,
+                        'received_date' => $batch->receiptItem?->stockReceipt?->received_date?->format('d M Y'),
+                        'status_label' => $batch->expired_at->toDateString() <= $almostExpiredDate ? 'Hampir Expired' : 'Aman',
+                        'status_color' => $batch->expired_at->toDateString() <= $almostExpiredDate ? 'sky' : 'emerald',
+                    ])
+                    ->values()
+                    ->all();
+
+                return $medicine;
+            })
+        );
     }
 
     private function calculateOpeningBalance(int $medicineId, ?string $dateFrom, ?string $batchNumber): int
