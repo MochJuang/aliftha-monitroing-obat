@@ -22,7 +22,7 @@ class StockReceiptRequest extends FormRequest
      */
     public function rules(): array
     {
-        $receipt = $this->route('stock_receipt');
+        $receipt = $this->route('stockReceipt') ?? $this->route('stock_receipt');
 
         return [
             'receipt_number' => [

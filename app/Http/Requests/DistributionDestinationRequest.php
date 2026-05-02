@@ -34,7 +34,7 @@ class DistributionDestinationRequest extends FormRequest
     public function rules(): array
     {
         /** @var DistributionDestination|null $destination */
-        $destination = $this->route('distribution_destination');
+        $destination = $this->route('distributionDestination') ?? $this->route('distribution_destination');
 
         return [
             'code' => [

@@ -22,7 +22,7 @@ class RkoHeaderRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rkoHeader = $this->route('rkoHeader');
+        $rkoHeader = $this->route('rkoHeader') ?? $this->route('rko_header');
 
         return [
             'rko_number' => [

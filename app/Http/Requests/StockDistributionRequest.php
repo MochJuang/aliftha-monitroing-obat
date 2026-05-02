@@ -22,7 +22,7 @@ class StockDistributionRequest extends FormRequest
      */
     public function rules(): array
     {
-        $distribution = $this->route('stock_distribution');
+        $distribution = $this->route('stockDistribution') ?? $this->route('stock_distribution');
 
         return [
             'distribution_number' => [

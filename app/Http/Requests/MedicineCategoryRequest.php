@@ -24,7 +24,7 @@ class MedicineCategoryRequest extends FormRequest
     public function rules(): array
     {
         /** @var MedicineCategory|null $category */
-        $category = $this->route('medicine_category');
+        $category = $this->route('medicineCategory') ?? $this->route('medicine_category');
 
         return [
             'name' => [
