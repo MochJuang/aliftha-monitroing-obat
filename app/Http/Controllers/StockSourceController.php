@@ -44,7 +44,7 @@ class StockSourceController extends Controller
 
         return redirect()
             ->route('stock-sources.show', $source)
-            ->with('success', 'Sumber obat berhasil ditambahkan.');
+            ->with('success', 'Sumber pengadaan berhasil ditambahkan.');
     }
 
     public function show(StockSource $stockSource): View
@@ -65,7 +65,7 @@ class StockSourceController extends Controller
 
         return redirect()
             ->route('stock-sources.show', $stockSource)
-            ->with('success', 'Sumber obat berhasil diperbarui.');
+            ->with('success', 'Sumber pengadaan berhasil diperbarui.');
     }
 
     public function destroy(StockSource $stockSource): RedirectResponse
@@ -75,10 +75,10 @@ class StockSourceController extends Controller
 
             return redirect()
                 ->route('stock-sources.index')
-                ->with('success', 'Sumber obat berhasil dihapus.');
+                ->with('success', 'Sumber pengadaan berhasil dihapus.');
         } catch (QueryException) {
             return back()->withErrors([
-                'delete' => 'Sumber obat tidak bisa dihapus karena masih dipakai transaksi masuk.',
+                'delete' => 'Sumber pengadaan tidak bisa dihapus karena masih dipakai pada realisasi pengadaan.',
             ]);
         }
     }

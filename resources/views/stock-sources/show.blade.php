@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">Detail Sumber Obat</x-slot>
+    <x-slot name="header">Detail Sumber Pengadaan</x-slot>
 
     <section class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">

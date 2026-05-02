@@ -5,7 +5,7 @@
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <p class="text-sm text-slate-500">Catat selisih stok fisik, batch expired, atau obat rusak agar stok sistem tetap akurat.</p>
             <a href="{{ route('stock-adjustments.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
-                Tambah Adjustment
+                Tambah Penyesuaian Stok
             </a>
         </div>
 

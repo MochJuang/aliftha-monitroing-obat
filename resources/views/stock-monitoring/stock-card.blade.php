@@ -77,7 +77,7 @@
                 <p class="mt-2 text-3xl font-semibold text-rose-900">{{ number_format($summary['total_out']) }}</p>
             </article>
             <article class="rounded-[2rem] border border-sky-200 bg-sky-50 p-5 shadow-sm">
-                <p class="text-sm text-sky-800">Adjustment</p>
+                <p class="text-sm text-sky-800">Penyesuaian Stok</p>
                 <p class="mt-2 text-3xl font-semibold {{ $summary['total_adjustment'] >= 0 ? 'text-sky-900' : 'text-rose-900' }}">{{ number_format($summary['total_adjustment']) }}</p>
             </article>
             <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
@@ -130,11 +130,11 @@
                                     <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ \Illuminate\Support\Carbon::parse($movement['movement_date'])->format('d M Y') }}</td>
                                     <td class="px-4 py-3">
                                         @if ($movement['type'] === 'stok_masuk')
-                                            <span class="whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">Stok Masuk</span>
+                                            <span class="whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">Realisasi Pengadaan</span>
                                         @elseif ($movement['type'] === 'stok_keluar')
-                                            <span class="whitespace-nowrap rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800">Stok Keluar</span>
+                                            <span class="whitespace-nowrap rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800">Distribusi Obat</span>
                                         @else
-                                            <span class="whitespace-nowrap rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800">Adjustment</span>
+                                            <span class="whitespace-nowrap rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800">Penyesuaian Stok</span>
                                         @endif
                                     </td>
                                     <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $movement['reference_number'] }}</td>

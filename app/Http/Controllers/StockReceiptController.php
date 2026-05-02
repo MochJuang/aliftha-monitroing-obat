@@ -67,7 +67,7 @@ class StockReceiptController extends Controller
 
         return redirect()
             ->route('stock-receipts.show', $receipt)
-            ->with('success', 'Transaksi stok masuk berhasil disimpan.');
+            ->with('success', 'Realisasi pengadaan berhasil disimpan.');
     }
 
     public function show(StockReceipt $stockReceipt): View
@@ -110,7 +110,7 @@ class StockReceiptController extends Controller
 
         return redirect()
             ->route('stock-receipts.show', $receipt)
-            ->with('success', 'Transaksi stok masuk berhasil diperbarui.');
+            ->with('success', 'Realisasi pengadaan berhasil diperbarui.');
     }
 
     public function destroy(Request $request, StockReceipt $stockReceipt): RedirectResponse
@@ -129,7 +129,7 @@ class StockReceiptController extends Controller
 
         return redirect()
             ->route('stock-receipts.index')
-            ->with('success', 'Transaksi stok masuk draft berhasil dihapus.');
+            ->with('success', 'Draft realisasi pengadaan berhasil dihapus.');
     }
 
     private function generateNextReceiptNumber(): string

@@ -25,7 +25,7 @@
                     <p class="mt-1 text-xs text-slate-400">{{ number_format($todayMovements['distributions_count']) }} transaksi posted</p>
                 </div>
                 <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <p class="text-sm text-slate-400">Adjustment hari ini</p>
+                    <p class="text-sm text-slate-400">Penyesuaian stok hari ini</p>
                     <p class="mt-2 text-2xl font-semibold {{ $todayMovements['adjustments_qty'] >= 0 ? 'text-sky-300' : 'text-rose-300' }}">
                         {{ number_format($todayMovements['adjustments_qty']) }}
                     </p>
@@ -181,11 +181,11 @@
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ \Illuminate\Support\Carbon::parse($transaction['movement_date'])->format('d M Y') }}</td>
                                 <td class="px-4 py-3">
                                     @if ($transaction['type'] === 'stok_masuk')
-                                        <span class="whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">Stok Masuk</span>
+                                        <span class="whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">Realisasi Pengadaan</span>
                                     @elseif ($transaction['type'] === 'stok_keluar')
-                                        <span class="whitespace-nowrap rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800">Stok Keluar</span>
+                                        <span class="whitespace-nowrap rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800">Distribusi Obat</span>
                                     @else
-                                        <span class="whitespace-nowrap rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800">Adjustment</span>
+                                        <span class="whitespace-nowrap rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800">Penyesuaian Stok</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $transaction['reference_number'] }}</td>

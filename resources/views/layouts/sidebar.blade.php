@@ -8,21 +8,32 @@
             ],
         ],
         [
-            'title' => 'Master Data',
+            'title' => 'Faskes',
             'items' => [
-                ['label' => 'Kategori Obat', 'href' => route('medicine-categories.index'), 'active' => request()->routeIs('medicine-categories.*')],
-                ['label' => 'Satuan', 'href' => route('units.index'), 'active' => request()->routeIs('units.*')],
-                ['label' => 'Obat', 'href' => route('medicines.index'), 'active' => request()->routeIs('medicines.*')],
-                ['label' => 'Sumber Obat', 'href' => route('stock-sources.index'), 'active' => request()->routeIs('stock-sources.*')],
-                ['label' => 'Tujuan Distribusi', 'href' => route('distribution-destinations.index'), 'active' => request()->routeIs('distribution-destinations.*')],
+                ['label' => 'Data Faskes', 'href' => route('distribution-destinations.index'), 'active' => request()->routeIs('distribution-destinations.*')],
+                ['label' => 'Distribusi Obat', 'href' => route('stock-distributions.index'), 'active' => request()->routeIs('stock-distributions.*')],
             ],
         ],
         [
-            'title' => 'Transaksi',
+            'title' => 'Master Obat',
             'items' => [
-                ['label' => 'Stok Masuk', 'href' => route('stock-receipts.index'), 'active' => request()->routeIs('stock-receipts.*')],
-                ['label' => 'Stok Keluar', 'href' => route('stock-distributions.index'), 'active' => request()->routeIs('stock-distributions.*')],
-                ['label' => 'Penyesuaian Stok', 'href' => route('stock-adjustments.index'), 'active' => request()->routeIs('stock-adjustments.*')],
+                ['label' => 'Kategori Obat', 'href' => route('medicine-categories.index'), 'active' => request()->routeIs('medicine-categories.*')],
+                ['label' => 'Satuan', 'href' => route('units.index'), 'active' => request()->routeIs('units.*')],
+                ['label' => 'Data Obat', 'href' => route('medicines.index'), 'active' => request()->routeIs('medicines.*')],
+            ],
+        ],
+        [
+            'title' => 'RKO',
+            'items' => [
+                ['label' => 'RKO Header', 'href' => '#', 'active' => false],
+                ['label' => 'RKO Detail', 'href' => '#', 'active' => false],
+            ],
+        ],
+        [
+            'title' => 'Realisasi Pengadaan',
+            'items' => [
+                ['label' => 'Sumber Pengadaan', 'href' => route('stock-sources.index'), 'active' => request()->routeIs('stock-sources.*')],
+                ['label' => 'Realisasi Pengadaan', 'href' => route('stock-receipts.index'), 'active' => request()->routeIs('stock-receipts.*')],
             ],
         ],
         [
@@ -31,6 +42,7 @@
                 ['label' => 'Stok Terkini', 'href' => route('stock-monitoring.current-stock'), 'active' => request()->routeIs('stock-monitoring.current-stock')],
                 ['label' => 'Batch & Kedaluwarsa', 'href' => route('stock-monitoring.batches'), 'active' => request()->routeIs('stock-monitoring.batches')],
                 ['label' => 'Kartu Stok', 'href' => route('stock-monitoring.stock-card'), 'active' => request()->routeIs('stock-monitoring.stock-card')],
+                ['label' => 'Penyesuaian Stok', 'href' => route('stock-adjustments.index'), 'active' => request()->routeIs('stock-adjustments.*')],
             ],
         ],
         [
@@ -53,7 +65,7 @@
         <a href="{{ route('dashboard') }}" class="block">
             <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-300">DPPKB Kota Sukabumi</p>
             <h1 class="mt-2 text-lg font-semibold leading-tight">Monitoring Obat Kontrasepsi</h1>
-            <p class="mt-2 text-sm text-slate-400">Panel internal pengelolaan stok, distribusi, dan pelaporan obat KB.</p>
+            <p class="mt-2 text-sm text-slate-400">Panel internal pengelolaan faskes, pengadaan, distribusi, dan pelaporan obat KB.</p>
         </a>
     </div>
 

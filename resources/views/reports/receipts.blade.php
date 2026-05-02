@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">Laporan Stok Masuk</x-slot>
+    <x-slot name="header">Laporan Realisasi Pengadaan</x-slot>
 
     @include('reports._tabs')
 

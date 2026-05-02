@@ -1,11 +1,11 @@
 <x-app-layout>
-    <x-slot name="header">Stok Keluar</x-slot>
+    <x-slot name="header">Distribusi Obat</x-slot>
 
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <p class="text-sm text-slate-500">Catat distribusi obat ke puskesmas, klinik, atau bidan dengan alokasi batch FEFO yang otomatis.</p>
             <a href="{{ route('stock-distributions.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
-                Tambah Stok Keluar
+                Tambah Distribusi Obat
             </a>
         </div>
 

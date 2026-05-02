@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">Tujuan Distribusi</x-slot>
+    <x-slot name="header">Faskes</x-slot>
 
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">

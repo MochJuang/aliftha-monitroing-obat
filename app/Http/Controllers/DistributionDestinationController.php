@@ -49,7 +49,7 @@ class DistributionDestinationController extends Controller
 
         return redirect()
             ->route('distribution-destinations.show', $destination)
-            ->with('success', 'Tujuan distribusi berhasil ditambahkan.');
+            ->with('success', 'Data faskes berhasil ditambahkan.');
     }
 
     public function show(DistributionDestination $distributionDestination): View
@@ -70,7 +70,7 @@ class DistributionDestinationController extends Controller
 
         return redirect()
             ->route('distribution-destinations.show', $distributionDestination)
-            ->with('success', 'Tujuan distribusi berhasil diperbarui.');
+            ->with('success', 'Data faskes berhasil diperbarui.');
     }
 
     public function destroy(DistributionDestination $distributionDestination): RedirectResponse
@@ -80,10 +80,10 @@ class DistributionDestinationController extends Controller
 
             return redirect()
                 ->route('distribution-destinations.index')
-                ->with('success', 'Tujuan distribusi berhasil dihapus.');
+                ->with('success', 'Data faskes berhasil dihapus.');
         } catch (QueryException) {
             return back()->withErrors([
-                'delete' => 'Tujuan distribusi tidak bisa dihapus karena masih dipakai transaksi keluar.',
+                'delete' => 'Data faskes tidak bisa dihapus karena masih dipakai pada distribusi obat.',
             ]);
         }
     }

@@ -11,20 +11,20 @@
         'bg-slate-950 text-white' => request()->routeIs('reports.receipts'),
         'bg-slate-100 text-slate-700 hover:bg-slate-200' => !request()->routeIs('reports.receipts'),
     ])>
-        Stok Masuk
+        Realisasi Pengadaan
     </a>
     <a href="{{ route('reports.distributions') }}" @class([
         'rounded-full px-4 py-2 text-sm font-semibold transition',
         'bg-slate-950 text-white' => request()->routeIs('reports.distributions'),
         'bg-slate-100 text-slate-700 hover:bg-slate-200' => !request()->routeIs('reports.distributions'),
     ])>
-        Stok Keluar
+        Distribusi Obat
     </a>
     <a href="{{ route('reports.adjustments') }}" @class([
         'rounded-full px-4 py-2 text-sm font-semibold transition',
         'bg-slate-950 text-white' => request()->routeIs('reports.adjustments'),
         'bg-slate-100 text-slate-700 hover:bg-slate-200' => !request()->routeIs('reports.adjustments'),
     ])>
-        Adjustment
+        Penyesuaian Stok
     </a>
 </div>

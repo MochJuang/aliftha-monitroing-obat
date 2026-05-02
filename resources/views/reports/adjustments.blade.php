@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">Laporan Adjustment</x-slot>
+    <x-slot name="header">Laporan Penyesuaian Stok</x-slot>
 
     @include('reports._tabs')
 
@@ -13,7 +13,7 @@
             <p class="mt-2 text-3xl font-semibold {{ $summary['total_difference'] >= 0 ? 'text-sky-900' : 'text-rose-900' }}">{{ number_format($summary['total_difference']) }}</p>
         </article>
         <article class="rounded-[2rem] border border-rose-200 bg-rose-50 p-5 shadow-sm">
-            <p class="text-sm text-rose-800">Adjustment expired</p>
+            <p class="text-sm text-rose-800">Penyesuaian expired</p>
             <p class="mt-2 text-3xl font-semibold text-rose-900">{{ number_format($summary['expired_count']) }}</p>
         </article>
     </section>

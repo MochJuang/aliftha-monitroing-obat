@@ -130,7 +130,7 @@
         </div>
 
         <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Adjustment langsung memperbarui <strong>qty_remaining</strong> sesuai stok fisik yang kamu input. Nilai selisih akan tersimpan sebagai jejak audit.
+            Penyesuaian stok langsung memperbarui <strong>qty_remaining</strong> sesuai stok fisik yang kamu input. Nilai selisih akan tersimpan sebagai jejak audit.
         </div>
 
         <div class="mt-6 space-y-4">
@@ -212,7 +212,7 @@
             Batal
         </a>
         <button type="submit" class="rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
-            Simpan Adjustment
+            Simpan Penyesuaian Stok
         </button>
     </div>
 </div>

@@ -76,7 +76,7 @@ class StockDistributionController extends Controller
 
         return redirect()
             ->route('stock-distributions.show', $distribution)
-            ->with('success', 'Transaksi stok keluar berhasil disimpan.');
+            ->with('success', 'Distribusi obat berhasil disimpan.');
     }
 
     public function show(StockDistribution $stockDistribution): View
@@ -130,7 +130,7 @@ class StockDistributionController extends Controller
 
         return redirect()
             ->route('stock-distributions.show', $distribution)
-            ->with('success', 'Transaksi stok keluar berhasil diperbarui.');
+            ->with('success', 'Distribusi obat berhasil diperbarui.');
     }
 
     public function destroy(Request $request, StockDistribution $stockDistribution): RedirectResponse
@@ -149,7 +149,7 @@ class StockDistributionController extends Controller
 
         return redirect()
             ->route('stock-distributions.index')
-            ->with('success', 'Transaksi stok keluar draft berhasil dihapus.');
+            ->with('success', 'Draft distribusi obat berhasil dihapus.');
     }
 
     /**
