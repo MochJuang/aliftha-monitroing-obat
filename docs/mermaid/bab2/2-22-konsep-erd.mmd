@@ -1,0 +1,7 @@
+erDiagram
+    USER ||--o{ TRANSAKSI_MASUK : mencatat
+    USER ||--o{ TRANSAKSI_KELUAR : mencatat
+    BARANG ||--o{ TRANSAKSI_MASUK : masuk
+    BARANG ||--o{ TRANSAKSI_KELUAR : keluar
+    KATEGORI ||--o{ BARANG : memiliki
+    PEMASOK ||--o{ TRANSAKSI_MASUK : sumber
