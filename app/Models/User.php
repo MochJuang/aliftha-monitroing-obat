@@ -81,6 +81,16 @@ class User extends Authenticatable
         return $this->hasMany(ActivityLog::class);
     }
 
+    public function submittedRkoHeaders(): HasMany
+    {
+        return $this->hasMany(RkoHeader::class, 'submitted_by');
+    }
+
+    public function approvedRkoHeaders(): HasMany
+    {
+        return $this->hasMany(RkoHeader::class, 'approved_by');
+    }
+
     public function hasRole(string $roleName): bool
     {
         return $this->role?->name === $roleName;

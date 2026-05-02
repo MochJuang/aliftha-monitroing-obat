@@ -502,12 +502,12 @@ Berikut checklist kerja yang bisa dipakai saat implementasi:
 
 ### Fase B: RKO
 
-- buat migration `rko_headers`
-- buat migration `rko_details`
-- buat model dan relasi
-- buat controller dan request validation
-- buat halaman index, create, edit, show
-- tambahkan menu RKO
+- [x] buat migration `rko_headers`
+- [x] buat migration `rko_details`
+- [x] buat model dan relasi
+- [x] buat controller dan request validation
+- [x] buat halaman index, create, edit, show
+- [x] tambahkan menu RKO
 
 ### Fase C: Integrasi
 

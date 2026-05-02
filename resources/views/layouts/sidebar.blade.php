@@ -25,8 +25,8 @@
         [
             'title' => 'RKO',
             'items' => [
-                ['label' => 'RKO Header', 'href' => '#', 'active' => false],
-                ['label' => 'RKO Detail', 'href' => '#', 'active' => false],
+                ['label' => 'RKO Header', 'href' => route('rko.header.index'), 'active' => request()->routeIs('rko.header.*', 'rko-headers.*')],
+                ['label' => 'RKO Detail', 'href' => route('rko.detail.index'), 'active' => request()->routeIs('rko.detail.*')],
             ],
         ],
         [
@@ -83,12 +83,6 @@
                             ])
                         >
                             <span>{{ $item['label'] }}</span>
-
-                            @if ($item['href'] === '#')
-                                <span class="rounded-full border border-slate-700 px-2 py-0.5 text-[10px] uppercase tracking-wide text-slate-500">
-                                    Segera
-                                </span>
-                            @endif
                         </a>
                     @endforeach
                 </div>

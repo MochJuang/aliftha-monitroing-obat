@@ -6,6 +6,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MedicineCategoryController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RkoDetailController;
+use App\Http\Controllers\RkoHeaderController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockDistributionController;
@@ -38,6 +40,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('medicine-categories', MedicineCategoryController::class);
         Route::resource('units', UnitController::class);
         Route::resource('medicines', MedicineController::class);
+        Route::resource('rko-headers', RkoHeaderController::class);
         Route::resource('stock-sources', StockSourceController::class);
         Route::resource('distribution-destinations', DistributionDestinationController::class);
         Route::resource('stock-receipts', StockReceiptController::class);
@@ -115,6 +118,18 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('penyesuaian-stok/create', [StockAdjustmentController::class, 'create'])->name('penyesuaian.create');
             Route::post('penyesuaian-stok', [StockAdjustmentController::class, 'store'])->name('penyesuaian.store');
             Route::get('penyesuaian-stok/{stockAdjustment}', [StockAdjustmentController::class, 'show'])->name('penyesuaian.show');
+        });
+
+        Route::prefix('rko')->name('rko.')->group(function () {
+            Route::get('header', [RkoHeaderController::class, 'index'])->name('header.index');
+            Route::get('header/create', [RkoHeaderController::class, 'create'])->name('header.create');
+            Route::post('header', [RkoHeaderController::class, 'store'])->name('header.store');
+            Route::get('header/{rkoHeader}', [RkoHeaderController::class, 'show'])->name('header.show');
+            Route::get('header/{rkoHeader}/edit', [RkoHeaderController::class, 'edit'])->name('header.edit');
+            Route::match(['put', 'patch'], 'header/{rkoHeader}', [RkoHeaderController::class, 'update'])->name('header.update');
+            Route::delete('header/{rkoHeader}', [RkoHeaderController::class, 'destroy'])->name('header.destroy');
+
+            Route::get('detail', [RkoDetailController::class, 'index'])->name('detail.index');
         });
     });
 

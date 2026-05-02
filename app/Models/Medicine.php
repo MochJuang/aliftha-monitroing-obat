@@ -70,4 +70,9 @@ class Medicine extends Model
     {
         return $this->hasMany(StockAdjustmentItem::class);
     }
+
+    public function rkoDetails(): HasMany
+    {
+        return $this->hasMany(RkoDetail::class);
+    }
 }
