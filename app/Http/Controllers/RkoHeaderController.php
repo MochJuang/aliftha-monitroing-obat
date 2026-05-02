@@ -107,9 +107,32 @@ class RkoHeaderController extends Controller
 
     public function show(RkoHeader $rkoHeader): View
     {
-        $rkoHeader->load(['submitter', 'approver', 'items.medicine.category', 'items.medicine.unit']);
+        $rkoHeader->load([
+            'submitter',
+            'approver',
+            'items.medicine.category',
+            'items.medicine.unit',
+            'stockReceipts.source',
+            'stockReceipts.receiver',
+        ]);
 
-        return view('rko-headers.show', compact('rkoHeader'));
+        $linkedReceipts = $rkoHeader->stockReceipts()
+            ->with(['source', 'receiver'])
+            ->withCount('items')
+            ->withSum('items', 'quantity')
+            ->latest('received_date')
+            ->latest('id')
+            ->get();
+
+        $receiptSummary = [
+            'linked_count' => $linkedReceipts->count(),
+            'posted_count' => $linkedReceipts->where('status', 'posted')->count(),
+            'total_realized_qty' => (int) $linkedReceipts->sum(fn ($receipt) => (int) ($receipt->items_sum_quantity ?? 0)),
+            'total_planned_qty' => (int) $rkoHeader->items->sum('planned_quantity'),
+            'total_approved_qty' => (int) $rkoHeader->items->sum(fn ($item) => (int) ($item->approved_quantity ?? 0)),
+        ];
+
+        return view('rko-headers.show', compact('rkoHeader', 'linkedReceipts', 'receiptSummary'));
     }
 
     public function edit(RkoHeader $rkoHeader): View

@@ -19,12 +19,18 @@
     </section>
 
     <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <form method="GET" action="{{ route('laporan.pengadaan') }}" class="grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_180px_180px_180px_140px] xl:items-end">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor transaksi atau sumber..." class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+        <form method="GET" action="{{ route('laporan.pengadaan') }}" class="grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(0,1.2fr)_minmax(0,1.3fr)_160px_160px_180px_140px] xl:items-end">
+            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor transaksi, sumber, atau RKO..." class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
             <select name="source_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
                 <option value="">Semua sumber</option>
                 @foreach ($sources as $source)
                     <option value="{{ $source->id }}" @selected($sourceId === (string) $source->id)>{{ $source->name }}</option>
+                @endforeach
+            </select>
+            <select name="rko_header_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+                <option value="">Semua RKO</option>
+                @foreach ($rkoHeaders as $header)
+                    <option value="{{ $header->id }}" @selected($rkoHeaderId === (string) $header->id)>{{ $header->rko_number }} - {{ sprintf('%02d', $header->period_month) }}/{{ $header->period_year }}</option>
                 @endforeach
             </select>
             <input type="date" name="date_from" value="{{ $dateFrom }}" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
@@ -46,6 +52,7 @@
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Nomor</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Tanggal</th>
                             <th class="px-4 py-3 font-semibold">Sumber</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">RKO</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Item</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Qty</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
@@ -58,13 +65,14 @@
                                 <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $report->receipt_number }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $report->received_date->format('d M Y') }}</td>
                                 <td class="px-4 py-3 text-slate-700">{{ $report->source->name }}</td>
+                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $report->rkoHeader?->rko_number ?? '-' }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($report->items_count) }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($report->items_sum_quantity ?? 0)) }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ ucfirst($report->status) }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $report->receiver->name }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada data laporan stok masuk.</td></tr>
+                            <tr><td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada data laporan stok masuk.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

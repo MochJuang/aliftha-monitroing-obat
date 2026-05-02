@@ -90,6 +90,23 @@
         </div>
 
         <div>
+            <label for="rko_header_id" class="block text-sm font-medium text-slate-700">Referensi RKO</label>
+            <select
+                id="rko_header_id"
+                name="rko_header_id"
+                class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500"
+            >
+                <option value="">Tanpa referensi RKO</option>
+                @foreach ($rkoHeaders as $header)
+                    <option value="{{ $header->id }}" @selected((string) old('rko_header_id', $receipt->rko_header_id) === (string) $header->id)>
+                        {{ $header->rko_number }} - {{ sprintf('%02d', $header->period_month) }}/{{ $header->period_year }}
+                    </option>
+                @endforeach
+            </select>
+            <p class="mt-2 text-xs text-slate-500">Pilih dokumen RKO jika realisasi pengadaan ini merupakan tindak lanjut dari rencana kebutuhan obat tertentu.</p>
+        </div>
+
+        <div>
             <label for="status" class="block text-sm font-medium text-slate-700">Status</label>
             <select
                 id="status"

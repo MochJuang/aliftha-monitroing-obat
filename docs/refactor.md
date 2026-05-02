@@ -511,10 +511,11 @@ Berikut checklist kerja yang bisa dipakai saat implementasi:
 
 ### Fase C: Integrasi
 
-- evaluasi apakah `stock_receipts` perlu `rko_header_id`
-- jika ya, tambahkan migration alter table
-- tampilkan referensi RKO di halaman realisasi pengadaan
-- buat laporan perbandingan RKO vs realisasi
+- [x] evaluasi apakah `stock_receipts` perlu `rko_header_id`
+- [x] jika ya, tambahkan migration alter table
+- [x] tampilkan referensi RKO di halaman realisasi pengadaan
+- [x] tampilkan relasi realisasi pengadaan pada halaman detail RKO
+- [ ] buat laporan perbandingan RKO vs realisasi
 
 ### Fase D: Monitoring dan Laporan
 

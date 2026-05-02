@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\DistributionDestination;
 use App\Models\Medicine;
 use App\Models\MedicineBatch;
+use App\Models\RkoHeader;
 use App\Models\StockAdjustment;
 use App\Models\StockDistribution;
 use App\Models\StockReceipt;
@@ -111,21 +112,24 @@ class ReportController extends Controller
     {
         $search = trim((string) $request->string('search'));
         $sourceId = trim((string) $request->string('source_id'));
+        $rkoHeaderId = trim((string) $request->string('rko_header_id'));
         $status = trim((string) $request->string('status'));
         $dateFrom = trim((string) $request->string('date_from'));
         $dateTo = trim((string) $request->string('date_to'));
 
         $reports = StockReceipt::query()
-            ->with(['source', 'receiver'])
+            ->with(['source', 'receiver', 'rkoHeader'])
             ->withCount('items')
             ->withSum('items', 'quantity')
             ->when($search !== '', function (Builder $query) use ($search) {
                 $query->where(function (Builder $inner) use ($search) {
                     $inner->where('receipt_number', 'like', "%{$search}%")
-                        ->orWhereHas('source', fn (Builder $sourceQuery) => $sourceQuery->where('name', 'like', "%{$search}%"));
+                        ->orWhereHas('source', fn (Builder $sourceQuery) => $sourceQuery->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('rkoHeader', fn (Builder $rkoQuery) => $rkoQuery->where('rko_number', 'like', "%{$search}%"));
                 });
             })
             ->when($sourceId !== '', fn (Builder $query) => $query->where('source_id', $sourceId))
+            ->when($rkoHeaderId !== '', fn (Builder $query) => $query->where('rko_header_id', $rkoHeaderId))
             ->when(in_array($status, ['draft', 'posted', 'cancelled'], true), fn (Builder $query) => $query->where('status', $status))
             ->when($dateFrom !== '', fn (Builder $query) => $query->whereDate('received_date', '>=', $dateFrom))
             ->when($dateTo !== '', fn (Builder $query) => $query->whereDate('received_date', '<=', $dateTo))
@@ -139,12 +143,14 @@ class ReportController extends Controller
             'total_qty' => (int) DB::table('stock_receipt_items')
                 ->join('stock_receipts', 'stock_receipts.id', '=', 'stock_receipt_items.receipt_id')
                 ->when($sourceId !== '', fn ($query) => $query->where('stock_receipts.source_id', $sourceId))
+                ->when($rkoHeaderId !== '', fn ($query) => $query->where('stock_receipts.rko_header_id', $rkoHeaderId))
                 ->when(in_array($status, ['draft', 'posted', 'cancelled'], true), fn ($query) => $query->where('stock_receipts.status', $status))
                 ->when($dateFrom !== '', fn ($query) => $query->whereDate('stock_receipts.received_date', '>=', $dateFrom))
                 ->when($dateTo !== '', fn ($query) => $query->whereDate('stock_receipts.received_date', '<=', $dateTo))
                 ->sum('stock_receipt_items.quantity'),
             'posted_count' => StockReceipt::query()
                 ->when($sourceId !== '', fn (Builder $query) => $query->where('source_id', $sourceId))
+                ->when($rkoHeaderId !== '', fn (Builder $query) => $query->where('rko_header_id', $rkoHeaderId))
                 ->when($dateFrom !== '', fn (Builder $query) => $query->whereDate('received_date', '>=', $dateFrom))
                 ->when($dateTo !== '', fn (Builder $query) => $query->whereDate('received_date', '<=', $dateTo))
                 ->where('status', 'posted')
@@ -152,8 +158,9 @@ class ReportController extends Controller
         ];
 
         $sources = StockSource::query()->orderBy('name')->get(['id', 'name']);
+        $rkoHeaders = RkoHeader::query()->orderByDesc('period_year')->orderByDesc('period_month')->get(['id', 'rko_number', 'period_month', 'period_year']);
 
-        return view('reports.receipts', compact('reports', 'summary', 'sources', 'search', 'sourceId', 'status', 'dateFrom', 'dateTo'));
+        return view('reports.receipts', compact('reports', 'summary', 'sources', 'rkoHeaders', 'search', 'sourceId', 'rkoHeaderId', 'status', 'dateFrom', 'dateTo'));
     }
 
     public function distributions(Request $request): View

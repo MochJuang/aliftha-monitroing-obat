@@ -19,6 +19,7 @@ class StockReceipt extends Model
     protected $fillable = [
         'receipt_number',
         'source_id',
+        'rko_header_id',
         'received_date',
         'received_by',
         'notes',
@@ -40,6 +41,11 @@ class StockReceipt extends Model
     public function source(): BelongsTo
     {
         return $this->belongsTo(StockSource::class, 'source_id');
+    }
+
+    public function rkoHeader(): BelongsTo
+    {
+        return $this->belongsTo(RkoHeader::class, 'rko_header_id');
     }
 
     public function receiver(): BelongsTo

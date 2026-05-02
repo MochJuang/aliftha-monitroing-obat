@@ -14,9 +14,15 @@
                 type="text"
                 name="search"
                 value="{{ $search }}"
-                placeholder="Cari nomor transaksi atau sumber obat..."
+                placeholder="Cari nomor transaksi, sumber, atau nomor RKO..."
                 class="w-full min-w-0 flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500"
             >
+            <select name="rko_header_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 xl:w-64 xl:shrink-0">
+                <option value="">Semua referensi RKO</option>
+                @foreach ($rkoHeaders as $header)
+                    <option value="{{ $header->id }}" @selected($rkoHeaderId === (string) $header->id)>{{ $header->rko_number }} - {{ sprintf('%02d', $header->period_month) }}/{{ $header->period_year }}</option>
+                @endforeach
+            </select>
             <select name="status" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 xl:w-48 xl:shrink-0">
                 <option value="">Semua status</option>
                 <option value="draft" @selected($status === 'draft')>Draft</option>
@@ -36,6 +42,7 @@
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Nomor</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Tanggal</th>
                             <th class="px-4 py-3 font-semibold">Sumber</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">RKO</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Item</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Petugas</th>
@@ -50,6 +57,15 @@
                                 <td class="px-4 py-3">
                                     <p class="font-medium text-slate-900">{{ $receipt->source->name }}</p>
                                     <p class="text-xs text-slate-500">{{ strtoupper($receipt->source->source_type) }}</p>
+                                </td>
+                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">
+                                    @if ($receipt->rkoHeader)
+                                        <a href="{{ route('rko.header.show', $receipt->rkoHeader) }}" class="font-medium text-amber-700 hover:text-amber-800">
+                                            {{ $receipt->rkoHeader->rko_number }}
+                                        </a>
+                                    @else
+                                        -
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $receipt->items_count }} item</td>
                                 <td class="px-4 py-3">
@@ -75,7 +91,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada transaksi stok masuk.</td>
+                                <td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada transaksi stok masuk.</td>
                             </tr>
                         @endforelse
                     </tbody>

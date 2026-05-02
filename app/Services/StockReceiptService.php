@@ -23,6 +23,7 @@ class StockReceiptService
             $receipt = StockReceipt::create([
                 'receipt_number' => $data['receipt_number'],
                 'source_id' => $data['source_id'],
+                'rko_header_id' => $data['rko_header_id'] ?? null,
                 'received_date' => $data['received_date'],
                 'received_by' => $userId,
                 'notes' => $data['notes'] ?? null,
@@ -62,6 +63,7 @@ class StockReceiptService
             $receipt->update([
                 'receipt_number' => $data['receipt_number'],
                 'source_id' => $data['source_id'],
+                'rko_header_id' => $data['rko_header_id'] ?? null,
                 'received_date' => $data['received_date'],
                 'notes' => $data['notes'] ?? null,
                 'status' => $newStatus,

@@ -35,47 +35,116 @@
                 <p class="text-sm text-slate-500">Catatan</p>
                 <p class="mt-2 text-sm leading-7 text-slate-700">{{ $rkoHeader->notes ?: 'Belum ada catatan RKO.' }}</p>
             </div>
+
+            <div class="mt-6">
+                <a href="{{ route('pengadaan.create', ['rko_header_id' => $rkoHeader->id]) }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+                    Buat Realisasi Pengadaan dari RKO Ini
+                </a>
+            </div>
         </article>
 
-        <article class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
-            <div class="border-b border-slate-200 px-6 py-5">
-                <h3 class="text-lg font-semibold text-slate-900">Detail Kebutuhan Obat</h3>
-                <p class="mt-1 text-sm text-slate-500">Rincian item obat, jumlah rencana, dan jumlah yang disetujui pada dokumen ini.</p>
-            </div>
+        <div class="space-y-6">
+            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+                    <p class="text-sm text-slate-500">Total rencana</p>
+                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($receiptSummary['total_planned_qty']) }}</p>
+                </article>
+                <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+                    <p class="text-sm text-slate-500">Total disetujui</p>
+                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($receiptSummary['total_approved_qty']) }}</p>
+                </article>
+                <article class="rounded-[2rem] border border-sky-200 bg-sky-50 p-5 shadow-sm">
+                    <p class="text-sm text-sky-800">Total realisasi</p>
+                    <p class="mt-2 text-3xl font-semibold text-sky-900">{{ number_format($receiptSummary['total_realized_qty']) }}</p>
+                </article>
+                <article class="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
+                    <p class="text-sm text-emerald-800">Pengadaan linked</p>
+                    <p class="mt-2 text-3xl font-semibold text-emerald-900">{{ number_format($receiptSummary['linked_count']) }}</p>
+                </article>
+            </section>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-[920px] w-full divide-y divide-slate-200 text-sm">
-                    <thead class="bg-slate-50 text-left text-slate-500">
-                        <tr>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Kode</th>
-                            <th class="px-4 py-3 font-semibold">Obat</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Kategori</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Satuan</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Rencana</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Disetujui</th>
-                            <th class="px-4 py-3 font-semibold">Catatan</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
-                        @forelse ($rkoHeader->items as $item)
+            <article class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-200 px-6 py-5">
+                    <h3 class="text-lg font-semibold text-slate-900">Detail Kebutuhan Obat</h3>
+                    <p class="mt-1 text-sm text-slate-500">Rincian item obat, jumlah rencana, dan jumlah yang disetujui pada dokumen ini.</p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-[920px] w-full divide-y divide-slate-200 text-sm">
+                        <thead class="bg-slate-50 text-left text-slate-500">
                             <tr>
-                                <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $item->medicine->code }}</td>
-                                <td class="px-4 py-3">
-                                    <p class="font-medium text-slate-900">{{ $item->medicine->name }}</p>
-                                    <p class="text-xs text-slate-500">{{ $item->medicine->brand ?: '-' }}</p>
-                                </td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->medicine->category?->name ?? '-' }}</td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->medicine->unit?->name ?? '-' }}</td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($item->planned_quantity) }}</td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->approved_quantity !== null ? number_format($item->approved_quantity) : '-' }}</td>
-                                <td class="px-4 py-3 text-slate-600">{{ $item->notes ?: '-' }}</td>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Kode</th>
+                                <th class="px-4 py-3 font-semibold">Obat</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Kategori</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Satuan</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Rencana</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Disetujui</th>
+                                <th class="px-4 py-3 font-semibold">Catatan</th>
                             </tr>
-                        @empty
-                            <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada item pada dokumen RKO ini.</td></tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </article>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            @forelse ($rkoHeader->items as $item)
+                                <tr>
+                                    <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $item->medicine->code }}</td>
+                                    <td class="px-4 py-3">
+                                        <p class="font-medium text-slate-900">{{ $item->medicine->name }}</p>
+                                        <p class="text-xs text-slate-500">{{ $item->medicine->brand ?: '-' }}</p>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->medicine->category?->name ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->medicine->unit?->name ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($item->planned_quantity) }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->approved_quantity !== null ? number_format($item->approved_quantity) : '-' }}</td>
+                                    <td class="px-4 py-3 text-slate-600">{{ $item->notes ?: '-' }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada item pada dokumen RKO ini.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-200 px-6 py-5">
+                    <h3 class="text-lg font-semibold text-slate-900">Realisasi Pengadaan Terkait</h3>
+                    <p class="mt-1 text-sm text-slate-500">Daftar transaksi realisasi pengadaan yang sudah dihubungkan ke dokumen RKO ini.</p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-[900px] w-full divide-y divide-slate-200 text-sm">
+                        <thead class="bg-slate-50 text-left text-slate-500">
+                            <tr>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Nomor</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Tanggal</th>
+                                <th class="px-4 py-3 font-semibold">Sumber</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Item</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Qty</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
+                                <th class="px-4 py-3 font-semibold text-right whitespace-nowrap">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            @forelse ($linkedReceipts as $receipt)
+                                <tr>
+                                    <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $receipt->receipt_number }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $receipt->received_date->format('d M Y') }}</td>
+                                    <td class="px-4 py-3 text-slate-600">{{ $receipt->source->name }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($receipt->items_count) }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($receipt->items_sum_quantity ?? 0)) }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ ucfirst($receipt->status) }}</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex justify-end">
+                                            <a href="{{ route('pengadaan.show', $receipt) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada realisasi pengadaan yang terhubung ke RKO ini.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
     </section>
 </x-app-layout>

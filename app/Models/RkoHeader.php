@@ -44,6 +44,11 @@ class RkoHeader extends Model
         return $this->hasMany(RkoDetail::class);
     }
 
+    public function stockReceipts(): HasMany
+    {
+        return $this->hasMany(StockReceipt::class, 'rko_header_id');
+    }
+
     public function submitter(): BelongsTo
     {
         return $this->belongsTo(User::class, 'submitted_by');

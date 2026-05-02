@@ -32,6 +32,7 @@ class StockReceiptRequest extends FormRequest
                 Rule::unique('stock_receipts', 'receipt_number')->ignore($receipt),
             ],
             'source_id' => ['required', 'exists:stock_sources,id'],
+            'rko_header_id' => ['nullable', 'exists:rko_headers,id'],
             'received_date' => ['required', 'date'],
             'status' => ['required', 'in:draft,posted'],
             'notes' => ['nullable', 'string'],

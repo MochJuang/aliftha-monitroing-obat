@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StockReceiptRequest;
 use App\Models\Medicine;
+use App\Models\RkoHeader;
 use App\Models\StockReceipt;
 use App\Models\StockSource;
 use App\Services\StockReceiptService;
@@ -23,28 +24,37 @@ class StockReceiptController extends Controller
     {
         $search = trim((string) $request->string('search'));
         $status = trim((string) $request->string('status'));
+        $rkoHeaderId = trim((string) $request->string('rko_header_id'));
 
         $receipts = StockReceipt::query()
-            ->with(['source', 'receiver'])
+            ->with(['source', 'receiver', 'rkoHeader'])
             ->withCount('items')
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
                     $inner->where('receipt_number', 'like', "%{$search}%")
-                        ->orWhereHas('source', fn ($sourceQuery) => $sourceQuery->where('name', 'like', "%{$search}%"));
+                        ->orWhereHas('source', fn ($sourceQuery) => $sourceQuery->where('name', 'like', "%{$search}%"))
+                        ->orWhereHas('rkoHeader', fn ($rkoQuery) => $rkoQuery->where('rko_number', 'like', "%{$search}%"));
                 });
             })
             ->when(in_array($status, ['draft', 'posted', 'cancelled'], true), fn ($query) => $query->where('status', $status))
+            ->when($rkoHeaderId !== '', fn ($query) => $query->where('rko_header_id', $rkoHeaderId))
             ->latest('received_date')
             ->latest('id')
             ->paginate(10)
             ->withQueryString();
 
-        return view('stock-receipts.index', compact('receipts', 'search', 'status'));
+        $rkoHeaders = RkoHeader::query()
+            ->orderByDesc('period_year')
+            ->orderByDesc('period_month')
+            ->get();
+
+        return view('stock-receipts.index', compact('receipts', 'rkoHeaders', 'search', 'status', 'rkoHeaderId'));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         $receipt = new StockReceipt([
+            'rko_header_id' => $request->integer('rko_header_id') ?: null,
             'received_date' => now()->toDateString(),
             'status' => 'draft',
         ]);
@@ -52,6 +62,7 @@ class StockReceiptController extends Controller
         return view('stock-receipts.create', [
             'receipt' => $receipt,
             'sources' => StockSource::orderBy('name')->get(),
+            'rkoHeaders' => RkoHeader::query()->orderByDesc('period_year')->orderByDesc('period_month')->get(),
             'medicines' => Medicine::where('is_active', true)->orderBy('name')->get(),
             'nextReceiptNumber' => $this->generateNextReceiptNumber(),
         ]);
@@ -72,7 +83,7 @@ class StockReceiptController extends Controller
 
     public function show(StockReceipt $stockReceipt): View
     {
-        $stockReceipt->load(['source', 'receiver', 'items.medicine', 'items.batch']);
+        $stockReceipt->load(['source', 'receiver', 'rkoHeader', 'items.medicine', 'items.batch']);
 
         return view('stock-receipts.show', ['receipt' => $stockReceipt]);
     }
@@ -88,6 +99,7 @@ class StockReceiptController extends Controller
         return view('stock-receipts.edit', [
             'receipt' => $stockReceipt,
             'sources' => StockSource::orderBy('name')->get(),
+            'rkoHeaders' => RkoHeader::query()->orderByDesc('period_year')->orderByDesc('period_month')->get(),
             'medicines' => Medicine::where('is_active', true)->orderBy('name')->get(),
             'nextReceiptNumber' => $stockReceipt->receipt_number,
         ]);

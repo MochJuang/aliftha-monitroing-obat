@@ -8,6 +8,14 @@
                     <p class="text-sm text-slate-500">Nomor penerimaan</p>
                     <h3 class="mt-2 text-2xl font-semibold text-slate-900">{{ $receipt->receipt_number }}</h3>
                     <p class="mt-2 text-sm text-slate-500">{{ $receipt->source->name }}</p>
+                    @if ($receipt->rkoHeader)
+                        <p class="mt-1 text-sm text-amber-700">
+                            Referensi RKO:
+                            <a href="{{ route('rko.header.show', $receipt->rkoHeader) }}" class="font-semibold hover:text-amber-800">
+                                {{ $receipt->rkoHeader->rko_number }}
+                            </a>
+                        </p>
+                    @endif
                 </div>
 
                 @if ($receipt->status === 'draft')
@@ -33,6 +41,18 @@
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
                     <dt class="text-sm text-slate-500">Sumber</dt>
                     <dd class="mt-1 font-semibold text-slate-900">{{ $receipt->source->name }}</dd>
+                </div>
+                <div class="rounded-2xl bg-slate-50 px-4 py-4 md:col-span-2">
+                    <dt class="text-sm text-slate-500">Referensi RKO</dt>
+                    <dd class="mt-1 font-semibold text-slate-900">
+                        @if ($receipt->rkoHeader)
+                            <a href="{{ route('rko.header.show', $receipt->rkoHeader) }}" class="text-amber-700 hover:text-amber-800">
+                                {{ $receipt->rkoHeader->rko_number }} - {{ sprintf('%02d', $receipt->rkoHeader->period_month) }}/{{ $receipt->rkoHeader->period_year }}
+                            </a>
+                        @else
+                            Tidak terhubung ke RKO
+                        @endif
+                    </dd>
                 </div>
                 <div class="rounded-2xl bg-slate-50 px-4 py-4 md:col-span-2">
                     <dt class="text-sm text-slate-500">Catatan</dt>
