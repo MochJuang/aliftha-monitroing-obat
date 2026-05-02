@@ -85,6 +85,38 @@
         </article>
     </section>
 
+    <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <div class="flex items-center justify-between gap-4">
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">RKO Snapshot</p>
+                <h3 class="mt-2 text-xl font-semibold text-slate-900">Perbandingan rencana dan realisasi pengadaan</h3>
+            </div>
+            <a href="{{ route('laporan.rko') }}" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                Buka Laporan RKO
+            </a>
+        </div>
+
+        <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <article class="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
+                <p class="text-sm text-slate-500">Dokumen RKO</p>
+                <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($rkoSummary['total_headers']) }}</p>
+                <p class="mt-1 text-xs text-slate-500">{{ number_format($rkoSummary['approved_headers']) }} dokumen disetujui</p>
+            </article>
+            <article class="rounded-[1.5rem] border border-amber-200 bg-amber-50 p-4">
+                <p class="text-sm text-amber-800">Total disetujui</p>
+                <p class="mt-2 text-3xl font-semibold text-amber-900">{{ number_format($rkoSummary['total_approved_qty']) }}</p>
+            </article>
+            <article class="rounded-[1.5rem] border border-sky-200 bg-sky-50 p-4">
+                <p class="text-sm text-sky-800">Total realisasi</p>
+                <p class="mt-2 text-3xl font-semibold text-sky-900">{{ number_format($rkoSummary['total_realized_qty']) }}</p>
+            </article>
+            <article class="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 p-4">
+                <p class="text-sm text-emerald-800">Cakupan realisasi</p>
+                <p class="mt-2 text-3xl font-semibold text-emerald-900">{{ number_format($rkoSummary['coverage_percent'], 1) }}%</p>
+            </article>
+        </div>
+    </section>
+
     <section class="mt-6 grid gap-6 xl:grid-cols-3">
         <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm xl:col-span-2">
             <div class="flex items-center justify-between gap-4">

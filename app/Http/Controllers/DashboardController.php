@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ActivityLog;
 use App\Models\Medicine;
 use App\Models\MedicineBatch;
+use App\Models\RkoHeader;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -55,6 +56,21 @@ class DashboardController extends Controller
                 ->whereDate('expired_at', '<', $today)
                 ->count(),
         ];
+
+        $rkoSummary = [
+            'total_headers' => RkoHeader::count(),
+            'approved_headers' => RkoHeader::where('status', 'approved')->count(),
+            'total_approved_qty' => (int) DB::table('rko_details')->sum('approved_quantity'),
+            'total_realized_qty' => (int) DB::table('stock_receipt_items')
+                ->join('stock_receipts', 'stock_receipts.id', '=', 'stock_receipt_items.receipt_id')
+                ->whereNotNull('stock_receipts.rko_header_id')
+                ->where('stock_receipts.status', 'posted')
+                ->sum('stock_receipt_items.quantity'),
+        ];
+
+        $rkoSummary['coverage_percent'] = $rkoSummary['total_approved_qty'] > 0
+            ? round(($rkoSummary['total_realized_qty'] / $rkoSummary['total_approved_qty']) * 100, 1)
+            : 0;
 
         $todayMovements = [
             'receipts_count' => DB::table('stock_receipts')
@@ -131,6 +147,7 @@ class DashboardController extends Controller
             'recentTransactions' => $recentTransactions,
             'recentActivities' => $recentActivities,
             'activeUser' => Auth::user(),
+            'rkoSummary' => $rkoSummary,
         ]);
     }
 

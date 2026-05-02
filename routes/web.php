@@ -141,6 +141,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('reports/receipts', [ReportController::class, 'receipts'])->name('reports.receipts');
         Route::get('reports/distributions', [ReportController::class, 'distributions'])->name('reports.distributions');
         Route::get('reports/adjustments', [ReportController::class, 'adjustments'])->name('reports.adjustments');
+        Route::get('reports/rko-realization', [ReportController::class, 'rkoRealization'])->name('reports.rko-realization');
 
         Route::prefix('monitoring')->name('monitoring.')->group(function () {
             Route::get('stok-terkini', [StockMonitoringController::class, 'currentStock'])->name('stok.index');
@@ -153,6 +154,7 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('realisasi-pengadaan', [ReportController::class, 'receipts'])->name('pengadaan');
             Route::get('distribusi-obat', [ReportController::class, 'distributions'])->name('distribusi');
             Route::get('penyesuaian-stok', [ReportController::class, 'adjustments'])->name('penyesuaian');
+            Route::get('rko-vs-realisasi', [ReportController::class, 'rkoRealization'])->name('rko');
         });
     });
 

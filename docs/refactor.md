@@ -519,9 +519,9 @@ Berikut checklist kerja yang bisa dipakai saat implementasi:
 
 ### Fase D: Monitoring dan Laporan
 
-- tambahkan laporan RKO
-- tambahkan summary realisasi pengadaan pada dashboard
-- pastikan monitoring stok tetap akurat setelah integrasi
+- [x] tambahkan laporan RKO vs realisasi
+- [x] tambahkan summary RKO dan realisasi pengadaan pada dashboard
+- [x] pastikan monitoring stok tetap akurat setelah integrasi
 
 ## 11. Rekomendasi Implementasi
 

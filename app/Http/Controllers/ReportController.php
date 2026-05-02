@@ -255,6 +255,77 @@ class ReportController extends Controller
         return view('reports.adjustments', compact('reports', 'summary', 'search', 'type', 'dateFrom', 'dateTo'));
     }
 
+    public function rkoRealization(Request $request): View
+    {
+        $search = trim((string) $request->string('search'));
+        $status = trim((string) $request->string('status'));
+        $periodYear = trim((string) $request->string('period_year'));
+
+        $reports = RkoHeader::query()
+            ->with(['submitter'])
+            ->withCount(['items', 'stockReceipts as linked_receipts_count'])
+            ->withSum('items', 'planned_quantity')
+            ->withSum('items', 'approved_quantity')
+            ->selectSub(
+                DB::table('stock_receipts')
+                    ->join('stock_receipt_items', 'stock_receipt_items.receipt_id', '=', 'stock_receipts.id')
+                    ->selectRaw('COALESCE(SUM(stock_receipt_items.quantity), 0)')
+                    ->whereColumn('stock_receipts.rko_header_id', 'rko_headers.id')
+                    ->where('stock_receipts.status', 'posted'),
+                'posted_realized_quantity'
+            )
+            ->when($search !== '', function (Builder $query) use ($search) {
+                $query->where(function (Builder $inner) use ($search) {
+                    $inner->where('rko_number', 'like', "%{$search}%")
+                        ->orWhere('notes', 'like', "%{$search}%");
+                });
+            })
+            ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn (Builder $query) => $query->where('status', $status))
+            ->when($periodYear !== '', fn (Builder $query) => $query->where('period_year', (int) $periodYear))
+            ->orderByDesc('period_year')
+            ->orderByDesc('period_month')
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        $baseSummaryQuery = RkoHeader::query()
+            ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn (Builder $query) => $query->where('status', $status))
+            ->when($periodYear !== '', fn (Builder $query) => $query->where('period_year', (int) $periodYear));
+
+        $summary = [
+            'total_headers' => (clone $baseSummaryQuery)->count(),
+            'total_planned_qty' => (int) DB::table('rko_details')
+                ->join('rko_headers', 'rko_headers.id', '=', 'rko_details.rko_header_id')
+                ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn ($query) => $query->where('rko_headers.status', $status))
+                ->when($periodYear !== '', fn ($query) => $query->where('rko_headers.period_year', (int) $periodYear))
+                ->sum('rko_details.planned_quantity'),
+            'total_approved_qty' => (int) DB::table('rko_details')
+                ->join('rko_headers', 'rko_headers.id', '=', 'rko_details.rko_header_id')
+                ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn ($query) => $query->where('rko_headers.status', $status))
+                ->when($periodYear !== '', fn ($query) => $query->where('rko_headers.period_year', (int) $periodYear))
+                ->sum('rko_details.approved_quantity'),
+            'total_realized_qty' => (int) DB::table('stock_receipt_items')
+                ->join('stock_receipts', 'stock_receipts.id', '=', 'stock_receipt_items.receipt_id')
+                ->join('rko_headers', 'rko_headers.id', '=', 'stock_receipts.rko_header_id')
+                ->where('stock_receipts.status', 'posted')
+                ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn ($query) => $query->where('rko_headers.status', $status))
+                ->when($periodYear !== '', fn ($query) => $query->where('rko_headers.period_year', (int) $periodYear))
+                ->sum('stock_receipt_items.quantity'),
+        ];
+
+        $summary['coverage_percent'] = $summary['total_approved_qty'] > 0
+            ? round(($summary['total_realized_qty'] / $summary['total_approved_qty']) * 100, 1)
+            : 0;
+
+        $availableYears = RkoHeader::query()
+            ->select('period_year')
+            ->distinct()
+            ->orderByDesc('period_year')
+            ->pluck('period_year');
+
+        return view('reports.rko-realization', compact('reports', 'summary', 'availableYears', 'search', 'status', 'periodYear'));
+    }
+
     private function currentStockSubquery(string $today): Builder
     {
         return MedicineBatch::query()
