@@ -65,7 +65,7 @@ class StockAdjustmentController extends Controller
         );
 
         return redirect()
-            ->route('stock-adjustments.show', $adjustment)
+            ->route('monitoring.penyesuaian.show', $adjustment)
             ->with('success', 'Penyesuaian stok berhasil disimpan.');
     }
 

@@ -11,6 +11,12 @@ Dokumen ini berisi rencana refactor aplikasi agar struktur menu, istilah bisnis,
 
 Dokumen ini difokuskan pada perencanaan perubahan, bukan implementasi langsung. Tujuannya agar proses refactor dapat dilakukan bertahap, aman, dan tetap menjaga fungsi yang sudah berjalan.
 
+Status implementasi saat ini:
+
+- `Tahap 1` sudah diimplementasikan pada level UI, istilah bisnis dan grouping menu utama sudah disesuaikan.
+- `Tahap 2` sudah diimplementasikan pada level route alias, redirect controller, dan action utama pada halaman CRUD/laporan.
+- route teknis lama masih dipertahankan sementara sebagai fallback agar transisi tetap aman.
+
 Catatan penting:
 
 - meskipun menu utama hanya terdiri dari 6 kelompok, proses `stok keluar` tetap harus dipertahankan karena secara bisnis obat tetap didistribusikan ke fasilitas kesehatan,
@@ -475,13 +481,24 @@ Berikut checklist kerja yang bisa dipakai saat implementasi:
 
 ### Fase A: UI Refactor
 
-- ubah menu sidebar ke struktur baru
-- ubah judul halaman `Tujuan Distribusi` menjadi `Faskes`
-- ubah judul halaman `Stok Masuk` menjadi `Realisasi Pengadaan`
-- ubah judul halaman `Stok Keluar` menjadi `Distribusi Obat`
-- letakkan `Distribusi Obat` di bawah grup `Faskes`
-- rapikan label laporan
-- pastikan active state menu tetap benar
+- [x] ubah menu sidebar ke struktur baru
+- [x] ubah judul halaman `Tujuan Distribusi` menjadi `Faskes`
+- [x] ubah judul halaman `Stok Masuk` menjadi `Realisasi Pengadaan`
+- [x] ubah judul halaman `Stok Keluar` menjadi `Distribusi Obat`
+- [x] letakkan `Distribusi Obat` di bawah grup `Faskes`
+- [x] rapikan label laporan
+- [x] pastikan active state menu tetap benar
+
+### Fase A.1: Route Alias Bisnis
+
+- [x] tambah alias route `faskes.*`
+- [x] tambah alias route `master-obat.*`
+- [x] tambah alias route `pengadaan.*`
+- [x] tambah alias route `monitoring.*`
+- [x] tambah alias route `laporan.*`
+- [x] arahkan redirect controller ke alias route baru
+- [x] arahkan form action dan tombol navigasi utama ke alias route baru
+- [x] pertahankan route lama sebagai fallback sementara
 
 ### Fase B: RKO
 

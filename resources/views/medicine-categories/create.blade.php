@@ -4,7 +4,7 @@
     </x-slot>
 
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <form method="POST" action="{{ route('medicine-categories.store') }}">
+        <form method="POST" action="{{ route('master-obat.kategori.store') }}">
             @include('medicine-categories._form')
         </form>
     </section>

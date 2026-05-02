@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <form method="GET" action="{{ route('stock-monitoring.batches') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
+        <form method="GET" action="{{ route('monitoring.batch.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
             <input
                 type="text"
                 name="search"

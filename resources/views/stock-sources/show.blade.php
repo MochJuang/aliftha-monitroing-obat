@@ -8,7 +8,7 @@
                     <p class="text-sm text-slate-500">Nama sumber</p>
                     <h3 class="mt-2 text-2xl font-semibold text-slate-900">{{ $source->name }}</h3>
                 </div>
-                <a href="{{ route('stock-sources.edit', $source) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                <a href="{{ route('pengadaan.sumber.edit', $source) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit</a>
             </div>
 
             <dl class="mt-8 grid gap-6 md:grid-cols-2">

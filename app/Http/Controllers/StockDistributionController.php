@@ -75,7 +75,7 @@ class StockDistributionController extends Controller
         }
 
         return redirect()
-            ->route('stock-distributions.show', $distribution)
+            ->route('faskes.distribusi.show', $distribution)
             ->with('success', 'Distribusi obat berhasil disimpan.');
     }
 
@@ -129,7 +129,7 @@ class StockDistributionController extends Controller
         }
 
         return redirect()
-            ->route('stock-distributions.show', $distribution)
+            ->route('faskes.distribusi.show', $distribution)
             ->with('success', 'Distribusi obat berhasil diperbarui.');
     }
 
@@ -148,7 +148,7 @@ class StockDistributionController extends Controller
         }
 
         return redirect()
-            ->route('stock-distributions.index')
+            ->route('faskes.distribusi.index')
             ->with('success', 'Draft distribusi obat berhasil dihapus.');
     }
 

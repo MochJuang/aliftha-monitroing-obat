@@ -33,6 +33,6 @@
 </div>
 
 <div class="mt-8 flex items-center justify-end gap-3">
-    <a href="{{ route('stock-sources.index') }}" class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Batal</a>
+    <a href="{{ route('pengadaan.sumber.index') }}" class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Batal</a>
     <button type="submit" class="rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Simpan</button>
 </div>

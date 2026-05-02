@@ -48,7 +48,7 @@ class DistributionDestinationController extends Controller
         $destination = DistributionDestination::create($request->validated());
 
         return redirect()
-            ->route('distribution-destinations.show', $destination)
+            ->route('faskes.show', $destination)
             ->with('success', 'Data faskes berhasil ditambahkan.');
     }
 
@@ -69,7 +69,7 @@ class DistributionDestinationController extends Controller
         $distributionDestination->update($request->validated());
 
         return redirect()
-            ->route('distribution-destinations.show', $distributionDestination)
+            ->route('faskes.show', $distributionDestination)
             ->with('success', 'Data faskes berhasil diperbarui.');
     }
 
@@ -79,7 +79,7 @@ class DistributionDestinationController extends Controller
             $distributionDestination->delete();
 
             return redirect()
-                ->route('distribution-destinations.index')
+                ->route('faskes.index')
                 ->with('success', 'Data faskes berhasil dihapus.');
         } catch (QueryException) {
             return back()->withErrors([

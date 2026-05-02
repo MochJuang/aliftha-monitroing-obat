@@ -2,7 +2,7 @@
     <x-slot name="header">Edit Sumber Pengadaan</x-slot>
 
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <form method="POST" action="{{ route('stock-sources.update', $source) }}">
+        <form method="POST" action="{{ route('pengadaan.sumber.update', $source) }}">
             @method('PUT')
             @include('stock-sources._form')
         </form>

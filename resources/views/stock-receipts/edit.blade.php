@@ -2,7 +2,7 @@
     <x-slot name="header">Edit Realisasi Pengadaan</x-slot>
 
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <form method="POST" action="{{ route('stock-receipts.update', $receipt) }}">
+        <form method="POST" action="{{ route('pengadaan.update', $receipt) }}">
             @method('PUT')
             @include('stock-receipts._form')
         </form>

@@ -39,7 +39,7 @@ class MedicineCategoryController extends Controller
         $category = MedicineCategory::create($request->validated());
 
         return redirect()
-            ->route('medicine-categories.show', $category)
+            ->route('master-obat.kategori.show', $category)
             ->with('success', 'Kategori obat berhasil ditambahkan.');
     }
 
@@ -60,7 +60,7 @@ class MedicineCategoryController extends Controller
         $medicineCategory->update($request->validated());
 
         return redirect()
-            ->route('medicine-categories.show', $medicineCategory)
+            ->route('master-obat.kategori.show', $medicineCategory)
             ->with('success', 'Kategori obat berhasil diperbarui.');
     }
 
@@ -70,7 +70,7 @@ class MedicineCategoryController extends Controller
             $medicineCategory->delete();
 
             return redirect()
-                ->route('medicine-categories.index')
+                ->route('master-obat.kategori.index')
                 ->with('success', 'Kategori obat berhasil dihapus.');
         } catch (QueryException) {
             return back()->withErrors([

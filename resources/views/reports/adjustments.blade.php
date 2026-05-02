@@ -19,7 +19,7 @@
     </section>
 
     <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <form method="GET" action="{{ route('reports.adjustments') }}" class="grid gap-3 xl:grid-cols-[minmax(0,2fr)_180px_180px_180px_140px] xl:items-end">
+        <form method="GET" action="{{ route('laporan.penyesuaian') }}" class="grid gap-3 xl:grid-cols-[minmax(0,2fr)_180px_180px_180px_140px] xl:items-end">
             <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor adjustment atau catatan..." class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
             <select name="type" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
                 <option value="">Semua jenis</option>

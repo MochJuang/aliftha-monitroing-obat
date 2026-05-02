@@ -4,12 +4,12 @@
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <p class="text-sm text-slate-500">Catat semua penerimaan obat dari BKKBN, Dinkes, atau supplier dan bentuk batch stok secara aman.</p>
-            <a href="{{ route('stock-receipts.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+            <a href="{{ route('pengadaan.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
                 Tambah Realisasi Pengadaan
             </a>
         </div>
 
-        <form method="GET" action="{{ route('stock-receipts.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
+        <form method="GET" action="{{ route('pengadaan.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
             <input
                 type="text"
                 name="search"
@@ -60,11 +60,11 @@
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $receipt->receiver->name }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex justify-end gap-2 whitespace-nowrap">
-                                        <a href="{{ route('stock-receipts.show', $receipt) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
+                                        <a href="{{ route('pengadaan.show', $receipt) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
 
                                         @if ($receipt->status === 'draft')
-                                            <a href="{{ route('stock-receipts.edit', $receipt) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
-                                            <form method="POST" action="{{ route('stock-receipts.destroy', $receipt) }}" onsubmit="return confirm('Hapus transaksi draft ini?')">
+                                            <a href="{{ route('pengadaan.edit', $receipt) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                                            <form method="POST" action="{{ route('pengadaan.destroy', $receipt) }}" onsubmit="return confirm('Hapus transaksi draft ini?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="rounded-xl border border-rose-300 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">Hapus</button>

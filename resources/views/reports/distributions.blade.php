@@ -19,7 +19,7 @@
     </section>
 
     <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <form method="GET" action="{{ route('reports.distributions') }}" class="grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_180px_180px_180px_140px] xl:items-end">
+        <form method="GET" action="{{ route('laporan.distribusi') }}" class="grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_180px_180px_180px_140px] xl:items-end">
             <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor transaksi atau tujuan..." class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
             <select name="destination_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
                 <option value="">Semua tujuan</option>

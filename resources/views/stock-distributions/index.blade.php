@@ -4,12 +4,12 @@
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <p class="text-sm text-slate-500">Catat distribusi obat ke puskesmas, klinik, atau bidan dengan alokasi batch FEFO yang otomatis.</p>
-            <a href="{{ route('stock-distributions.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+            <a href="{{ route('faskes.distribusi.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
                 Tambah Distribusi Obat
             </a>
         </div>
 
-        <form method="GET" action="{{ route('stock-distributions.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
+        <form method="GET" action="{{ route('faskes.distribusi.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
             <input
                 type="text"
                 name="search"
@@ -62,11 +62,11 @@
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $distribution->distributor->name }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex justify-end gap-2 whitespace-nowrap">
-                                        <a href="{{ route('stock-distributions.show', $distribution) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
+                                        <a href="{{ route('faskes.distribusi.show', $distribution) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
 
                                         @if ($distribution->status === 'draft')
-                                            <a href="{{ route('stock-distributions.edit', $distribution) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
-                                            <form method="POST" action="{{ route('stock-distributions.destroy', $distribution) }}" onsubmit="return confirm('Hapus transaksi draft ini?')">
+                                            <a href="{{ route('faskes.distribusi.edit', $distribution) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                                            <form method="POST" action="{{ route('faskes.distribusi.destroy', $distribution) }}" onsubmit="return confirm('Hapus transaksi draft ini?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="rounded-xl border border-rose-300 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">Hapus</button>

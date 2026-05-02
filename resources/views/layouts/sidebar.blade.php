@@ -10,16 +10,16 @@
         [
             'title' => 'Faskes',
             'items' => [
-                ['label' => 'Data Faskes', 'href' => route('distribution-destinations.index'), 'active' => request()->routeIs('distribution-destinations.*')],
-                ['label' => 'Distribusi Obat', 'href' => route('stock-distributions.index'), 'active' => request()->routeIs('stock-distributions.*')],
+                ['label' => 'Data Faskes', 'href' => route('faskes.index'), 'active' => request()->routeIs('faskes.*', 'distribution-destinations.*')],
+                ['label' => 'Distribusi Obat', 'href' => route('faskes.distribusi.index'), 'active' => request()->routeIs('faskes.distribusi.*', 'stock-distributions.*')],
             ],
         ],
         [
             'title' => 'Master Obat',
             'items' => [
-                ['label' => 'Kategori Obat', 'href' => route('medicine-categories.index'), 'active' => request()->routeIs('medicine-categories.*')],
-                ['label' => 'Satuan', 'href' => route('units.index'), 'active' => request()->routeIs('units.*')],
-                ['label' => 'Data Obat', 'href' => route('medicines.index'), 'active' => request()->routeIs('medicines.*')],
+                ['label' => 'Kategori Obat', 'href' => route('master-obat.kategori.index'), 'active' => request()->routeIs('master-obat.kategori.*', 'medicine-categories.*')],
+                ['label' => 'Satuan', 'href' => route('master-obat.satuan.index'), 'active' => request()->routeIs('master-obat.satuan.*', 'units.*')],
+                ['label' => 'Data Obat', 'href' => route('master-obat.obat.index'), 'active' => request()->routeIs('master-obat.obat.*', 'medicines.*')],
             ],
         ],
         [
@@ -32,21 +32,21 @@
         [
             'title' => 'Realisasi Pengadaan',
             'items' => [
-                ['label' => 'Sumber Pengadaan', 'href' => route('stock-sources.index'), 'active' => request()->routeIs('stock-sources.*')],
-                ['label' => 'Realisasi Pengadaan', 'href' => route('stock-receipts.index'), 'active' => request()->routeIs('stock-receipts.*')],
+                ['label' => 'Sumber Pengadaan', 'href' => route('pengadaan.sumber.index'), 'active' => request()->routeIs('pengadaan.sumber.*', 'stock-sources.*')],
+                ['label' => 'Realisasi Pengadaan', 'href' => route('pengadaan.index'), 'active' => request()->routeIs('pengadaan.*', 'stock-receipts.*')],
             ],
         ],
         [
             'title' => 'Monitoring',
             'items' => [
-                ['label' => 'Stok Terkini', 'href' => route('stock-monitoring.current-stock'), 'active' => request()->routeIs('stock-monitoring.current-stock')],
-                ['label' => 'Penyesuaian Stok', 'href' => route('stock-adjustments.index'), 'active' => request()->routeIs('stock-adjustments.*')],
+                ['label' => 'Stok Terkini', 'href' => route('monitoring.stok.index'), 'active' => request()->routeIs('monitoring.stok.*', 'stock-monitoring.current-stock')],
+                ['label' => 'Penyesuaian Stok', 'href' => route('monitoring.penyesuaian.index'), 'active' => request()->routeIs('monitoring.penyesuaian.*', 'stock-adjustments.*')],
             ],
         ],
         [
             'title' => 'Lainnya',
             'items' => array_values(array_filter([
-                ['label' => 'Laporan', 'href' => route('reports.stock'), 'active' => request()->routeIs('reports.*')],
+                ['label' => 'Laporan', 'href' => route('laporan.stok'), 'active' => request()->routeIs('laporan.*', 'reports.*')],
                 Auth::user()?->isAdmin()
                     ? ['label' => 'Pengguna', 'href' => route('users.index'), 'active' => request()->routeIs('users.*')]
                     : null,

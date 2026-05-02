@@ -11,7 +11,7 @@
                 </div>
 
                 @if ($distribution->status === 'draft')
-                    <a href="{{ route('stock-distributions.edit', $distribution) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">
+                    <a href="{{ route('faskes.distribusi.edit', $distribution) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">
                         Edit Draft
                     </a>
                 @endif

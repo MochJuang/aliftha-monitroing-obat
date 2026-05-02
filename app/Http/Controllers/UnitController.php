@@ -39,7 +39,7 @@ class UnitController extends Controller
         $unit = Unit::create($request->validated());
 
         return redirect()
-            ->route('units.show', $unit)
+            ->route('master-obat.satuan.show', $unit)
             ->with('success', 'Satuan berhasil ditambahkan.');
     }
 
@@ -60,7 +60,7 @@ class UnitController extends Controller
         $unit->update($request->validated());
 
         return redirect()
-            ->route('units.show', $unit)
+            ->route('master-obat.satuan.show', $unit)
             ->with('success', 'Satuan berhasil diperbarui.');
     }
 
@@ -70,7 +70,7 @@ class UnitController extends Controller
             $unit->delete();
 
             return redirect()
-                ->route('units.index')
+                ->route('master-obat.satuan.index')
                 ->with('success', 'Satuan berhasil dihapus.');
         } catch (QueryException) {
             return back()->withErrors([

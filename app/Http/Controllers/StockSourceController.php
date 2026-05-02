@@ -43,7 +43,7 @@ class StockSourceController extends Controller
         $source = StockSource::create($request->validated());
 
         return redirect()
-            ->route('stock-sources.show', $source)
+            ->route('pengadaan.sumber.show', $source)
             ->with('success', 'Sumber pengadaan berhasil ditambahkan.');
     }
 
@@ -64,7 +64,7 @@ class StockSourceController extends Controller
         $stockSource->update($request->validated());
 
         return redirect()
-            ->route('stock-sources.show', $stockSource)
+            ->route('pengadaan.sumber.show', $stockSource)
             ->with('success', 'Sumber pengadaan berhasil diperbarui.');
     }
 
@@ -74,7 +74,7 @@ class StockSourceController extends Controller
             $stockSource->delete();
 
             return redirect()
-                ->route('stock-sources.index')
+                ->route('pengadaan.sumber.index')
                 ->with('success', 'Sumber pengadaan berhasil dihapus.');
         } catch (QueryException) {
             return back()->withErrors([

@@ -4,12 +4,12 @@
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <p class="text-sm text-slate-500">Catat selisih stok fisik, batch expired, atau obat rusak agar stok sistem tetap akurat.</p>
-            <a href="{{ route('stock-adjustments.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+            <a href="{{ route('monitoring.penyesuaian.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
                 Tambah Penyesuaian Stok
             </a>
         </div>
 
-        <form method="GET" action="{{ route('stock-adjustments.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
+        <form method="GET" action="{{ route('monitoring.penyesuaian.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
             <input
                 type="text"
                 name="search"
@@ -60,7 +60,7 @@
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $adjustment->creator->name }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex justify-end gap-2 whitespace-nowrap">
-                                        <a href="{{ route('stock-adjustments.show', $adjustment) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
+                                        <a href="{{ route('monitoring.penyesuaian.show', $adjustment) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
                                     </div>
                                 </td>
                             </tr>

@@ -10,7 +10,7 @@
                     <p class="text-sm text-slate-500">Nama kategori</p>
                     <h3 class="mt-2 text-2xl font-semibold text-slate-900">{{ $category->name }}</h3>
                 </div>
-                <a href="{{ route('medicine-categories.edit', $category) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">
+                <a href="{{ route('master-obat.kategori.edit', $category) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">
                     Edit
                 </a>
             </div>

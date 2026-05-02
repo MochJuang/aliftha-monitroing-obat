@@ -4,10 +4,10 @@
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <p class="text-sm text-slate-500">Kelola sumber penerimaan obat seperti BKKBN, Dinkes, atau supplier.</p>
-            <a href="{{ route('stock-sources.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Tambah Sumber</a>
+            <a href="{{ route('pengadaan.sumber.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">Tambah Sumber</a>
         </div>
 
-        <form method="GET" action="{{ route('stock-sources.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
+        <form method="GET" action="{{ route('pengadaan.sumber.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
             <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama atau contact person..." class="w-full min-w-0 flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
             <select name="type" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 xl:w-48 xl:shrink-0">
                 <option value="">Semua jenis</option>
@@ -40,9 +40,9 @@
                             <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $source->phone ?: '-' }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex justify-end gap-2 whitespace-nowrap">
-                                    <a href="{{ route('stock-sources.show', $source) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
-                                    <a href="{{ route('stock-sources.edit', $source) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
-                                    <form method="POST" action="{{ route('stock-sources.destroy', $source) }}" onsubmit="return confirm('Hapus sumber obat ini?')">
+                                    <a href="{{ route('pengadaan.sumber.show', $source) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
+                                    <a href="{{ route('pengadaan.sumber.edit', $source) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                                    <form method="POST" action="{{ route('pengadaan.sumber.destroy', $source) }}" onsubmit="return confirm('Hapus sumber obat ini?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="rounded-xl border border-rose-300 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">Hapus</button>

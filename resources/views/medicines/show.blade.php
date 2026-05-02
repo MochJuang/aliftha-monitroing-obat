@@ -9,7 +9,7 @@
                     <h3 class="mt-2 text-2xl font-semibold text-slate-900">{{ $medicine->code }}</h3>
                     <p class="mt-2 text-sm text-slate-500">{{ $medicine->brand ?: 'Tanpa merek' }}</p>
                 </div>
-                <a href="{{ route('medicines.edit', $medicine) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                <a href="{{ route('master-obat.obat.edit', $medicine) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit</a>
             </div>
 
             <dl class="mt-8 grid gap-6 md:grid-cols-2">

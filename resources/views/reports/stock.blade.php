@@ -23,7 +23,7 @@
     </section>
 
     <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <form method="GET" action="{{ route('reports.stock') }}" class="flex flex-col gap-3 xl:flex-row xl:items-center">
+        <form method="GET" action="{{ route('laporan.stok') }}" class="flex flex-col gap-3 xl:flex-row xl:items-center">
             <input type="text" name="search" value="{{ $search }}" placeholder="Cari kode atau nama obat..." class="w-full min-w-0 flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
             <select name="category_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 xl:w-56 xl:shrink-0">
                 <option value="">Semua kategori</option>

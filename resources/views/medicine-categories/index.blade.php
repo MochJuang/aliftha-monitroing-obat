@@ -8,12 +8,12 @@
             <div>
                 <p class="text-sm text-slate-500">Kelola kelompok utama obat kontrasepsi yang dipakai di aplikasi.</p>
             </div>
-            <a href="{{ route('medicine-categories.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+            <a href="{{ route('master-obat.kategori.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
                 Tambah Kategori
             </a>
         </div>
 
-        <form method="GET" action="{{ route('medicine-categories.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
+        <form method="GET" action="{{ route('master-obat.kategori.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
             <input
                 type="text"
                 name="search"
@@ -45,9 +45,9 @@
                             <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $category->created_at->format('d M Y') }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex justify-end gap-2 whitespace-nowrap">
-                                    <a href="{{ route('medicine-categories.show', $category) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
-                                    <a href="{{ route('medicine-categories.edit', $category) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
-                                    <form method="POST" action="{{ route('medicine-categories.destroy', $category) }}" onsubmit="return confirm('Hapus kategori ini?')">
+                                    <a href="{{ route('master-obat.kategori.show', $category) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
+                                    <a href="{{ route('master-obat.kategori.edit', $category) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                                    <form method="POST" action="{{ route('master-obat.kategori.destroy', $category) }}" onsubmit="return confirm('Hapus kategori ini?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="rounded-xl border border-rose-300 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">Hapus</button>

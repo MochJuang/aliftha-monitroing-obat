@@ -7,7 +7,7 @@
             <p class="mt-1 text-sm text-slate-500">Pilih obat untuk melihat mutasi stok masuk, stok keluar, dan adjustment dalam urutan kronologis beserta saldo berjalan.</p>
         </div>
 
-        <form method="GET" action="{{ route('stock-monitoring.stock-card') }}" class="mt-6 grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_180px_180px_140px] xl:items-end">
+        <form method="GET" action="{{ route('monitoring.kartu-stok.index') }}" class="mt-6 grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_180px_180px_140px] xl:items-end">
             <div>
                 <label for="medicine_id" class="block text-sm font-medium text-slate-700">Obat</label>
                 <select

@@ -80,7 +80,7 @@ class MedicineController extends Controller
         Medicine::create($request->validated());
 
         return redirect()
-            ->route('medicines.index')
+            ->route('master-obat.obat.index')
             ->with('success', 'Data obat berhasil ditambahkan.');
     }
 
@@ -105,7 +105,7 @@ class MedicineController extends Controller
         $medicine->update($request->validated());
 
         return redirect()
-            ->route('medicines.index')
+            ->route('master-obat.obat.index')
             ->with('success', 'Data obat berhasil diperbarui.');
     }
 
@@ -115,7 +115,7 @@ class MedicineController extends Controller
             $medicine->delete();
 
             return redirect()
-                ->route('medicines.index')
+                ->route('master-obat.obat.index')
                 ->with('success', 'Data obat berhasil dihapus.');
         } catch (QueryException) {
             return back()->withErrors([
@@ -253,6 +253,12 @@ class MedicineController extends Controller
             ->sortByDesc('sort_date')
             ->values()
             ->map(function (array $movement) {
+                $movement['type_label'] = match ($movement['type']) {
+                    'realisasi_pengadaan' => 'Realisasi Pengadaan',
+                    'distribusi_obat' => 'Distribusi Obat',
+                    default => 'Penyesuaian Stok',
+                };
+
                 unset($movement['sort_date']);
 
                 return $movement;
