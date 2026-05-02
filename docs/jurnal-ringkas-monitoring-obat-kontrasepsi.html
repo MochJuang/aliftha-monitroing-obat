@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jurnal Ringkas Monitoring Obat Kontrasepsi</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 12pt;
+            line-height: 1.6;
+            color: #111827;
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 0 24px 48px;
+        }
+
+        h1, h2, h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 18pt;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 14pt;
+            margin-top: 24px;
+        }
+
+        h3 {
+            font-size: 12.5pt;
+            margin-top: 18px;
+        }
+
+        p {
+            margin: 0 0 12px;
+            text-align: justify;
+        }
+
+        ul {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        .meta {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .meta p {
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .section-title {
+            font-weight: bold;
+        }
+
+        .mermaid {
+            border: 1px solid #000;
+            padding: 16px;
+            margin: 16px 0 8px;
+            background: #fff;
+        }
+
+        .figure-title,
+        .table-title {
+            margin-bottom: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        th {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rancang Bangun Aplikasi Monitoring Obat Kontrasepsi Berbasis Web Menggunakan Laravel dan MySQL</h1>
+
+    <div class="meta">
+        <p><strong>Nama Penulis</strong></p>
+        <p>Nama Mahasiswa</p>
+        <p><strong>Instansi</strong></p>
+        <p>Program Studi Diploma III, Nama Kampus</p>
+        <p><strong>Email</strong></p>
+        <p>email@kampus.ac.id</p>
+    </div>
+
+    <h2>Abstrak</h2>
+    <p>Pengelolaan stok obat kontrasepsi pada instansi pelayanan publik memerlukan pencatatan yang akurat, cepat, dan terintegrasi. Proses pengelolaan yang masih dilakukan secara manual berpotensi menimbulkan kesalahan pencatatan, keterlambatan pelaporan, serta kesulitan dalam melakukan monitoring stok secara real-time. Penelitian ini bertujuan untuk merancang dan membangun aplikasi monitoring obat kontrasepsi berbasis web menggunakan framework Laravel dan database MySQL/MariaDB. Metode pengembangan sistem dilakukan melalui tahapan analisis kebutuhan, perancangan basis data, implementasi sistem, dan pengujian fungsional. Hasil penelitian menunjukkan bahwa aplikasi yang dibangun mampu mendukung manajemen data obat, pencatatan stok masuk, pencatatan stok keluar, penyesuaian stok, monitoring batch dan kedaluwarsa, pembuatan laporan, serta pengelolaan pengguna. Dengan adanya aplikasi ini, proses pengelolaan stok obat kontrasepsi menjadi lebih terstruktur, informasi stok dapat diperoleh lebih cepat, dan risiko kesalahan pencatatan dapat diminimalkan.</p>
+    <p><strong>Kata kunci:</strong> monitoring stok, obat kontrasepsi, Laravel, MySQL, aplikasi berbasis web</p>
+
+    <h2>1. Pendahuluan</h2>
+    <p>Perkembangan teknologi informasi mendorong berbagai instansi untuk beralih dari sistem manual menuju sistem terkomputerisasi. Salah satu bidang yang membutuhkan dukungan sistem informasi adalah pengelolaan persediaan obat, termasuk obat kontrasepsi. Obat kontrasepsi merupakan bagian penting dalam program keluarga berencana, sehingga ketersediaan stok, ketepatan distribusi, dan pengawasan masa kedaluwarsa perlu dikelola secara baik.</p>
+    <p>Pada beberapa instansi, pengelolaan stok obat kontrasepsi masih dilakukan menggunakan pencatatan berbasis kertas atau aplikasi spreadsheet sederhana. Cara tersebut memiliki beberapa kelemahan, seperti tingginya risiko kesalahan input, sulitnya melakukan pemantauan stok secara real-time, serta lamanya proses penyusunan laporan. Kondisi ini dapat berdampak pada keterlambatan pengambilan keputusan dan menurunnya efektivitas pelayanan.</p>
+    <p>Berdasarkan permasalahan tersebut, diperlukan suatu aplikasi monitoring obat kontrasepsi berbasis web yang mampu mendukung proses pencatatan, pengelolaan, monitoring, dan pelaporan dalam satu sistem terintegrasi. Aplikasi ini dibangun menggunakan Laravel sebagai framework backend dan MySQL/MariaDB sebagai basis data.</p>
+    <p>Secara khusus, penelitian ini menitikberatkan pada kebutuhan pengelolaan stok yang tidak hanya berfokus pada jumlah total obat, tetapi juga pada riwayat pergerakan stok, pencatatan per batch, dan pemantauan masa kedaluwarsa. Karakteristik ini penting karena obat kontrasepsi termasuk barang yang harus dikelola secara hati-hati agar distribusi tepat sasaran dan tidak menimbulkan pemborosan akibat stok kedaluwarsa.</p>
+
+    <h3>1.1 Rumusan Masalah</h3>
+    <ul>
+        <li>bagaimana merancang aplikasi monitoring obat kontrasepsi berbasis web yang mampu mendukung pengelolaan stok secara terintegrasi,</li>
+        <li>bagaimana membangun sistem yang dapat mencatat stok masuk, stok keluar, dan penyesuaian stok secara akurat,</li>
+        <li>bagaimana menampilkan informasi stok dan kedaluwarsa secara cepat untuk membantu monitoring dan pengambilan keputusan.</li>
+    </ul>
+
+    <h3>1.2 Tujuan Penelitian</h3>
+    <ul>
+        <li>merancang sistem informasi monitoring obat kontrasepsi berbasis web,</li>
+        <li>membangun aplikasi yang dapat mengelola master data, transaksi stok, dan laporan,</li>
+        <li>menyediakan informasi stok obat secara lebih cepat, akurat, dan terstruktur.</li>
+    </ul>
+
+    <h3>1.3 Manfaat Penelitian</h3>
+    <ul>
+        <li>membantu petugas dalam mengelola stok obat kontrasepsi secara lebih efektif,</li>
+        <li>mengurangi risiko kesalahan pencatatan dan keterlambatan pelaporan,</li>
+        <li>menyediakan informasi yang mendukung proses monitoring dan evaluasi distribusi obat.</li>
+    </ul>
+
+    <h2>2. Metode Penelitian</h2>
+    <p>Metode penelitian yang digunakan dalam pengembangan aplikasi ini meliputi beberapa tahapan sebagai berikut:</p>
+    <ul>
+        <li>analisis kebutuhan sistem, yaitu mengidentifikasi pengguna, proses bisnis, serta fitur utama yang dibutuhkan,</li>
+        <li>perancangan sistem, yaitu menyusun struktur basis data, alur proses, dan rancangan antarmuka,</li>
+        <li>implementasi sistem, yaitu membangun aplikasi menggunakan Laravel, Blade, dan MySQL/MariaDB,</li>
+        <li>pengujian sistem, yaitu menguji fungsi aplikasi dengan metode <i>black box testing</i>.</li>
+    </ul>
+    <p>Tahapan penelitian tersebut dilakukan secara berurutan agar sistem yang dibangun sesuai dengan kebutuhan pengguna dan dapat diimplementasikan secara efektif.</p>
+
+    <div class="mermaid">
+flowchart LR
+    A["Analisis Kebutuhan"] --> B["Perancangan Sistem"]
+    B --> C["Implementasi Aplikasi"]
+    C --> D["Pengujian Sistem"]
+    D --> E["Hasil dan Evaluasi"]
+    </div>
+    <p class="figure-title">Gambar 1. Tahapan penelitian dan pengembangan sistem.</p>
+
+    <h3>2.1 Teknik Pengumpulan Data</h3>
+    <p>Dalam penelitian ini, kebutuhan sistem diperoleh melalui pengamatan terhadap proses bisnis pengelolaan stok, identifikasi data yang diperlukan, serta analisis dokumen pencatatan stok. Teknik pengumpulan data yang dapat digunakan dalam konteks penelitian seperti ini meliputi:</p>
+    <ul>
+        <li>observasi terhadap alur kerja pengelolaan stok,</li>
+        <li>wawancara dengan petugas atau pihak yang terlibat,</li>
+        <li>studi pustaka mengenai sistem informasi persediaan, Laravel, dan basis data relasional.</li>
+    </ul>
+
+    <h3>2.2 Metode Pengembangan Sistem</h3>
+    <p>Pengembangan aplikasi ini dilakukan dengan pendekatan terstruktur melalui tahap analisis, desain, implementasi, dan pengujian. Pendekatan ini dipilih karena sesuai untuk pembuatan aplikasi administrasi yang memiliki kebutuhan data dan proses bisnis yang jelas.</p>
+    <p>Tahap analisis dilakukan untuk memahami kebutuhan pengguna dan alur bisnis. Tahap desain digunakan untuk menyusun rancangan basis data, struktur menu, dan modul aplikasi. Tahap implementasi dilakukan dengan menerjemahkan rancangan menjadi kode program. Tahap pengujian dilakukan untuk memastikan setiap fungsi berjalan sesuai tujuan.</p>
+
+    <h3>2.3 Metode Pengujian</h3>
+    <p>Metode pengujian yang digunakan adalah <i>black box testing</i>. Pengujian ini dilakukan dengan menguji fungsi-fungsi sistem berdasarkan input, proses, dan output yang dihasilkan. Fokus pengujian ditujukan pada validitas proses simpan data, perubahan stok, tampilan informasi monitoring, dan hasil laporan.</p>
+
+    <h2>3. Hasil dan Pembahasan</h2>
+    <h3>3.1 Hasil Implementasi Sistem</h3>
+    <p>Hasil dari penelitian ini adalah aplikasi monitoring obat kontrasepsi berbasis web yang dapat diakses melalui browser. Aplikasi yang dibangun memiliki beberapa modul utama, yaitu:</p>
+    <ul>
+        <li>login dan autentikasi pengguna,</li>
+        <li>dashboard ringkasan stok,</li>
+        <li>master data obat,</li>
+        <li>transaksi stok masuk,</li>
+        <li>transaksi stok keluar,</li>
+        <li>penyesuaian stok,</li>
+        <li>monitoring batch dan kedaluwarsa,</li>
+        <li>laporan stok,</li>
+        <li>manajemen pengguna,</li>
+        <li>log aktivitas.</li>
+    </ul>
+    <p>Sistem juga menerapkan pengelolaan stok berbasis batch sehingga setiap penerimaan obat dapat ditelusuri berdasarkan nomor batch, jumlah stok, dan tanggal kedaluwarsa. Pada proses distribusi stok keluar, sistem menerapkan pendekatan FEFO (<i>First Expired First Out</i>), yaitu stok dari batch dengan tanggal kedaluwarsa terdekat akan diprioritaskan terlebih dahulu.</p>
+
+    <h3>3.2 Rancangan Arsitektur Sistem</h3>
+    <p>Aplikasi dibangun dengan arsitektur web berbasis client-server. Pengguna mengakses aplikasi melalui browser, kemudian permintaan diproses oleh aplikasi Laravel pada sisi server. Data transaksi dan master data disimpan ke dalam basis data MySQL/MariaDB. Arsitektur ini dipilih karena mudah diimplementasikan, mendukung akses multi-user, dan sesuai untuk aplikasi administrasi internal.</p>
+
+    <div class="mermaid">
+flowchart LR
+    A["Pengguna"] --> B["Web Browser"]
+    B --> C["Aplikasi Laravel"]
+    C --> D["Database MySQL/MariaDB"]
+    C --> E["Dashboard dan Laporan"]
+    </div>
+    <p class="figure-title">Gambar 2. Arsitektur umum aplikasi monitoring obat kontrasepsi.</p>
+
+    <h3>3.3 Rancangan Data dan Proses</h3>
+    <p>Rancangan data pada aplikasi dibagi ke dalam tiga kelompok utama, yaitu data master, data transaksi, dan data pendukung audit. Data master terdiri atas data obat, kategori, satuan, sumber stok, tujuan distribusi, role, dan pengguna. Data transaksi terdiri atas stok masuk, batch obat, stok keluar, dan penyesuaian stok. Data audit terdiri atas log aktivitas pengguna.</p>
+    <p>Struktur data tersebut dibangun agar setiap transaksi dapat ditelusuri kembali. Misalnya, transaksi penerimaan obat akan membentuk batch baru, lalu batch tersebut menjadi sumber pengurangan stok saat distribusi dilakukan. Dengan pola ini, sistem tidak hanya mengetahui total stok, tetapi juga asal stok, umur simpan, dan sisa stok per batch.</p>
+
+    <div class="mermaid">
+erDiagram
+    ROLES ||--o{ USERS : memiliki
+    MEDICINE_CATEGORIES ||--o{ MEDICINES : mengelompokkan
+    UNITS ||--o{ MEDICINES : menggunakan
+    STOCK_SOURCES ||--o{ STOCK_RECEIPTS : sumber
+    STOCK_RECEIPTS ||--o{ STOCK_RECEIPT_ITEMS : memiliki
+    STOCK_RECEIPT_ITEMS ||--|| MEDICINE_BATCHES : membentuk
+    MEDICINES ||--o{ MEDICINE_BATCHES : memiliki
+    DISTRIBUTION_DESTINATIONS ||--o{ STOCK_DISTRIBUTIONS : tujuan
+    STOCK_DISTRIBUTIONS ||--o{ STOCK_DISTRIBUTION_ITEMS : memiliki
+    STOCK_ADJUSTMENTS ||--o{ STOCK_ADJUSTMENT_ITEMS : memiliki
+    USERS ||--o{ ACTIVITY_LOGS : mencatat
+    </div>
+    <p class="figure-title">Gambar 3. Diagram konseptual data utama aplikasi.</p>
+
+    <h3>3.4 Pembahasan Fitur Utama</h3>
+    <p>Modul master data digunakan untuk mengelola informasi obat, kategori obat, satuan, sumber stok, dan tujuan distribusi. Modul stok masuk digunakan untuk mencatat obat yang diterima dan otomatis membentuk data batch. Modul stok keluar digunakan untuk mencatat distribusi obat ke fasilitas kesehatan dengan pengurangan stok berdasarkan batch. Modul penyesuaian stok digunakan untuk mencatat selisih antara stok sistem dan stok fisik. Sementara itu, modul monitoring digunakan untuk menampilkan kondisi stok terkini, status batch, dan informasi obat yang mendekati masa kedaluwarsa.</p>
+
+    <div class="mermaid">
+flowchart LR
+    A["Stok Masuk"] --> B["Batch Obat"]
+    B --> C["Stok Tersedia"]
+    C --> D["Stok Keluar"]
+    C --> E["Penyesuaian Stok"]
+    B --> F["Monitoring Kedaluwarsa"]
+    C --> G["Laporan"]
+    </div>
+    <p class="figure-title">Gambar 4. Alur utama pengelolaan stok pada aplikasi.</p>
+
+    <p>Fitur login dan hak akses berfungsi untuk memastikan bahwa pengguna hanya dapat mengakses menu yang sesuai dengan perannya. Admin memiliki akses ke seluruh modul, petugas gudang berfokus pada pengelolaan data dan transaksi, sedangkan pimpinan difokuskan pada akses dashboard, monitoring, dan laporan. Pembagian hak akses ini membantu menjaga keamanan data dan keteraturan penggunaan sistem.</p>
+    <p>Pada modul stok masuk, setiap transaksi penerimaan akan menghasilkan satu atau lebih data batch. Data batch memuat informasi nomor batch, jumlah diterima, jumlah tersisa, dan tanggal kedaluwarsa. Data ini menjadi dasar utama dalam monitoring stok dan distribusi obat. Pada modul stok keluar, sistem memilih batch dengan kedaluwarsa paling dekat menggunakan pendekatan FEFO. Hal ini membantu menurunkan risiko akumulasi obat yang mendekati masa kedaluwarsa.</p>
+    <p>Pada modul penyesuaian stok, sistem memungkinkan petugas melakukan koreksi berdasarkan hasil stok opname. Proses ini menyimpan jumlah stok menurut sistem, jumlah stok aktual di lapangan, dan selisih keduanya. Dengan demikian, histori perubahan stok tetap tercatat dan bisa digunakan untuk evaluasi.</p>
+
+    <h3>3.5 Implementasi Antarmuka Sistem</h3>
+    <p>Antarmuka sistem dirancang agar mudah digunakan oleh pengguna administratif. Struktur menu disusun berdasarkan kelompok modul, yaitu dashboard, master data, transaksi, monitoring, laporan, manajemen pengguna, dan log aktivitas. Setiap modul menyediakan fitur pencarian dan filter untuk mempermudah pengguna dalam menelusuri data.</p>
+    <p>Pada halaman dashboard, pengguna dapat melihat ringkasan jumlah stok, obat yang menipis, batch yang hampir kedaluwarsa, serta aktivitas terbaru. Halaman master data digunakan untuk melakukan pengelolaan data referensi. Halaman transaksi digunakan untuk mencatat stok masuk, stok keluar, dan penyesuaian. Halaman monitoring digunakan untuk melihat stok terkini, informasi batch, dan kartu stok. Halaman laporan digunakan untuk melihat hasil rekapitulasi data berdasarkan periode tertentu.</p>
+
+    <h3>3.6 Hasil Implementasi Logika FEFO</h3>
+    <p>Implementasi FEFO menjadi salah satu poin penting dalam aplikasi ini. Pada saat pengguna melakukan transaksi stok keluar, sistem tidak langsung mengurangi stok total pada data obat, melainkan mencari batch yang masih tersedia dan memiliki tanggal kedaluwarsa paling dekat. Jika jumlah permintaan melebihi stok pada batch pertama, sistem akan melanjutkan pengambilan ke batch berikutnya sampai jumlah permintaan terpenuhi.</p>
+    <p>Dengan pendekatan tersebut, aplikasi tidak hanya berfungsi sebagai pencatat transaksi, tetapi juga sebagai alat bantu pengambilan keputusan operasional. Penerapan FEFO sangat relevan untuk barang medis karena kualitas pengelolaan stok sangat dipengaruhi oleh masa simpan produk.</p>
+
+    <div class="mermaid">
+flowchart TD
+    A["Permintaan Stok Keluar"] --> B["Cari Batch Tersedia"]
+    B --> C["Urutkan Berdasarkan Expired Terdekat"]
+    C --> D["Ambil Stok dari Batch Pertama"]
+    D --> E{"Jumlah Sudah Cukup?"}
+    E -->|Belum| F["Lanjut ke Batch Berikutnya"]
+    F --> D
+    E -->|Ya| G["Simpan Distribusi dan Update Stok"]
+    </div>
+    <p class="figure-title">Gambar 5. Proses pengeluaran stok berdasarkan metode FEFO.</p>
+
+    <h3>3.7 Pengujian Sistem</h3>
+    <p>Pengujian sistem dilakukan menggunakan metode <i>black box testing</i> untuk memastikan bahwa setiap fungsi berjalan sesuai kebutuhan. Pengujian dilakukan pada fitur login, pengelolaan master data, pencatatan stok masuk, pencatatan stok keluar, penyesuaian stok, monitoring, laporan, dan manajemen pengguna.</p>
+    <p>Secara umum, hasil pengujian menunjukkan bahwa fitur-fitur utama sistem dapat berjalan dengan baik. Sistem mampu mencatat transaksi stok, memperbarui stok secara otomatis, menampilkan informasi stok secara real-time, dan menghasilkan laporan sesuai data yang tersimpan.</p>
+
+    <p class="table-title">Tabel 1. Ringkasan hasil pengujian sistem.</p>
+    <table>
+        <tr><th>No</th><th>Modul</th><th>Skenario Uji</th><th>Hasil</th></tr>
+        <tr><td>1</td><td>Login</td><td>Pengguna masuk dengan akun valid</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Master Data</td><td>Tambah dan ubah data obat</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Stok Masuk</td><td>Simpan transaksi penerimaan obat</td><td>Berhasil</td></tr>
+        <tr><td>4</td><td>Stok Keluar</td><td>Simpan distribusi dan kurangi stok batch</td><td>Berhasil</td></tr>
+        <tr><td>5</td><td>Adjustment</td><td>Simpan penyesuaian stok</td><td>Berhasil</td></tr>
+        <tr><td>6</td><td>Monitoring</td><td>Tampilkan stok dan batch kedaluwarsa</td><td>Berhasil</td></tr>
+        <tr><td>7</td><td>Laporan</td><td>Tampilkan laporan stok dan transaksi</td><td>Berhasil</td></tr>
+    </table>
+
+    <p>Selain pengujian ringkas di atas, dilakukan pula pengujian fungsional pada proses-proses yang berkaitan langsung dengan perubahan stok. Pengujian ini penting karena kualitas aplikasi tidak hanya ditentukan oleh kemampuan menyimpan data, tetapi juga oleh kemampuan sistem menjaga konsistensi jumlah stok setelah transaksi dilakukan.</p>
+
+    <p class="table-title">Tabel 2. Ringkasan skenario pengujian fungsional.</p>
+    <table>
+        <tr><th>No</th><th>Skenario Pengujian</th><th>Hasil yang Diharapkan</th><th>Status</th></tr>
+        <tr><td>1</td><td>Simpan stok masuk dengan data batch</td><td>Batch baru terbentuk dan stok tersimpan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Simpan stok keluar dengan stok cukup</td><td>Stok batch berkurang sesuai jumlah distribusi</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Simpan stok keluar dengan stok tidak cukup</td><td>Sistem menolak transaksi</td><td>Berhasil</td></tr>
+        <tr><td>4</td><td>Simpan penyesuaian stok</td><td><code>qty_remaining</code> berubah sesuai stok aktual</td><td>Berhasil</td></tr>
+        <tr><td>5</td><td>Tampilkan monitoring batch</td><td>Sistem menampilkan status aman, hampir kedaluwarsa, atau kedaluwarsa</td><td>Berhasil</td></tr>
+        <tr><td>6</td><td>Tampilkan laporan periode tertentu</td><td>Sistem menampilkan data sesuai filter</td><td>Berhasil</td></tr>
+    </table>
+
+    <h3>3.8 Analisis Hasil Pengujian</h3>
+    <p>Berdasarkan hasil pengujian, aplikasi menunjukkan bahwa fungsi utama berjalan sesuai kebutuhan. Modul master data mampu menyimpan dan memperbarui data dengan baik. Modul transaksi mampu mengubah stok sesuai proses bisnis yang ditetapkan. Modul monitoring mampu menyajikan informasi stok yang berguna bagi pengguna. Modul laporan juga dapat menampilkan data rekapitulasi yang mendukung proses evaluasi.</p>
+    <p>Dari sisi integritas data, penggunaan basis data relasional dan relasi antartabel membantu menjaga konsistensi antara data obat, batch, dan transaksi. Dari sisi operasional, pendekatan batch dan FEFO memberikan nilai tambah dibanding pencatatan stok total biasa, karena pengguna dapat mengetahui stok secara lebih rinci dan akurat.</p>
+    <p>Namun demikian, sistem ini masih dapat dikembangkan lebih lanjut, misalnya dengan penambahan fitur ekspor laporan, notifikasi stok minimum, notifikasi batch hampir kedaluwarsa, atau integrasi dengan sistem eksternal lain.</p>
+
+    <h3>3.9 Keterangan Gambar yang Dapat Ditambahkan</h3>
+    <p>Bagian ini dapat diisi dengan screenshot hasil implementasi aplikasi saat jurnal akan difinalkan. Beberapa gambar yang disarankan antara lain:</p>
+    <ul>
+        <li>Gambar 6. Tampilan halaman login aplikasi.</li>
+        <li>Gambar 7. Tampilan dashboard monitoring stok.</li>
+        <li>Gambar 8. Halaman transaksi stok masuk.</li>
+        <li>Gambar 9. Halaman transaksi stok keluar.</li>
+        <li>Gambar 10. Halaman monitoring batch dan kedaluwarsa.</li>
+        <li>Gambar 11. Halaman laporan stok obat.</li>
+    </ul>
+
+    <h2>4. Kesimpulan</h2>
+    <p>Berdasarkan hasil penelitian, dapat disimpulkan bahwa aplikasi monitoring obat kontrasepsi berbasis web yang dibangun menggunakan Laravel dan MySQL/MariaDB mampu membantu proses pengelolaan stok obat secara lebih terstruktur dan terintegrasi. Sistem ini mendukung pencatatan stok masuk, stok keluar, penyesuaian stok, monitoring batch dan kedaluwarsa, serta penyusunan laporan. Dengan adanya aplikasi ini, proses monitoring stok menjadi lebih cepat, risiko kesalahan pencatatan dapat dikurangi, dan informasi yang dibutuhkan pengguna dapat diperoleh secara lebih efektif.</p>
+    <p>Secara teknis, penerapan Laravel mempermudah pengembangan aplikasi dari sisi struktur kode, pengelolaan route, validasi data, serta integrasi dengan basis data. Penggunaan MySQL/MariaDB mendukung penyimpanan data transaksi dan relasi antarentitas secara konsisten. Implementasi batch dan metode FEFO juga memberikan nilai praktis yang penting pada pengelolaan stok obat kontrasepsi, karena sistem dapat membantu distribusi stok secara lebih tepat.</p>
+    <p>Dengan demikian, aplikasi yang dibangun tidak hanya berfungsi sebagai alat pencatatan, tetapi juga sebagai media monitoring dan pengendalian stok yang lebih sistematis. Aplikasi ini dapat dijadikan dasar untuk pengembangan sistem yang lebih luas pada pengelolaan logistik kesehatan.</p>
+
+    <h2>5. Saran</h2>
+    <ul>
+        <li>menambahkan fitur ekspor laporan ke PDF atau Excel,</li>
+        <li>menambahkan notifikasi otomatis untuk stok minimum dan batch hampir kedaluwarsa,</li>
+        <li>menambahkan grafik statistik distribusi obat,</li>
+        <li>mengintegrasikan sistem dengan modul logistik atau pelaporan lainnya.</li>
+    </ul>
+
+    <h2>Daftar Pustaka</h2>
+    <ul>
+        <li>Abdul Kadir. 2003. <i>Pengenalan Sistem Informasi</i>. Yogyakarta: Andi.</li>
+        <li>Jogiyanto. 2005. <i>Analisis dan Desain Sistem Informasi</i>. Yogyakarta: Andi.</li>
+        <li>Romney, Marshall B. dan Paul John Steinbart. 2015. <i>Accounting Information Systems</i>. Pearson.</li>
+        <li>Pressman, Roger S. 2010. <i>Software Engineering: A Practitioner’s Approach</i>. New York: McGraw-Hill.</li>
+        <li>Dokumentasi Laravel. <a href="https://laravel.com/docs">https://laravel.com/docs</a></li>
+        <li>Dokumentasi MariaDB. <a href="https://mariadb.com/docs">https://mariadb.com/docs</a></li>
+    </ul>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: "default",
+            securityLevel: "loose"
+        });
+    </script>
+</body>
+</html>
