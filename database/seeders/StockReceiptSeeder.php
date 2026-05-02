@@ -23,6 +23,7 @@ class StockReceiptSeeder extends Seeder
 
         $medicineIds = DB::table('medicines')->pluck('id', 'code');
         $sourceIds = DB::table('stock_sources')->pluck('id', 'name');
+        $rkoHeaderIds = DB::table('rko_headers')->pluck('id', 'rko_number');
 
         if ($medicineIds->isEmpty() || $sourceIds->isEmpty()) {
             $this->command?->warn('Master data obat atau sumber stok belum tersedia.');
@@ -44,6 +45,7 @@ class StockReceiptSeeder extends Seeder
                 [
                     'receipt_number' => 'RCV-20260401-001',
                     'source_name' => 'BKKBN Provinsi Jawa Barat',
+                    'rko_number' => 'RKO-202604-0001',
                     'received_date' => '2026-04-01',
                     'status' => 'posted',
                     'notes' => 'Penerimaan rutin triwulan I dari provinsi.',
@@ -77,6 +79,7 @@ class StockReceiptSeeder extends Seeder
                 [
                     'receipt_number' => 'RCV-20260410-001',
                     'source_name' => 'Dinas Kesehatan Kota Sukabumi',
+                    'rko_number' => 'RKO-202604-0002',
                     'received_date' => '2026-04-10',
                     'status' => 'posted',
                     'notes' => 'Penambahan stok kebutuhan bulan April.',
@@ -102,6 +105,7 @@ class StockReceiptSeeder extends Seeder
                 [
                     'receipt_number' => 'RCV-20260418-001',
                     'source_name' => 'PT Supplier Sehat Sentosa',
+                    'rko_number' => 'RKO-202604-0003',
                     'received_date' => '2026-04-18',
                     'status' => 'posted',
                     'notes' => 'Pemenuhan stok cadangan gudang kota.',
@@ -131,6 +135,7 @@ class StockReceiptSeeder extends Seeder
                 $receiptId = DB::table('stock_receipts')->insertGetId([
                     'receipt_number' => $receiptData['receipt_number'],
                     'source_id' => $sourceIds[$receiptData['source_name']] ?? null,
+                    'rko_header_id' => isset($receiptData['rko_number']) ? ($rkoHeaderIds[$receiptData['rko_number']] ?? null) : null,
                     'received_date' => $receiptData['received_date'],
                     'received_by' => $userId,
                     'notes' => $receiptData['notes'],
