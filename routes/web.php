@@ -77,10 +77,6 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('/', [DistributionDestinationController::class, 'index'])->name('index');
             Route::get('create', [DistributionDestinationController::class, 'create'])->name('create');
             Route::post('/', [DistributionDestinationController::class, 'store'])->name('store');
-            Route::get('{distributionDestination}', [DistributionDestinationController::class, 'show'])->name('show');
-            Route::get('{distributionDestination}/edit', [DistributionDestinationController::class, 'edit'])->name('edit');
-            Route::match(['put', 'patch'], '{distributionDestination}', [DistributionDestinationController::class, 'update'])->name('update');
-            Route::delete('{distributionDestination}', [DistributionDestinationController::class, 'destroy'])->name('destroy');
 
             Route::prefix('distribusi-obat')->name('distribusi.')->group(function () {
                 Route::get('/', [StockDistributionController::class, 'index'])->name('index');
@@ -91,6 +87,11 @@ Route::middleware(['auth', 'active'])->group(function () {
                 Route::match(['put', 'patch'], '{stockDistribution}', [StockDistributionController::class, 'update'])->name('update');
                 Route::delete('{stockDistribution}', [StockDistributionController::class, 'destroy'])->name('destroy');
             });
+
+            Route::get('{distributionDestination}', [DistributionDestinationController::class, 'show'])->name('show');
+            Route::get('{distributionDestination}/edit', [DistributionDestinationController::class, 'edit'])->name('edit');
+            Route::match(['put', 'patch'], '{distributionDestination}', [DistributionDestinationController::class, 'update'])->name('update');
+            Route::delete('{distributionDestination}', [DistributionDestinationController::class, 'destroy'])->name('destroy');
         });
 
         Route::prefix('pengadaan')->name('pengadaan.')->group(function () {

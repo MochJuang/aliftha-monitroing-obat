@@ -10,7 +10,7 @@
         [
             'title' => 'Faskes',
             'items' => [
-                ['label' => 'Data Faskes', 'href' => route('faskes.index'), 'active' => request()->routeIs('faskes.*', 'distribution-destinations.*')],
+                ['label' => 'Data Faskes', 'href' => route('faskes.index'), 'active' => request()->routeIs('faskes.index', 'faskes.create', 'faskes.show', 'faskes.edit', 'distribution-destinations.*')],
                 ['label' => 'Distribusi Obat', 'href' => route('faskes.distribusi.index'), 'active' => request()->routeIs('faskes.distribusi.*', 'stock-distributions.*')],
             ],
         ],
@@ -33,7 +33,7 @@
             'title' => 'Realisasi Pengadaan',
             'items' => [
                 ['label' => 'Sumber Pengadaan', 'href' => route('pengadaan.sumber.index'), 'active' => request()->routeIs('pengadaan.sumber.*', 'stock-sources.*')],
-                ['label' => 'Realisasi Pengadaan', 'href' => route('pengadaan.index'), 'active' => request()->routeIs('pengadaan.*', 'stock-receipts.*')],
+                ['label' => 'Realisasi Pengadaan', 'href' => route('pengadaan.index'), 'active' => request()->routeIs('pengadaan.index', 'pengadaan.create', 'pengadaan.show', 'pengadaan.edit', 'stock-receipts.*')],
             ],
         ],
         [
