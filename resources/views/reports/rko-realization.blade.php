@@ -63,8 +63,8 @@
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Penyusun</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 bg-white">
-                        @forelse ($reports as $report)
+                    @forelse ($reports as $report)
+                        <tbody x-data="{ open: false }" class="divide-y divide-slate-100 bg-white">
                             @php
                                 $approvedQty = (int) ($report->items_sum_approved_quantity ?? 0);
                                 $realizedQty = (int) ($report->posted_realized_quantity ?? 0);
@@ -73,9 +73,21 @@
                             @endphp
                             <tr>
                                 <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">
-                                    <a href="{{ route('rko.header.show', $report) }}" class="hover:text-amber-700">
-                                        {{ $report->rko_number }}
-                                    </a>
+                                    <div class="flex items-center gap-3">
+                                        <button
+                                            type="button"
+                                            @click="open = !open"
+                                            class="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-300 text-slate-600 hover:bg-slate-50"
+                                            :aria-expanded="open.toString()"
+                                            aria-label="Toggle detail item"
+                                        >
+                                            <span x-show="!open">+</span>
+                                            <span x-show="open">−</span>
+                                        </button>
+                                        <a href="{{ route('rko.header.show', $report) }}" class="hover:text-amber-700">
+                                            {{ $report->rko_number }}
+                                        </a>
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ sprintf('%02d', $report->period_month) }}/{{ $report->period_year }}</td>
                                 <td class="px-4 py-3">
@@ -102,10 +114,65 @@
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($report->linked_receipts_count ?? 0)) }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $report->submitter?->name ?? '-' }}</td>
                             </tr>
-                        @empty
+                            <tr x-cloak x-show="open" x-transition>
+                                <td colspan="11" class="bg-slate-50 px-4 py-5">
+                                    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+                                        <div class="border-b border-slate-200 px-4 py-3">
+                                            <h4 class="font-semibold text-slate-900">Detail Item RKO</h4>
+                                            <p class="mt-1 text-sm text-slate-500">Perbandingan rencana, jumlah disetujui, dan realisasi per obat.</p>
+                                        </div>
+                                        <div class="overflow-x-auto">
+                                            <table class="min-w-[980px] w-full divide-y divide-slate-200 text-sm">
+                                                <thead class="bg-slate-50 text-left text-slate-500">
+                                                    <tr>
+                                                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Kode</th>
+                                                        <th class="px-4 py-3 font-semibold">Obat</th>
+                                                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Rencana</th>
+                                                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Disetujui</th>
+                                                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Realisasi</th>
+                                                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Selisih</th>
+                                                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Cakupan</th>
+                                                        <th class="px-4 py-3 font-semibold">Catatan</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-slate-100 bg-white">
+                                                    @forelse ($report->item_rows as $item)
+                                                        <tr>
+                                                            <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $item['medicine_code'] }}</td>
+                                                            <td class="px-4 py-3">
+                                                                <p class="font-medium text-slate-900">{{ $item['medicine_name'] }}</p>
+                                                                <p class="text-xs text-slate-500">{{ $item['unit_name'] ?? '-' }}</p>
+                                                            </td>
+                                                            <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($item['planned_quantity']) }}</td>
+                                                            <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($item['approved_quantity']) }}</td>
+                                                            <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($item['realized_quantity']) }}</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap {{ $item['difference_quantity'] >= 0 ? 'text-emerald-700' : 'text-rose-700' }}">
+                                                                {{ number_format($item['difference_quantity']) }}
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                                <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
+                                                                    {{ number_format($item['coverage_percent'], 1) }}%
+                                                                </span>
+                                                            </td>
+                                                            <td class="px-4 py-3 text-slate-600">{{ $item['notes'] ?: '-' }}</td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada detail item untuk dokumen RKO ini.</td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    @empty
+                        <tbody class="bg-white">
                             <tr><td colspan="11" class="px-4 py-8 text-center text-slate-500">Belum ada data perbandingan RKO dan realisasi.</td></tr>
-                        @endforelse
-                    </tbody>
+                        </tbody>
+                    @endforelse
                 </table>
             </div>
         </div>

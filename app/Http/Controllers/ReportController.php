@@ -262,7 +262,7 @@ class ReportController extends Controller
         $periodYear = trim((string) $request->string('period_year'));
 
         $reports = RkoHeader::query()
-            ->with(['submitter'])
+            ->with(['submitter', 'items.medicine.unit'])
             ->withCount(['items', 'stockReceipts as linked_receipts_count'])
             ->withSum('items', 'planned_quantity')
             ->withSum('items', 'approved_quantity')
@@ -287,6 +287,42 @@ class ReportController extends Controller
             ->orderByDesc('id')
             ->paginate(10)
             ->withQueryString();
+
+        $headerIds = $reports->getCollection()->pluck('id')->all();
+
+        $realizationByHeaderAndMedicine = DB::table('stock_receipts')
+            ->join('stock_receipt_items', 'stock_receipt_items.receipt_id', '=', 'stock_receipts.id')
+            ->where('stock_receipts.status', 'posted')
+            ->whereIn('stock_receipts.rko_header_id', $headerIds)
+            ->groupBy('stock_receipts.rko_header_id', 'stock_receipt_items.medicine_id')
+            ->selectRaw('stock_receipts.rko_header_id, stock_receipt_items.medicine_id, SUM(stock_receipt_items.quantity) as realized_quantity')
+            ->get()
+            ->keyBy(fn ($item) => $item->rko_header_id.'-'.$item->medicine_id);
+
+        $reports->setCollection(
+            $reports->getCollection()->map(function (RkoHeader $report) use ($realizationByHeaderAndMedicine) {
+                $report->item_rows = $report->items
+                    ->map(function ($item) use ($report, $realizationByHeaderAndMedicine) {
+                        $realizedQty = (int) optional($realizationByHeaderAndMedicine->get($report->id.'-'.$item->medicine_id))->realized_quantity;
+                        $approvedQty = (int) $item->approved_quantity;
+
+                        return [
+                            'medicine_code' => $item->medicine->code,
+                            'medicine_name' => $item->medicine->name,
+                            'unit_name' => $item->medicine->unit?->name,
+                            'planned_quantity' => (int) $item->planned_quantity,
+                            'approved_quantity' => $approvedQty,
+                            'realized_quantity' => $realizedQty,
+                            'difference_quantity' => $realizedQty - $approvedQty,
+                            'coverage_percent' => $approvedQty > 0 ? round(($realizedQty / $approvedQty) * 100, 1) : 0,
+                            'notes' => $item->notes,
+                        ];
+                    })
+                    ->values();
+
+                return $report;
+            })
+        );
 
         $baseSummaryQuery = RkoHeader::query()
             ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn (Builder $query) => $query->where('status', $status))
