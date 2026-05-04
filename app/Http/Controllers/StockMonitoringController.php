@@ -20,7 +20,6 @@ class StockMonitoringController extends Controller
         $categoryId = trim((string) $request->string('category_id'));
 
         $today = now()->toDateString();
-        $almostExpiredDate = now()->addDays(30)->toDateString();
         $currentStockSubquery = $this->buildCurrentStockSubquery($today);
 
         $baseMedicinesQuery = Medicine::query()
@@ -39,32 +38,6 @@ class StockMonitoringController extends Controller
                 'units.name as unit_name',
             ])
             ->selectSub($currentStockSubquery, 'current_stock')
-            ->selectSub(
-                MedicineBatch::query()
-                    ->selectRaw('COUNT(*)')
-                    ->whereColumn('medicine_id', 'medicines.id')
-                    ->where('qty_remaining', '>', 0)
-                    ->whereDate('expired_at', '>=', $today),
-                'active_batch_count'
-            )
-            ->selectSub(
-                MedicineBatch::query()
-                    ->selectRaw('COUNT(*)')
-                    ->whereColumn('medicine_id', 'medicines.id')
-                    ->where('qty_remaining', '>', 0)
-                    ->whereBetween('expired_at', [$today, $almostExpiredDate]),
-                'almost_expired_batch_count'
-            )
-            ->selectSub(
-                MedicineBatch::query()
-                    ->select('expired_at')
-                    ->whereColumn('medicine_id', 'medicines.id')
-                    ->where('qty_remaining', '>', 0)
-                    ->whereDate('expired_at', '>=', $today)
-                    ->orderBy('expired_at')
-                    ->limit(1),
-                'nearest_expired_at'
-            )
             ->when($search !== '', function (Builder $query) use ($search) {
                 $query->where(function (Builder $inner) use ($search) {
                     $inner->where('medicines.code', 'like', "%{$search}%")
@@ -81,15 +54,12 @@ class StockMonitoringController extends Controller
                     'safe' => $query->whereRaw('COALESCE(current_stock, 0) > minimum_stock'),
                     'low' => $query->whereRaw('COALESCE(current_stock, 0) > 0 AND COALESCE(current_stock, 0) <= minimum_stock'),
                     'empty' => $query->whereRaw('COALESCE(current_stock, 0) = 0'),
-                    'almost_expired' => $query->whereRaw('COALESCE(almost_expired_batch_count, 0) > 0'),
                     default => null,
                 };
             })
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();
-
-        $this->attachBatchDetailsToCurrentStock($medicines, $today, $almostExpiredDate);
 
         $summaryBaseQuery = Medicine::query()
             ->where('is_active', true)
@@ -112,10 +82,6 @@ class StockMonitoringController extends Controller
             'empty_stock_count' => DB::query()
                 ->fromSub($summaryBaseQuery->toBase(), 'stock_summary')
                 ->whereRaw('COALESCE(current_stock, 0) = 0')
-                ->count(),
-            'almost_expired_batch_count' => MedicineBatch::query()
-                ->available()
-                ->whereBetween('expired_at', [$today, $almostExpiredDate])
                 ->count(),
         ];
 

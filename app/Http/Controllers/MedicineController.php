@@ -30,21 +30,6 @@ class MedicineController extends Controller
                     ->where('qty_remaining', '>', 0)
                     ->whereDate('expired_at', '>=', $today),
             ], 'qty_remaining')
-            ->withCount([
-                'batches as active_batch_count' => fn ($query) => $query
-                    ->where('qty_remaining', '>', 0)
-                    ->whereDate('expired_at', '>=', $today),
-            ])
-            ->selectSub(
-                MedicineBatch::query()
-                    ->select('expired_at')
-                    ->whereColumn('medicine_id', 'medicines.id')
-                    ->where('qty_remaining', '>', 0)
-                    ->whereDate('expired_at', '>=', $today)
-                    ->orderBy('expired_at')
-                    ->limit(1),
-                'nearest_expired_at'
-            )
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
                     $inner->where('name', 'like', "%{$search}%")
@@ -86,7 +71,7 @@ class MedicineController extends Controller
 
     public function show(Medicine $medicine): View
     {
-        $medicine->load(['category', 'unit'])->loadCount('batches');
+        $medicine->load(['category', 'unit']);
 
         return view('medicines.show', compact('medicine'));
     }
@@ -148,14 +133,9 @@ class MedicineController extends Controller
                 'description' => $medicine->description,
                 'is_active' => (bool) $medicine->is_active,
                 'current_stock' => (int) ($medicine->current_stock ?? 0),
-                'active_batch_count' => (int) ($medicine->active_batch_count ?? 0),
-                'nearest_expired_at' => $medicine->nearest_expired_at
-                    ? Carbon::parse($medicine->nearest_expired_at)->format('d M Y')
-                    : null,
                 'movement_summary' => [
                     'total_in' => (int) $movements->sum('qty_in'),
                     'total_out' => (int) $movements->sum('qty_out'),
-                    'total_adjustment' => (int) $movements->sum('adjustment_qty'),
                 ],
                 'movements' => $movements->take(12)->values()->all(),
             ];
@@ -191,7 +171,6 @@ class MedicineController extends Controller
                 'notes' => $item->notes,
                 'qty_in' => (int) $item->quantity,
                 'qty_out' => 0,
-                'adjustment_qty' => 0,
                 'sort_date' => $item->movement_date,
             ]);
 
@@ -218,45 +197,17 @@ class MedicineController extends Controller
                 'notes' => $item->notes,
                 'qty_in' => 0,
                 'qty_out' => (int) $item->quantity,
-                'adjustment_qty' => 0,
-                'sort_date' => $item->movement_date,
-            ]);
-
-        $adjustmentMovements = DB::table('stock_adjustment_items')
-            ->join('stock_adjustments', 'stock_adjustments.id', '=', 'stock_adjustment_items.adjustment_id')
-            ->join('medicine_batches', 'medicine_batches.id', '=', 'stock_adjustment_items.batch_id')
-            ->where('stock_adjustment_items.medicine_id', $medicineId)
-            ->get([
-                'stock_adjustments.adjustment_date as movement_date',
-                'stock_adjustments.adjustment_number as reference_number',
-                'stock_adjustments.adjustment_type',
-                'medicine_batches.batch_number',
-                'stock_adjustment_items.difference_qty',
-                'stock_adjustment_items.reason',
-            ])
-            ->map(fn ($item) => [
-                'movement_date' => Carbon::parse($item->movement_date)->format('d M Y'),
-                'type' => 'penyesuaian_stok',
-                'reference_number' => $item->reference_number,
-                'batch_number' => $item->batch_number,
-                'counterpart_name' => ucfirst((string) $item->adjustment_type),
-                'notes' => $item->reason,
-                'qty_in' => (int) $item->difference_qty > 0 ? (int) $item->difference_qty : 0,
-                'qty_out' => (int) $item->difference_qty < 0 ? abs((int) $item->difference_qty) : 0,
-                'adjustment_qty' => (int) $item->difference_qty,
                 'sort_date' => $item->movement_date,
             ]);
 
         return $receiptMovements
             ->concat($distributionMovements)
-            ->concat($adjustmentMovements)
             ->sortByDesc('sort_date')
             ->values()
             ->map(function (array $movement) {
                 $movement['type_label'] = match ($movement['type']) {
                     'realisasi_pengadaan' => 'Realisasi Pengadaan',
-                    'distribusi_obat' => 'Distribusi Obat',
-                    default => 'Penyesuaian Stok',
+                    default => 'Distribusi Obat',
                 };
 
                 unset($movement['sort_date']);

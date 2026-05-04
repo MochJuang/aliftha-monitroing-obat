@@ -3,33 +3,33 @@
 
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <p class="text-sm text-slate-500">Catat semua penerimaan obat dari BKKBN, Dinkes, atau supplier dan bentuk batch stok secara aman.</p>
+            <p class="text-sm text-slate-500">Catat semua penerimaan obat dari BKKBN, Dinkes, atau supplier sebagai realisasi pengadaan per periode.</p>
             <a href="{{ route('pengadaan.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
                 Tambah Realisasi Pengadaan
             </a>
         </div>
 
-        <form method="GET" action="{{ route('pengadaan.index') }}" class="mt-6 flex flex-col gap-3 xl:flex-row xl:items-center">
+        <form method="GET" action="{{ route('pengadaan.index') }}" class="mt-6 grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(0,1.4fr)_180px_140px] xl:items-end">
             <input
                 type="text"
                 name="search"
                 value="{{ $search }}"
                 placeholder="Cari nomor transaksi, sumber, atau nomor RKO..."
-                class="w-full min-w-0 flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500"
             >
-            <select name="rko_header_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 xl:w-64 xl:shrink-0">
+            <select name="rko_header_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
                 <option value="">Semua referensi RKO</option>
                 @foreach ($rkoHeaders as $header)
                     <option value="{{ $header->id }}" @selected($rkoHeaderId === (string) $header->id)>{{ $header->rko_number }} - {{ sprintf('%02d', $header->period_month) }}/{{ $header->period_year }}</option>
                 @endforeach
             </select>
-            <select name="status" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 xl:w-48 xl:shrink-0">
+            <select name="status" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
                 <option value="">Semua status</option>
                 <option value="draft" @selected($status === 'draft')>Draft</option>
                 <option value="posted" @selected($status === 'posted')>Posted</option>
                 <option value="cancelled" @selected($status === 'cancelled')>Cancelled</option>
             </select>
-            <button type="submit" class="shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 xl:min-w-32">
+            <button type="submit" class="rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
                 Filter
             </button>
         </form>
@@ -91,7 +91,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada transaksi stok masuk.</td>
+                                <td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada data realisasi pengadaan.</td>
                             </tr>
                         @endforelse
                     </tbody>

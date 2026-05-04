@@ -3,7 +3,7 @@
 
     @include('reports._tabs')
 
-    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
             <p class="text-sm text-slate-500">Total stok berjalan</p>
             <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($summary['total_stock_qty']) }}</p>
@@ -15,10 +15,6 @@
         <article class="rounded-[2rem] border border-rose-200 bg-rose-50 p-5 shadow-sm">
             <p class="text-sm text-rose-800">Stok habis</p>
             <p class="mt-2 text-3xl font-semibold text-rose-900">{{ number_format($summary['empty_stock_count']) }}</p>
-        </article>
-        <article class="rounded-[2rem] border border-sky-200 bg-sky-50 p-5 shadow-sm">
-            <p class="text-sm text-sky-800">Batch hampir expired</p>
-            <p class="mt-2 text-3xl font-semibold text-sky-900">{{ number_format($summary['almost_expired_batches']) }}</p>
         </article>
     </section>
 
@@ -42,7 +38,7 @@
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">
-                <table class="min-w-[1100px] w-full divide-y divide-slate-200 text-sm">
+                <table class="min-w-[920px] w-full divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-slate-500">
                         <tr>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Kode</th>
@@ -51,8 +47,6 @@
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Satuan</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Stok</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Minimum</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Batch Aktif</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Expired Terdekat</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
@@ -64,11 +58,9 @@
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $report->unit_name ?? '-' }}</td>
                                 <td class="px-4 py-3 font-semibold text-slate-900 whitespace-nowrap">{{ number_format((int) ($report->current_stock ?? 0)) }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) $report->minimum_stock) }}</td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($report->active_batch_count ?? 0)) }}</td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $report->nearest_expired_at ? \Illuminate\Support\Carbon::parse($report->nearest_expired_at)->format('d M Y') : '-' }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada data laporan stok.</td></tr>
+                            <tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Belum ada data laporan stok.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

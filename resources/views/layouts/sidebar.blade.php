@@ -40,7 +40,6 @@
             'title' => 'Monitoring',
             'items' => [
                 ['label' => 'Stok Terkini', 'href' => route('monitoring.stok.index'), 'active' => request()->routeIs('monitoring.stok.*', 'stock-monitoring.current-stock')],
-                ['label' => 'Penyesuaian Stok', 'href' => route('monitoring.penyesuaian.index'), 'active' => request()->routeIs('monitoring.penyesuaian.*', 'stock-adjustments.*')],
             ],
         ],
         [
@@ -63,7 +62,7 @@
         <a href="{{ route('dashboard') }}" class="block">
             <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-300">DPPKB Kota Sukabumi</p>
             <h1 class="mt-2 text-lg font-semibold leading-tight">Monitoring Obat Kontrasepsi</h1>
-            <p class="mt-2 text-sm text-slate-400">Panel internal pengelolaan faskes, pengadaan, distribusi, dan pelaporan obat KB.</p>
+            <p class="mt-2 text-sm text-slate-400">Panel internal monitoring kebutuhan, pengadaan, distribusi, dan pelaporan obat KB.</p>
         </a>
     </div>
 

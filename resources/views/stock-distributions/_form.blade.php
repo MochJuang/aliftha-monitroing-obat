@@ -104,7 +104,7 @@
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h3 class="text-lg font-semibold text-slate-900">Item Obat Keluar</h3>
-                <p class="mt-1 text-sm text-slate-500">Sistem akan memilih batch otomatis dengan metode FEFO, yaitu batch yang expired paling dekat akan dipakai lebih dulu.</p>
+                <p class="mt-1 text-sm text-slate-500">Isi data distribusi obat sesuai tujuan penyaluran dan jumlah yang akan dikirim.</p>
             </div>
             <button
                 type="button"
@@ -116,7 +116,7 @@
         </div>
 
         <div class="mt-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
-            Distribusi dengan status <strong>posted</strong> akan langsung mengurangi <strong>qty_remaining</strong> pada batch yang terpilih. Draft belum mengubah stok, tapi tetap memakai simulasi alokasi FEFO saat disimpan.
+            Distribusi dengan status <strong>posted</strong> akan langsung tercatat sebagai realisasi penyaluran. Draft dapat dipakai untuk menyiapkan data sebelum diposting.
         </div>
 
         <div class="mt-6 space-y-4">

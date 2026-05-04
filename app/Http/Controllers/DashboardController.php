@@ -17,7 +17,6 @@ class DashboardController extends Controller
     public function __invoke(): View
     {
         $today = now()->toDateString();
-        $almostExpiredDate = now()->addDays(30)->toDateString();
 
         $currentStockSubquery = MedicineBatch::query()
             ->selectRaw('SUM(qty_remaining)')
@@ -46,14 +45,6 @@ class DashboardController extends Controller
             'empty_stock_medicines' => DB::query()
                 ->fromSub($stockSummaryBaseQuery->toBase(), 'stock_summary')
                 ->whereRaw('COALESCE(current_stock, 0) = 0')
-                ->count(),
-            'almost_expired_batches' => MedicineBatch::query()
-                ->where('qty_remaining', '>', 0)
-                ->whereBetween('expired_at', [$today, $almostExpiredDate])
-                ->count(),
-            'expired_batches' => MedicineBatch::query()
-                ->where('qty_remaining', '>', 0)
-                ->whereDate('expired_at', '<', $today)
                 ->count(),
         ];
 
@@ -91,13 +82,6 @@ class DashboardController extends Controller
                 ->where('stock_distributions.status', 'posted')
                 ->whereDate('stock_distributions.distributed_date', $today)
                 ->sum('stock_distribution_items.quantity'),
-            'adjustments_count' => DB::table('stock_adjustments')
-                ->whereDate('adjustment_date', $today)
-                ->count(),
-            'adjustments_qty' => (int) DB::table('stock_adjustment_items')
-                ->join('stock_adjustments', 'stock_adjustments.id', '=', 'stock_adjustment_items.adjustment_id')
-                ->whereDate('stock_adjustments.adjustment_date', $today)
-                ->sum('stock_adjustment_items.difference_qty'),
         ];
 
         $lowStockMedicines = DB::query()
@@ -122,15 +106,6 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        $almostExpiredBatches = MedicineBatch::query()
-            ->with(['medicine.unit'])
-            ->where('qty_remaining', '>', 0)
-            ->whereBetween('expired_at', [$today, $almostExpiredDate])
-            ->orderBy('expired_at')
-            ->orderBy('id')
-            ->limit(5)
-            ->get();
-
         $recentTransactions = $this->buildRecentTransactions();
 
         $recentActivities = ActivityLog::query()
@@ -143,7 +118,6 @@ class DashboardController extends Controller
             'summary' => $summary,
             'todayMovements' => $todayMovements,
             'lowStockMedicines' => $lowStockMedicines,
-            'almostExpiredBatches' => $almostExpiredBatches,
             'recentTransactions' => $recentTransactions,
             'recentActivities' => $recentActivities,
             'activeUser' => Auth::user(),
@@ -195,28 +169,8 @@ class DashboardController extends Controller
                 'notes' => $item->notes,
             ]);
 
-        $recentAdjustments = DB::table('stock_adjustments')
-            ->orderByDesc('stock_adjustments.adjustment_date')
-            ->orderByDesc('stock_adjustments.id')
-            ->limit(5)
-            ->get([
-                'stock_adjustments.adjustment_date as movement_date',
-                'stock_adjustments.adjustment_number as reference_number',
-                'stock_adjustments.adjustment_type as counterpart_name',
-                'stock_adjustments.notes',
-            ])
-            ->map(fn ($item) => [
-                'movement_date' => $item->movement_date,
-                'sort_type' => 3,
-                'type' => 'adjustment',
-                'reference_number' => $item->reference_number,
-                'counterpart_name' => ucfirst((string) $item->counterpart_name),
-                'notes' => $item->notes,
-            ]);
-
         return $recentReceipts
             ->concat($recentDistributions)
-            ->concat($recentAdjustments)
             ->sortByDesc(fn (array $item) => sprintf('%s-%s', $item['movement_date'], $item['sort_type']))
             ->take(8)
             ->values();

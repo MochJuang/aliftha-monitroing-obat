@@ -47,7 +47,7 @@
 
             <div class="mt-4 space-y-4">
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
-                    <p class="text-sm text-slate-500">Jumlah alokasi batch</p>
+                    <p class="text-sm text-slate-500">Jumlah item distribusi</p>
                     <p class="mt-1 text-2xl font-semibold text-slate-900">{{ $distribution->items->count() }}</p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
@@ -69,21 +69,18 @@
     <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex items-center justify-between gap-4">
             <div>
-                <h3 class="text-lg font-semibold text-slate-900">Detail Alokasi Batch</h3>
-                <p class="mt-1 text-sm text-slate-500">Satu obat bisa dipecah ke beberapa batch sesuai urutan FEFO.</p>
+                <h3 class="text-lg font-semibold text-slate-900">Detail Item Distribusi</h3>
+                <p class="mt-1 text-sm text-slate-500">Rincian ini menunjukkan item obat yang tercatat pada transaksi distribusi.</p>
             </div>
         </div>
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">
-                <table class="min-w-[1100px] w-full divide-y divide-slate-200 text-sm">
+                <table class="min-w-[860px] w-full divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-slate-500">
                         <tr>
                             <th class="px-4 py-3 font-semibold">Obat</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Batch</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Expired</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Qty Keluar</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Sisa Batch</th>
                             <th class="px-4 py-3 font-semibold">Catatan</th>
                         </tr>
                     </thead>
@@ -94,10 +91,7 @@
                                     <p class="font-medium text-slate-900">{{ $item->medicine->name }}</p>
                                     <p class="text-xs text-slate-500">{{ $item->medicine->code }}</p>
                                 </td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->batch->batch_number }}</td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->batch->expired_at->format('d M Y') }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($item->quantity) }}</td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($item->batch->qty_remaining) }}</td>
                                 <td class="px-4 py-3 text-slate-600">{{ $item->notes ?: '-' }}</td>
                             </tr>
                         @endforeach

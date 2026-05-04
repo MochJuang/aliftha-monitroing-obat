@@ -3,7 +3,7 @@
 
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <p class="text-sm text-slate-500">Catat distribusi obat ke puskesmas, klinik, atau bidan dengan alokasi batch FEFO yang otomatis.</p>
+            <p class="text-sm text-slate-500">Catat distribusi obat ke puskesmas, klinik, atau bidan sebagai bagian dari monitoring penyaluran obat.</p>
             <a href="{{ route('faskes.distribusi.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
                 Tambah Distribusi Obat
             </a>
@@ -36,7 +36,7 @@
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Nomor</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Tanggal</th>
                             <th class="px-4 py-3 font-semibold">Tujuan</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Item Batch</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Jumlah Item</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Total Qty</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Petugas</th>
@@ -52,7 +52,7 @@
                                     <p class="font-medium text-slate-900">{{ $distribution->destination->name }}</p>
                                     <p class="text-xs text-slate-500">{{ strtoupper($distribution->destination->destination_type) }}</p>
                                 </td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $distribution->items_count }} alokasi</td>
+                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $distribution->items_count }} item</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($distribution->items_sum_quantity ?? 0)) }}</td>
                                 <td class="px-4 py-3">
                                     <span class="whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold {{ $distribution->status === 'posted' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
@@ -77,7 +77,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada transaksi stok keluar.</td>
+                                <td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada data distribusi obat.</td>
                             </tr>
                         @endforelse
                     </tbody>

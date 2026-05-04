@@ -9,7 +9,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RkoDetailController;
 use App\Http\Controllers\RkoHeaderController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\StockDistributionController;
 use App\Http\Controllers\StockMonitoringController;
 use App\Http\Controllers\StockReceiptController;
@@ -45,7 +44,6 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('distribution-destinations', DistributionDestinationController::class);
         Route::resource('stock-receipts', StockReceiptController::class);
         Route::resource('stock-distributions', StockDistributionController::class);
-        Route::resource('stock-adjustments', StockAdjustmentController::class)->only(['index', 'create', 'store', 'show']);
 
         Route::prefix('master-obat')->name('master-obat.')->group(function () {
             Route::get('kategori-obat', [MedicineCategoryController::class, 'index'])->name('kategori.index');
@@ -114,13 +112,6 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::delete('realisasi/{stockReceipt}', [StockReceiptController::class, 'destroy'])->name('destroy');
         });
 
-        Route::prefix('monitoring')->name('monitoring.')->group(function () {
-            Route::get('penyesuaian-stok', [StockAdjustmentController::class, 'index'])->name('penyesuaian.index');
-            Route::get('penyesuaian-stok/create', [StockAdjustmentController::class, 'create'])->name('penyesuaian.create');
-            Route::post('penyesuaian-stok', [StockAdjustmentController::class, 'store'])->name('penyesuaian.store');
-            Route::get('penyesuaian-stok/{stockAdjustment}', [StockAdjustmentController::class, 'show'])->name('penyesuaian.show');
-        });
-
         Route::prefix('rko')->name('rko.')->group(function () {
             Route::get('header', [RkoHeaderController::class, 'index'])->name('header.index');
             Route::get('header/create', [RkoHeaderController::class, 'create'])->name('header.create');
@@ -136,25 +127,19 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     Route::middleware('role:admin,petugas_gudang,pimpinan')->group(function () {
         Route::get('stock-monitoring/current-stock', [StockMonitoringController::class, 'currentStock'])->name('stock-monitoring.current-stock');
-        Route::get('stock-monitoring/batches', [StockMonitoringController::class, 'batches'])->name('stock-monitoring.batches');
-        Route::get('stock-monitoring/stock-card', [StockMonitoringController::class, 'stockCard'])->name('stock-monitoring.stock-card');
         Route::get('reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
         Route::get('reports/receipts', [ReportController::class, 'receipts'])->name('reports.receipts');
         Route::get('reports/distributions', [ReportController::class, 'distributions'])->name('reports.distributions');
-        Route::get('reports/adjustments', [ReportController::class, 'adjustments'])->name('reports.adjustments');
         Route::get('reports/rko-realization', [ReportController::class, 'rkoRealization'])->name('reports.rko-realization');
 
         Route::prefix('monitoring')->name('monitoring.')->group(function () {
             Route::get('stok-terkini', [StockMonitoringController::class, 'currentStock'])->name('stok.index');
-            Route::get('batch-kedaluwarsa', [StockMonitoringController::class, 'batches'])->name('batch.index');
-            Route::get('kartu-stok', [StockMonitoringController::class, 'stockCard'])->name('kartu-stok.index');
         });
 
         Route::prefix('laporan')->name('laporan.')->group(function () {
             Route::get('stok', [ReportController::class, 'stock'])->name('stok');
             Route::get('realisasi-pengadaan', [ReportController::class, 'receipts'])->name('pengadaan');
             Route::get('distribusi-obat', [ReportController::class, 'distributions'])->name('distribusi');
-            Route::get('penyesuaian-stok', [ReportController::class, 'adjustments'])->name('penyesuaian');
             Route::get('rko-vs-realisasi', [ReportController::class, 'rkoRealization'])->name('rko');
         });
     });

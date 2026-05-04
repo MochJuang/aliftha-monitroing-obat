@@ -134,7 +134,7 @@
         <div class="flex items-center justify-between gap-4">
             <div>
                 <h3 class="text-lg font-semibold text-slate-900">Item Obat Masuk</h3>
-                <p class="mt-1 text-sm text-slate-500">Isi daftar obat yang diterima beserta batch, tanggal kedaluwarsa, dan jumlahnya.</p>
+                <p class="mt-1 text-sm text-slate-500">Isi daftar obat yang diterima beserta jumlah dan informasi pendukung transaksi.</p>
             </div>
             <button
                 type="button"

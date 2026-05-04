@@ -139,19 +139,12 @@
                                                 <p class="text-sm text-slate-500">Stok minimum</p>
                                                 <p class="mt-1 text-2xl font-semibold text-slate-900" x-text="new Intl.NumberFormat('id-ID').format(selected?.minimum_stock ?? 0)"></p>
                                             </article>
-                                            <article class="rounded-2xl border border-slate-200 bg-white px-4 py-4">
-                                                <p class="text-sm text-slate-500">Batch aktif</p>
-                                                <p class="mt-1 text-2xl font-semibold text-slate-900" x-text="new Intl.NumberFormat('id-ID').format(selected?.active_batch_count ?? 0)"></p>
-                                            </article>
                                         </div>
                                     </div>
 
                                     <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5">
                                         <div class="flex flex-wrap gap-2">
                                             <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700" x-text="'Minimum: ' + new Intl.NumberFormat('id-ID').format(selected?.minimum_stock ?? 0)"></span>
-                                            <template x-if="selected?.nearest_expired_at">
-                                                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800" x-text="'Expired terdekat: ' + selected.nearest_expired_at"></span>
-                                            </template>
                                             <span
                                                 class="rounded-full px-3 py-1 text-xs font-semibold"
                                                 :class="selected?.is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'"
@@ -176,32 +169,26 @@
                                             <p class="text-sm text-rose-800">Total distribusi obat</p>
                                             <p class="mt-2 text-3xl font-semibold text-rose-900" x-text="new Intl.NumberFormat('id-ID').format(selected?.movement_summary?.total_out ?? 0)"></p>
                                         </article>
-                                        <article class="rounded-2xl border border-sky-200 bg-sky-50 px-4 py-4">
-                                            <p class="text-sm text-sky-800">Total penyesuaian stok</p>
-                                            <p class="mt-2 text-3xl font-semibold text-sky-900" x-text="new Intl.NumberFormat('id-ID').format(selected?.movement_summary?.total_adjustment ?? 0)"></p>
-                                        </article>
                                     </div>
                                     <div class="overflow-x-auto">
-                                        <table class="min-w-[1180px] w-full divide-y divide-slate-200 text-sm">
+                                        <table class="min-w-[980px] w-full divide-y divide-slate-200 text-sm">
                                             <thead class="bg-slate-50 text-left text-slate-500">
                                                 <tr>
                                                     <th class="px-4 py-3 font-semibold whitespace-nowrap">Tanggal</th>
                                                     <th class="px-4 py-3 font-semibold whitespace-nowrap">Jenis</th>
                                                     <th class="px-4 py-3 font-semibold whitespace-nowrap">Referensi</th>
-                                                    <th class="px-4 py-3 font-semibold whitespace-nowrap">Batch</th>
                                                     <th class="px-4 py-3 font-semibold whitespace-nowrap">Sumber / Tujuan</th>
                                                     <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Masuk</th>
                                                     <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Keluar</th>
-                                                    <th class="px-4 py-3 font-semibold whitespace-nowrap text-right">Adj</th>
                                                 </tr>
                                             </thead>
                                             <tbody class="divide-y divide-slate-100 bg-white">
                                                 <template x-if="!selected?.movements?.length">
                                                     <tr>
-                                                        <td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada mutasi untuk obat ini.</td>
+                                                        <td colspan="6" class="px-4 py-8 text-center text-slate-500">Belum ada mutasi untuk obat ini.</td>
                                                     </tr>
                                                 </template>
-                                                <template x-for="movement in (selected?.movements || [])" :key="movement.reference_number + '-' + movement.movement_date + '-' + movement.batch_number">
+                                                <template x-for="movement in (selected?.movements || [])" :key="movement.reference_number + '-' + movement.movement_date">
                                                     <tr>
                                                         <td class="px-4 py-3 whitespace-nowrap text-slate-600" x-text="movement.movement_date"></td>
                                                         <td class="px-4 py-3">
@@ -216,11 +203,9 @@
                                                             ></span>
                                                         </td>
                                                         <td class="px-4 py-3 font-medium whitespace-nowrap text-slate-900" x-text="movement.reference_number"></td>
-                                                        <td class="px-4 py-3 whitespace-nowrap text-slate-600" x-text="movement.batch_number || '-'"></td>
                                                         <td class="px-4 py-3 text-slate-600" x-text="movement.counterpart_name || movement.notes || '-'"></td>
                                                         <td class="px-4 py-3 text-right whitespace-nowrap text-emerald-700" x-text="movement.qty_in ? new Intl.NumberFormat('id-ID').format(movement.qty_in) : '-'"></td>
                                                         <td class="px-4 py-3 text-right whitespace-nowrap text-rose-700" x-text="movement.qty_out ? new Intl.NumberFormat('id-ID').format(movement.qty_out) : '-'"></td>
-                                                        <td class="px-4 py-3 text-right whitespace-nowrap text-sky-700" x-text="movement.adjustment_qty ? new Intl.NumberFormat('id-ID').format(movement.adjustment_qty) : '-'"></td>
                                                     </tr>
                                                 </template>
                                             </tbody>

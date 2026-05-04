@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">Stok Terkini</x-slot>
 
-    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+    <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
             <p class="text-sm text-slate-500">Obat aktif</p>
             <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($summary['total_medicines']) }}</p>
@@ -17,10 +17,6 @@
         <article class="rounded-[2rem] border border-rose-200 bg-rose-50 p-5 shadow-sm">
             <p class="text-sm text-rose-800">Stok habis</p>
             <p class="mt-2 text-3xl font-semibold text-rose-900">{{ number_format($summary['empty_stock_count']) }}</p>
-        </article>
-        <article class="rounded-[2rem] border border-sky-200 bg-sky-50 p-5 shadow-sm">
-            <p class="text-sm text-sky-800">Batch hampir expired</p>
-            <p class="mt-2 text-3xl font-semibold text-sky-900">{{ number_format($summary['almost_expired_batch_count']) }}</p>
         </article>
     </section>
 
@@ -39,10 +35,6 @@
                     'unit_name' => $medicine->unit_name,
                     'current_stock' => (int) ($medicine->current_stock ?? 0),
                     'minimum_stock' => (int) $medicine->minimum_stock,
-                    'active_batch_count' => (int) ($medicine->active_batch_count ?? 0),
-                    'almost_expired_batch_count' => (int) ($medicine->almost_expired_batch_count ?? 0),
-                    'nearest_expired_at' => $medicine->nearest_expired_at ? \Illuminate\Support\Carbon::parse($medicine->nearest_expired_at)->format('d M Y') : null,
-                    'batch_details' => $medicine->batch_details ?? [],
                 ],
             ])),
             openDetail(id) {
@@ -60,7 +52,7 @@
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h3 class="text-lg font-semibold text-slate-900">Monitoring Stok Per Obat</h3>
-                <p class="mt-1 text-sm text-slate-500">Lihat stok aktif non-expired, batas minimum, dan buka detail untuk melihat batch pembentuk stok obat.</p>
+                <p class="mt-1 text-sm text-slate-500">Lihat posisi stok per obat, batas minimum, dan ringkasan monitoring untuk membantu pengambilan keputusan.</p>
             </div>
         </div>
 
@@ -83,7 +75,6 @@
                 <option value="safe" @selected($status === 'safe')>Aman</option>
                 <option value="low" @selected($status === 'low')>Stok menipis</option>
                 <option value="empty" @selected($status === 'empty')>Stok habis</option>
-                <option value="almost_expired" @selected($status === 'almost_expired')>Hampir expired</option>
             </select>
             <button type="submit" class="shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 xl:min-w-32">
                 Filter
@@ -92,7 +83,7 @@
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">
-                <table class="min-w-[1280px] w-full divide-y divide-slate-200 text-sm">
+                <table class="min-w-[1080px] w-full divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-slate-500">
                         <tr>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Kode</th>
@@ -101,10 +92,8 @@
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Satuan</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Stok Saat Ini</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Minimum</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Batch Aktif</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Expired Terdekat</th>
-                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
-                        <th class="px-4 py-3 font-semibold text-right whitespace-nowrap">Aksi</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
+                            <th class="px-4 py-3 font-semibold text-right whitespace-nowrap">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 bg-white">
@@ -114,7 +103,6 @@
                                 $minimumStock = (int) $medicine->minimum_stock;
                                 $isEmpty = $currentStock === 0;
                                 $isLow = $currentStock > 0 && $currentStock <= $minimumStock;
-                                $hasAlmostExpired = (int) ($medicine->almost_expired_batch_count ?? 0) > 0;
                             @endphp
                             <tr>
                                 <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $medicine->code }}</td>
@@ -128,10 +116,6 @@
                                     {{ number_format($currentStock) }}
                                 </td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($minimumStock) }}</td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($medicine->active_batch_count ?? 0)) }}</td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">
-                                    {{ $medicine->nearest_expired_at ? \Illuminate\Support\Carbon::parse($medicine->nearest_expired_at)->format('d M Y') : '-' }}
-                                </td>
                                 <td class="px-4 py-3">
                                     <div class="flex flex-wrap gap-2">
                                         @if ($isEmpty)
@@ -142,9 +126,6 @@
                                             <span class="whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">Aman</span>
                                         @endif
 
-                                        @if ($hasAlmostExpired)
-                                            <span class="whitespace-nowrap rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800">Hampir Expired</span>
-                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-4 py-3">
@@ -161,7 +142,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="10" class="px-4 py-8 text-center text-slate-500">Belum ada data stok untuk ditampilkan.</td>
+                                <td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada data stok untuk ditampilkan.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -182,7 +163,7 @@
                     <div class="my-4 flex w-full max-w-7xl max-h-[92vh] flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-2xl" @click.stop>
                     <div class="flex items-start justify-between border-b border-slate-200 bg-slate-50 px-6 py-5">
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Detail Stok Terkini</p>
+                            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Detail Monitoring Stok</p>
                             <h3 class="mt-2 text-xl font-semibold text-slate-900" x-text="selected?.name"></h3>
                             <p class="mt-1 text-sm text-slate-500">
                                 <span x-text="selected?.code"></span>
@@ -221,74 +202,71 @@
                                             <p class="text-sm text-slate-500">Stok minimum</p>
                                             <p class="mt-1 text-2xl font-semibold text-slate-900" x-text="new Intl.NumberFormat('id-ID').format(selected?.minimum_stock ?? 0)"></p>
                                         </article>
-                                        <article class="rounded-2xl border border-slate-200 bg-white px-4 py-4">
-                                            <p class="text-sm text-slate-500">Batch aktif</p>
-                                            <p class="mt-1 text-2xl font-semibold text-slate-900" x-text="new Intl.NumberFormat('id-ID').format(selected?.active_batch_count ?? 0)"></p>
-                                        </article>
                                     </div>
                                 </div>
 
                                 <div class="rounded-[1.75rem] border border-slate-200 bg-white p-5">
                                     <div class="flex flex-wrap gap-2">
-                                        <template x-if="selected?.nearest_expired_at">
-                                            <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800" x-text="'Expired terdekat: ' + selected.nearest_expired_at"></span>
-                                        </template>
-                                        <template x-if="(selected?.almost_expired_batch_count ?? 0) > 0">
-                                            <span class="rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold text-sky-800" x-text="'Batch hampir expired: ' + new Intl.NumberFormat('id-ID').format(selected?.almost_expired_batch_count ?? 0)"></span>
-                                        </template>
-                                        <template x-if="(selected?.almost_expired_batch_count ?? 0) === 0">
-                                            <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">Batch aktif dalam kondisi aman</span>
-                                        </template>
+                                        <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700" x-text="'Minimum: ' + new Intl.NumberFormat('id-ID').format(selected?.minimum_stock ?? 0)"></span>
+                                        <span
+                                            class="rounded-full px-3 py-1 text-xs font-semibold"
+                                            :class="(selected?.current_stock ?? 0) === 0
+                                                ? 'bg-rose-100 text-rose-800'
+                                                : ((selected?.current_stock ?? 0) <= (selected?.minimum_stock ?? 0)
+                                                    ? 'bg-amber-100 text-amber-800'
+                                                    : 'bg-emerald-100 text-emerald-800')"
+                                            x-text="(selected?.current_stock ?? 0) === 0
+                                                ? 'Stok Habis'
+                                                : ((selected?.current_stock ?? 0) <= (selected?.minimum_stock ?? 0)
+                                                    ? 'Stok Menipis'
+                                                    : 'Stok Aman')"
+                                        ></span>
                                     </div>
-                                    <p class="mt-4 text-sm leading-7 text-slate-600">Detail ini menampilkan batch aktif yang saat ini membentuk stok tersedia pada obat terpilih.</p>
+                                    <p class="mt-4 text-sm leading-7 text-slate-600">Detail ini merangkum posisi stok obat terpilih terhadap batas minimum yang ditetapkan pada master obat.</p>
                                 </div>
                             </div>
 
                             <div class="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white">
                                 <div class="border-b border-slate-200 px-5 py-4">
-                                    <h4 class="font-semibold text-slate-900">Batch Monitoring Obat</h4>
-                                    <p class="mt-1 text-sm text-slate-500">Daftar batch aktif yang membentuk stok terkini untuk obat ini.</p>
+                                    <h4 class="font-semibold text-slate-900">Ringkasan Monitoring</h4>
+                                    <p class="mt-1 text-sm text-slate-500">Interpretasi cepat untuk membantu menentukan tindak lanjut obat ini.</p>
                                 </div>
-                                <div class="overflow-x-auto">
-                                    <table class="min-w-[1080px] w-full divide-y divide-slate-200 text-sm">
-                                        <thead class="bg-slate-50 text-left text-slate-500">
-                                            <tr>
-                                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Batch</th>
-                                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Tgl Terima</th>
-                                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Expired</th>
-                                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Sumber</th>
-                                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Qty Diterima</th>
-                                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Qty Sisa</th>
-                                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-slate-100 bg-white">
-                                            <template x-if="!selected?.batch_details?.length">
-                                                <tr>
-                                                    <td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada batch aktif untuk obat ini.</td>
-                                                </tr>
-                                            </template>
-                                            <template x-for="batch in (selected?.batch_details || [])" :key="batch.batch_number + '-' + batch.expired_at">
-                                                <tr>
-                                                    <td class="px-4 py-3 font-medium whitespace-nowrap text-slate-900" x-text="batch.batch_number"></td>
-                                                    <td class="px-4 py-3 whitespace-nowrap text-slate-600" x-text="batch.received_date || '-'"></td>
-                                                    <td class="px-4 py-3 whitespace-nowrap text-slate-600" x-text="batch.expired_at"></td>
-                                                    <td class="px-4 py-3 text-slate-600" x-text="batch.source_name || '-'"></td>
-                                                    <td class="px-4 py-3 whitespace-nowrap text-slate-600" x-text="new Intl.NumberFormat('id-ID').format(batch.qty_received)"></td>
-                                                    <td class="px-4 py-3 whitespace-nowrap font-semibold text-slate-900" x-text="new Intl.NumberFormat('id-ID').format(batch.qty_remaining)"></td>
-                                                    <td class="px-4 py-3">
-                                                        <span
-                                                            class="whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold"
-                                                            :class="batch.status_color === 'sky'
-                                                                ? 'bg-sky-100 text-sky-800'
-                                                                : 'bg-emerald-100 text-emerald-800'"
-                                                            x-text="batch.status_label"
-                                                        ></span>
-                                                    </td>
-                                                </tr>
-                                            </template>
-                                        </tbody>
-                                    </table>
+                                <div class="grid gap-4 px-5 py-5 md:grid-cols-2">
+                                    <article class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                                        <p class="text-sm text-slate-500">Status monitoring</p>
+                                        <p
+                                            class="mt-2 text-2xl font-semibold"
+                                            :class="(selected?.current_stock ?? 0) === 0
+                                                ? 'text-rose-700'
+                                                : ((selected?.current_stock ?? 0) <= (selected?.minimum_stock ?? 0)
+                                                    ? 'text-amber-700'
+                                                    : 'text-emerald-700')"
+                                            x-text="(selected?.current_stock ?? 0) === 0
+                                                ? 'Stok Habis'
+                                                : ((selected?.current_stock ?? 0) <= (selected?.minimum_stock ?? 0)
+                                                    ? 'Stok Menipis'
+                                                    : 'Stok Aman')"
+                                        ></p>
+                                    </article>
+                                    <article class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                                        <p class="text-sm text-slate-500">Selisih terhadap minimum</p>
+                                        <p
+                                            class="mt-2 text-2xl font-semibold"
+                                            :class="((selected?.current_stock ?? 0) - (selected?.minimum_stock ?? 0)) >= 0 ? 'text-emerald-700' : 'text-rose-700'"
+                                            x-text="new Intl.NumberFormat('id-ID').format((selected?.current_stock ?? 0) - (selected?.minimum_stock ?? 0))"
+                                        ></p>
+                                    </article>
+                                    <article class="rounded-2xl border border-slate-200 bg-white px-4 py-4 md:col-span-2">
+                                        <p class="text-sm text-slate-500">Kesimpulan</p>
+                                        <p class="mt-2 text-sm leading-7 text-slate-700">
+                                            Obat ini memiliki stok
+                                            <span class="font-semibold" x-text="new Intl.NumberFormat('id-ID').format(selected?.current_stock ?? 0)"></span>
+                                            <span x-text="selected?.unit_name ? ' ' + selected.unit_name : ''"></span>
+                                            dengan batas minimum
+                                            <span class="font-semibold" x-text="new Intl.NumberFormat('id-ID').format(selected?.minimum_stock ?? 0)"></span>.
+                                            Gunakan informasi ini untuk menentukan prioritas pengadaan berikutnya.
+                                        </p>
+                                    </article>
                                 </div>
                             </div>
                         </div>
