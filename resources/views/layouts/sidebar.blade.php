@@ -11,7 +11,7 @@
             'title' => 'Faskes',
             'items' => [
                 ['label' => 'Data Faskes', 'href' => route('faskes.index'), 'active' => request()->routeIs('faskes.index', 'faskes.create', 'faskes.show', 'faskes.edit', 'distribution-destinations.*')],
-                ['label' => 'Distribusi Obat', 'href' => route('faskes.distribusi.index'), 'active' => request()->routeIs('faskes.distribusi.*', 'stock-distributions.*')],
+                ['label' => 'Mutasi Obat', 'href' => route('faskes.distribusi.index'), 'active' => request()->routeIs('faskes.distribusi.*', 'stock-distributions.*')],
             ],
         ],
         [

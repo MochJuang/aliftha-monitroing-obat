@@ -26,8 +26,10 @@
                     <tr>
                         <th class="px-4 py-3 font-semibold">Nama</th>
                         <th class="px-4 py-3 font-semibold whitespace-nowrap">Jenis</th>
+                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
                         <th class="px-4 py-3 font-semibold whitespace-nowrap">Contact person</th>
                         <th class="px-4 py-3 font-semibold whitespace-nowrap">Telepon</th>
+                        <th class="px-4 py-3 font-semibold">Keterangan</th>
                         <th class="px-4 py-3 font-semibold text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -36,8 +38,14 @@
                         <tr>
                             <td class="px-4 py-3 font-medium text-slate-900">{{ $source->name }}</td>
                             <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ strtoupper($source->source_type) }}</td>
+                            <td class="px-4 py-3">
+                                <span class="whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold {{ $source->is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700' }}">
+                                    {{ $source->is_active ? 'Aktif' : 'Nonaktif' }}
+                                </span>
+                            </td>
                             <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $source->contact_person ?: '-' }}</td>
                             <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $source->phone ?: '-' }}</td>
+                            <td class="px-4 py-3 text-slate-600">{{ $source->notes ?: '-' }}</td>
                             <td class="px-4 py-3">
                                 <div class="flex justify-end gap-2 whitespace-nowrap">
                                     <a href="{{ route('pengadaan.sumber.show', $source) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
@@ -51,7 +59,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Belum ada data sumber obat.</td></tr>
+                        <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada data sumber obat.</td></tr>
                     @endforelse
                 </tbody>
             </table>

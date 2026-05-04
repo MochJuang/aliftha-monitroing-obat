@@ -104,7 +104,7 @@
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h3 class="text-lg font-semibold text-slate-900">Item Obat Keluar</h3>
-                <p class="mt-1 text-sm text-slate-500">Isi data distribusi obat sesuai tujuan penyaluran dan jumlah yang akan dikirim.</p>
+                <p class="mt-1 text-sm text-slate-500">Isi data mutasi obat sesuai tujuan penyaluran dan jumlah yang akan dikirim.</p>
             </div>
             <button
                 type="button"

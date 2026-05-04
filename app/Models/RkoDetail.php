@@ -20,6 +20,9 @@ class RkoDetail extends Model
         'medicine_id',
         'planned_quantity',
         'approved_quantity',
+        'estimated_unit_price',
+        'total_estimate',
+        'priority',
         'notes',
     ];
 
@@ -33,6 +36,8 @@ class RkoDetail extends Model
         return [
             'planned_quantity' => 'integer',
             'approved_quantity' => 'integer',
+            'estimated_unit_price' => 'decimal:2',
+            'total_estimate' => 'decimal:2',
         ];
     }
 

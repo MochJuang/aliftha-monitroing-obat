@@ -46,9 +46,11 @@ class MedicineRequest extends FormRequest
                 Rule::unique('medicines', 'code')->ignore($medicine),
             ],
             'name' => ['required', 'string', 'max:150'],
+            'medicine_type' => ['nullable', 'string', 'max:100'],
             'brand' => ['nullable', 'string', 'max:100'],
             'dosage' => ['nullable', 'string', 'max:100'],
             'minimum_stock' => ['required', 'integer', 'min:0'],
+            'standard_price' => ['required', 'numeric', 'min:0'],
             'description' => ['nullable', 'string'],
             'is_active' => ['required', 'boolean'],
         ];

@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             RkoSeeder::class,
             StockReceiptSeeder::class,
             StockDistributionSeeder::class,
+            MonitoringSnapshotSeeder::class,
         ]);
     }
 }

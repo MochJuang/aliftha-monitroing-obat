@@ -124,12 +124,14 @@ class MedicineController extends Controller
                 'id' => (int) $medicine->id,
                 'code' => $medicine->code,
                 'name' => $medicine->name,
+                'medicine_type' => $medicine->medicine_type,
                 'brand' => $medicine->brand,
                 'dosage' => $medicine->dosage,
                 'category_name' => $medicine->category?->name,
                 'unit_name' => $medicine->unit?->name,
                 'unit_symbol' => $medicine->unit?->symbol,
                 'minimum_stock' => (int) $medicine->minimum_stock,
+                'standard_price' => (float) ($medicine->standard_price ?? 0),
                 'description' => $medicine->description,
                 'is_active' => (bool) $medicine->is_active,
                 'current_stock' => (int) ($medicine->current_stock ?? 0),
@@ -207,7 +209,7 @@ class MedicineController extends Controller
             ->map(function (array $movement) {
                 $movement['type_label'] = match ($movement['type']) {
                     'realisasi_pengadaan' => 'Realisasi Pengadaan',
-                    default => 'Distribusi Obat',
+                    default => 'Mutasi Obat',
                 };
 
                 unset($movement['sort_date']);

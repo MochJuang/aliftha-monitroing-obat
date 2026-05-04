@@ -18,7 +18,7 @@
         'bg-slate-950 text-white' => request()->routeIs('laporan.distribusi', 'reports.distributions'),
         'bg-slate-100 text-slate-700 hover:bg-slate-200' => !request()->routeIs('laporan.distribusi', 'reports.distributions'),
     ])>
-        Distribusi Obat
+        Mutasi Obat
     </a>
     <a href="{{ route('laporan.rko') }}" @class([
         'rounded-full px-4 py-2 text-sm font-semibold transition',

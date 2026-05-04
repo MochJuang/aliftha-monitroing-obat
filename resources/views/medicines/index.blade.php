@@ -40,8 +40,10 @@
                     <tr>
                         <th class="px-4 py-3 font-semibold whitespace-nowrap">Kode</th>
                         <th class="px-4 py-3 font-semibold">Nama</th>
+                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Jenis</th>
                         <th class="px-4 py-3 font-semibold">Kategori</th>
                         <th class="px-4 py-3 font-semibold">Satuan</th>
+                        <th class="px-4 py-3 font-semibold whitespace-nowrap">Harga standar</th>
                         <th class="px-4 py-3 font-semibold whitespace-nowrap">Stok minimum</th>
                         <th class="px-4 py-3 font-semibold">Status</th>
                         <th class="px-4 py-3 font-semibold text-right whitespace-nowrap">Aksi</th>
@@ -55,8 +57,10 @@
                                 <p class="font-medium text-slate-900">{{ $medicine->name }}</p>
                                 <p class="text-xs text-slate-500">{{ $medicine->brand ?: 'Tanpa merek' }}</p>
                             </td>
+                            <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $medicine->medicine_type ?: '-' }}</td>
                             <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $medicine->category->name }}</td>
                             <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $medicine->unit->name }}</td>
+                            <td class="px-4 py-3 text-slate-600 whitespace-nowrap">Rp {{ number_format((float) $medicine->standard_price, 0, ',', '.') }}</td>
                             <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($medicine->minimum_stock) }}</td>
                             <td class="px-4 py-3">
                                 <span class="whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold {{ $medicine->is_active ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600' }}">
@@ -82,7 +86,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada data obat.</td></tr>
+                        <tr><td colspan="9" class="px-4 py-8 text-center text-slate-500">Belum ada data obat.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -124,12 +128,20 @@
                                         <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Ringkasan</p>
                                         <div class="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
                                             <article class="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                                                <p class="text-sm text-slate-500">Jenis obat</p>
+                                                <p class="mt-1 font-semibold text-slate-900" x-text="selected?.medicine_type || '-'"></p>
+                                            </article>
+                                            <article class="rounded-2xl border border-slate-200 bg-white px-4 py-4">
                                                 <p class="text-sm text-slate-500">Kategori</p>
                                                 <p class="mt-1 font-semibold text-slate-900" x-text="selected?.category_name || '-'"></p>
                                             </article>
                                             <article class="rounded-2xl border border-slate-200 bg-white px-4 py-4">
                                                 <p class="text-sm text-slate-500">Satuan</p>
                                                 <p class="mt-1 font-semibold text-slate-900" x-text="selected?.unit_name || '-'"></p>
+                                            </article>
+                                            <article class="rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                                                <p class="text-sm text-slate-500">Harga standar</p>
+                                                <p class="mt-1 font-semibold text-slate-900" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(selected?.standard_price ?? 0)"></p>
                                             </article>
                                             <article class="rounded-2xl border border-slate-200 bg-white px-4 py-4">
                                                 <p class="text-sm text-slate-500">Stok saat ini</p>
@@ -166,7 +178,7 @@
                                             <p class="mt-2 text-3xl font-semibold text-emerald-900" x-text="new Intl.NumberFormat('id-ID').format(selected?.movement_summary?.total_in ?? 0)"></p>
                                         </article>
                                         <article class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-4">
-                                            <p class="text-sm text-rose-800">Total distribusi obat</p>
+                                            <p class="text-sm text-rose-800">Total mutasi obat keluar</p>
                                             <p class="mt-2 text-3xl font-semibold text-rose-900" x-text="new Intl.NumberFormat('id-ID').format(selected?.movement_summary?.total_out ?? 0)"></p>
                                         </article>
                                     </div>

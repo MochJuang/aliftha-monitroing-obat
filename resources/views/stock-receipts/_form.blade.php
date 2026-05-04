@@ -5,7 +5,6 @@
         $initialItems = $receipt->exists
             ? $receipt->items->map(fn ($item) => [
                 'medicine_id' => $item->medicine_id,
-                'batch_number' => $item->batch_number,
                 'expired_at' => optional($item->expired_at)->format('Y-m-d'),
                 'quantity' => $item->quantity,
                 'unit_cost' => $item->unit_cost,
@@ -13,7 +12,6 @@
             ])->values()->all()
             : [[
                 'medicine_id' => '',
-                'batch_number' => '',
                 'expired_at' => '',
                 'quantity' => 1,
                 'unit_cost' => 0,
@@ -30,7 +28,6 @@
         addItem() {
             this.items.push({
                 medicine_id: "",
-                batch_number: "",
                 expired_at: "",
                 quantity: 1,
                 unit_cost: 0,
@@ -174,17 +171,6 @@
                                     <option value="{{ $medicine->id }}">{{ $medicine->code }} - {{ $medicine->name }}</option>
                                 @endforeach
                             </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700">Nomor batch</label>
-                            <input
-                                type="text"
-                                class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500"
-                                :name="`items[${index}][batch_number]`"
-                                x-model="item.batch_number"
-                                required
-                            >
                         </div>
 
                         <div>

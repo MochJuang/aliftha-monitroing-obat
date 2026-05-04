@@ -18,6 +18,10 @@
                     <dd class="mt-1 font-semibold text-slate-900">{{ $medicine->name }}</dd>
                 </div>
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                    <dt class="text-sm text-slate-500">Jenis obat</dt>
+                    <dd class="mt-1 font-semibold text-slate-900">{{ $medicine->medicine_type ?: '-' }}</dd>
+                </div>
+                <div class="rounded-2xl bg-slate-50 px-4 py-4">
                     <dt class="text-sm text-slate-500">Kategori</dt>
                     <dd class="mt-1 font-semibold text-slate-900">{{ $medicine->category->name }}</dd>
                 </div>
@@ -32,6 +36,10 @@
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
                     <dt class="text-sm text-slate-500">Stok minimum</dt>
                     <dd class="mt-1 font-semibold text-slate-900">{{ number_format($medicine->minimum_stock) }}</dd>
+                </div>
+                <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                    <dt class="text-sm text-slate-500">Harga standar</dt>
+                    <dd class="mt-1 font-semibold text-slate-900">Rp {{ number_format((float) $medicine->standard_price, 0, ',', '.') }}</dd>
                 </div>
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
                     <dt class="text-sm text-slate-500">Status</dt>

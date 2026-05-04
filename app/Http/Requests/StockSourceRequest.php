@@ -27,6 +27,15 @@ class StockSourceRequest extends FormRequest
             'address' => ['nullable', 'string'],
             'phone' => ['nullable', 'string', 'max:20'],
             'contact_person' => ['nullable', 'string', 'max:100'],
+            'notes' => ['nullable', 'string'],
+            'is_active' => ['required', 'boolean'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'is_active' => $this->boolean('is_active'),
+        ]);
     }
 }

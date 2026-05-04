@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">Laporan Distribusi Obat</x-slot>
+    <x-slot name="header">Laporan Mutasi Obat</x-slot>
 
     @include('reports._tabs')
 
@@ -64,7 +64,7 @@
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $report->distributor->name }}</td>
                             </tr>
                         @empty
-                            <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada data laporan stok keluar.</td></tr>
+                            <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada data laporan mutasi obat.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

@@ -83,7 +83,7 @@ class DistributionDestinationController extends Controller
                 ->with('success', 'Data faskes berhasil dihapus.');
         } catch (QueryException) {
             return back()->withErrors([
-                'delete' => 'Data faskes tidak bisa dihapus karena masih dipakai pada distribusi obat.',
+                'delete' => 'Data faskes tidak bisa dihapus karena masih dipakai pada mutasi obat.',
             ]);
         }
     }

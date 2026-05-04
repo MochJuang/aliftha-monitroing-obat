@@ -17,6 +17,10 @@
                     <dd class="mt-1 font-semibold text-slate-900">{{ strtoupper($source->source_type) }}</dd>
                 </div>
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                    <dt class="text-sm text-slate-500">Status</dt>
+                    <dd class="mt-1 font-semibold {{ $source->is_active ? 'text-emerald-700' : 'text-slate-600' }}">{{ $source->is_active ? 'Aktif' : 'Nonaktif' }}</dd>
+                </div>
+                <div class="rounded-2xl bg-slate-50 px-4 py-4">
                     <dt class="text-sm text-slate-500">Contact person</dt>
                     <dd class="mt-1 font-semibold text-slate-900">{{ $source->contact_person ?: '-' }}</dd>
                 </div>
@@ -27,6 +31,10 @@
                 <div class="rounded-2xl bg-slate-50 px-4 py-4 md:col-span-2">
                     <dt class="text-sm text-slate-500">Alamat</dt>
                     <dd class="mt-1 text-sm leading-7 text-slate-700">{{ $source->address ?: 'Belum ada alamat.' }}</dd>
+                </div>
+                <div class="rounded-2xl bg-slate-50 px-4 py-4 md:col-span-2">
+                    <dt class="text-sm text-slate-500">Keterangan</dt>
+                    <dd class="mt-1 text-sm leading-7 text-slate-700">{{ $source->notes ?: 'Belum ada keterangan tambahan.' }}</dd>
                 </div>
             </dl>
         </article>

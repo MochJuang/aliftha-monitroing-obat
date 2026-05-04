@@ -63,7 +63,8 @@ class RkoHeaderController extends Controller
             'period_month' => (int) now()->format('m'),
             'period_year' => (int) now()->format('Y'),
             'status' => 'draft',
-        ]);
+            'submitted_at' => now()->toDateString(),
+            ]);
 
         return view('rko-headers.create', [
             'rkoHeader' => $rkoHeader,
@@ -81,7 +82,10 @@ class RkoHeaderController extends Controller
                 'rko_number' => $validated['rko_number'],
                 'period_month' => $validated['period_month'],
                 'period_year' => $validated['period_year'],
+                'total_budget' => $validated['total_budget'],
                 'status' => $validated['status'],
+                'submitted_at' => $validated['submitted_at'] ?? null,
+                'approved_at' => $validated['approved_at'] ?? null,
                 'submitted_by' => $request->user()?->id,
                 'approved_by' => $validated['status'] === 'approved' ? $request->user()?->id : null,
                 'notes' => $validated['notes'] ?? null,
@@ -155,7 +159,10 @@ class RkoHeaderController extends Controller
                 'rko_number' => $validated['rko_number'],
                 'period_month' => $validated['period_month'],
                 'period_year' => $validated['period_year'],
+                'total_budget' => $validated['total_budget'],
                 'status' => $validated['status'],
+                'submitted_at' => $validated['submitted_at'] ?? null,
+                'approved_at' => $validated['approved_at'] ?? null,
                 'submitted_by' => $rkoHeader->submitted_by ?? $request->user()?->id,
                 'approved_by' => $validated['status'] === 'approved' ? $request->user()?->id : null,
                 'notes' => $validated['notes'] ?? null,
@@ -210,6 +217,9 @@ class RkoHeaderController extends Controller
                 'medicine_id' => (int) $item['medicine_id'],
                 'planned_quantity' => (int) $item['planned_quantity'],
                 'approved_quantity' => $item['approved_quantity'] !== null && $item['approved_quantity'] !== '' ? (int) $item['approved_quantity'] : null,
+                'estimated_unit_price' => (float) ($item['estimated_unit_price'] ?? 0),
+                'total_estimate' => (int) $item['planned_quantity'] * (float) ($item['estimated_unit_price'] ?? 0),
+                'priority' => $item['priority'] ?? 'sedang',
                 'notes' => $item['notes'] ?? null,
             ])
             ->values()

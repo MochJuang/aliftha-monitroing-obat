@@ -51,7 +51,7 @@
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">
-                <table class="min-w-[1180px] w-full divide-y divide-slate-200 text-sm">
+                <table class="min-w-[1440px] w-full divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-slate-500">
                         <tr>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Nomor RKO</th>
@@ -60,6 +60,9 @@
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Jumlah Item</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Total Rencana</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Total Disetujui</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Total Anggaran</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Tanggal Pengajuan</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Tanggal Persetujuan</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Penyusun</th>
                             <th class="px-4 py-3 font-semibold text-right whitespace-nowrap">Aksi</th>
                         </tr>
@@ -83,6 +86,9 @@
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($header->items_count) }} item</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($header->items_sum_planned_quantity ?? 0)) }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($header->items_sum_approved_quantity ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">Rp {{ number_format((float) $header->total_budget, 0, ',', '.') }}</td>
+                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $header->submitted_at?->format('d M Y') ?? '-' }}</td>
+                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $header->approved_at?->format('d M Y') ?? '-' }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $header->submitter?->name ?? '-' }}</td>
                                 <td class="px-4 py-3">
                                     <div class="flex justify-end gap-2 whitespace-nowrap">
@@ -97,7 +103,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada dokumen RKO.</td></tr>
+                            <tr><td colspan="11" class="px-4 py-8 text-center text-slate-500">Belum ada dokumen RKO.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

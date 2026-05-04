@@ -30,6 +30,16 @@
         <label for="address" class="block text-sm font-medium text-slate-700">Alamat</label>
         <textarea id="address" name="address" rows="4" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">{{ old('address', $source->address) }}</textarea>
     </div>
+
+    <div class="md:col-span-2">
+        <label for="notes" class="block text-sm font-medium text-slate-700">Keterangan</label>
+        <textarea id="notes" name="notes" rows="3" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">{{ old('notes', $source->notes) }}</textarea>
+    </div>
+
+    <div class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-4">
+        <input id="is_active" name="is_active" type="checkbox" value="1" class="rounded border-slate-300 text-amber-600 shadow-sm focus:ring-amber-500" @checked(old('is_active', $source->is_active ?? true))>
+        <label for="is_active" class="text-sm font-medium text-slate-700">Aktif dan bisa dipakai untuk realisasi pengadaan</label>
+    </div>
 </div>
 
 <div class="mt-8 flex items-center justify-end gap-3">

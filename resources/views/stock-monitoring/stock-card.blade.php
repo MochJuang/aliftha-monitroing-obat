@@ -132,7 +132,7 @@
                                         @if ($movement['type'] === 'stok_masuk')
                                             <span class="whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">Realisasi Pengadaan</span>
                                         @elseif ($movement['type'] === 'stok_keluar')
-                                            <span class="whitespace-nowrap rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800">Distribusi Obat</span>
+                                            <span class="whitespace-nowrap rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800">Mutasi Obat</span>
                                         @else
                                             <span class="whitespace-nowrap rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-800">Penyesuaian Stok</span>
                                         @endif

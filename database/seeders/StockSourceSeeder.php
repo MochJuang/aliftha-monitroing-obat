@@ -21,6 +21,8 @@ class StockSourceSeeder extends Seeder
                 'address' => 'Bandung',
                 'phone' => '022-7000001',
                 'contact_person' => 'Rina',
+                'notes' => 'Sumber pengadaan utama dari distribusi provinsi untuk program KB.',
+                'is_active' => true,
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
@@ -30,6 +32,8 @@ class StockSourceSeeder extends Seeder
                 'address' => 'Sukabumi',
                 'phone' => '0266-200001',
                 'contact_person' => 'Dedi',
+                'notes' => 'Sumber pengadaan pendukung dari alokasi dinas kesehatan kota.',
+                'is_active' => true,
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
@@ -39,9 +43,11 @@ class StockSourceSeeder extends Seeder
                 'address' => 'Jakarta',
                 'phone' => '021-8000001',
                 'contact_person' => 'Taufik',
+                'notes' => 'Supplier rekanan untuk pemenuhan cadangan bila stok program belum cukup.',
+                'is_active' => true,
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
-        ], ['name'], ['source_type', 'address', 'phone', 'contact_person', 'updated_at']);
+        ], ['name'], ['source_type', 'address', 'phone', 'contact_person', 'notes', 'is_active', 'updated_at']);
     }
 }

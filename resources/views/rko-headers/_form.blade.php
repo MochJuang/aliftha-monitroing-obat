@@ -19,12 +19,16 @@
             'medicine_id' => (string) $item->medicine_id,
             'planned_quantity' => $item->planned_quantity,
             'approved_quantity' => $item->approved_quantity,
+            'estimated_unit_price' => $item->estimated_unit_price,
+            'priority' => $item->priority,
             'notes' => $item->notes,
         ])->values()->all()
         : [[
             'medicine_id' => '',
             'planned_quantity' => 1,
             'approved_quantity' => '',
+            'estimated_unit_price' => 0,
+            'priority' => 'sedang',
             'notes' => '',
         ]]);
 
@@ -55,6 +59,8 @@
                 medicine_id: "",
                 planned_quantity: 1,
                 approved_quantity: "",
+                estimated_unit_price: 0,
+                priority: "sedang",
                 notes: "",
             });
         },
@@ -99,6 +105,21 @@
         <div>
             <label for="period_year" class="block text-sm font-medium text-slate-700">Periode Tahun</label>
             <input id="period_year" name="period_year" type="number" min="2020" max="2100" value="{{ old('period_year', $rkoHeader->period_year) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
+        </div>
+
+        <div>
+            <label for="total_budget" class="block text-sm font-medium text-slate-700">Total anggaran</label>
+            <input id="total_budget" name="total_budget" type="number" min="0" step="0.01" value="{{ old('total_budget', $rkoHeader->total_budget ?? 0) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
+        </div>
+
+        <div>
+            <label for="submitted_at" class="block text-sm font-medium text-slate-700">Tanggal pengajuan</label>
+            <input id="submitted_at" name="submitted_at" type="date" value="{{ old('submitted_at', optional($rkoHeader->submitted_at)->format('Y-m-d')) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+        </div>
+
+        <div>
+            <label for="approved_at" class="block text-sm font-medium text-slate-700">Tanggal persetujuan</label>
+            <input id="approved_at" name="approved_at" type="date" value="{{ old('approved_at', optional($rkoHeader->approved_at)->format('Y-m-d')) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
         </div>
 
         <div class="lg:col-span-2">
@@ -149,11 +170,26 @@
                             <input type="number" min="0" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][approved_quantity]`" x-model="item.approved_quantity">
                         </div>
 
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Estimasi harga satuan</label>
+                            <input type="number" min="0" step="0.01" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][estimated_unit_price]`" x-model="item.estimated_unit_price" required>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700">Prioritas</label>
+                            <select class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][priority]`" x-model="item.priority" required>
+                                <option value="tinggi">Tinggi</option>
+                                <option value="sedang">Sedang</option>
+                                <option value="rendah">Rendah</option>
+                            </select>
+                        </div>
+
                         <div class="xl:col-span-4">
                             <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600" x-show="selectedMedicine(item.medicine_id)">
                                 <span class="font-medium text-slate-900" x-text="selectedMedicine(item.medicine_id)?.code"></span>
                                 <span x-text="' | ' + (selectedMedicine(item.medicine_id)?.category || '-')"></span>
                                 <span x-text="' | ' + (selectedMedicine(item.medicine_id)?.unit || '-')"></span>
+                                <span class="block mt-2 text-slate-700" x-text="'Total estimasi: ' + new Intl.NumberFormat('id-ID').format(Number(item.planned_quantity || 0) * Number(item.estimated_unit_price || 0))"></span>
                             </div>
                         </div>
 

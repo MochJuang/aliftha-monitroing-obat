@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\MedicineBatch;
+use App\Models\StockMutation;
 use App\Models\StockReceipt;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -34,6 +35,7 @@ class StockReceiptService
 
             if ($receipt->status === 'posted') {
                 $this->createBatchesFromReceipt($receipt);
+                $this->createMutationsFromReceipt($receipt->fresh('items'));
             }
 
             $this->activityLogService->log(
@@ -73,7 +75,9 @@ class StockReceiptService
             $this->syncItems($receipt, $data['items']);
 
             if ($newStatus === 'posted') {
-                $this->createBatchesFromReceipt($receipt->fresh('items'));
+                $freshReceipt = $receipt->fresh('items');
+                $this->createBatchesFromReceipt($freshReceipt);
+                $this->createMutationsFromReceipt($freshReceipt);
             }
 
             $this->activityLogService->log(
@@ -113,16 +117,24 @@ class StockReceiptService
      */
     private function syncItems(StockReceipt $receipt, array $items): void
     {
-        foreach ($items as $item) {
+        foreach ($items as $index => $item) {
+            $batchNumber = $item['batch_number'] ?? null;
+
             $receipt->items()->create([
                 'medicine_id' => $item['medicine_id'],
-                'batch_number' => $item['batch_number'],
+                'batch_number' => $batchNumber ?: $this->generateInternalBatchNumber($receipt, $index),
                 'expired_at' => $item['expired_at'],
                 'quantity' => $item['quantity'],
                 'unit_cost' => $item['unit_cost'] ?? 0,
+                'total_realization' => (int) $item['quantity'] * (float) ($item['unit_cost'] ?? 0),
                 'notes' => $item['notes'] ?? null,
             ]);
         }
+    }
+
+    private function generateInternalBatchNumber(StockReceipt $receipt, int $index): string
+    {
+        return sprintf('AUTO-%s-%02d', $receipt->receipt_number, $index + 1);
     }
 
     private function createBatchesFromReceipt(StockReceipt $receipt): void
@@ -135,6 +147,20 @@ class StockReceiptService
                 'expired_at' => $item->expired_at,
                 'qty_received' => $item->quantity,
                 'qty_remaining' => $item->quantity,
+            ]);
+        }
+    }
+
+    private function createMutationsFromReceipt(StockReceipt $receipt): void
+    {
+        foreach ($receipt->items as $item) {
+            StockMutation::create([
+                'medicine_id' => $item->medicine_id,
+                'mutation_date' => $receipt->received_date,
+                'mutation_type' => 'MASUK',
+                'quantity' => (int) $item->quantity,
+                'reference' => "Realisasi Pengadaan / {$receipt->receipt_number}",
+                'notes' => $item->notes,
             ]);
         }
     }

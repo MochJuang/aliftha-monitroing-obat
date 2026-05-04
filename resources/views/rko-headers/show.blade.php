@@ -29,6 +29,18 @@
                     <p class="text-sm text-slate-500">Penyetuju</p>
                     <p class="mt-1 font-semibold text-slate-900">{{ $rkoHeader->approver?->name ?? '-' }}</p>
                 </div>
+                <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                    <p class="text-sm text-slate-500">Total anggaran</p>
+                    <p class="mt-1 font-semibold text-slate-900">Rp {{ number_format((float) $rkoHeader->total_budget, 0, ',', '.') }}</p>
+                </div>
+                <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                    <p class="text-sm text-slate-500">Tanggal pengajuan</p>
+                    <p class="mt-1 font-semibold text-slate-900">{{ $rkoHeader->submitted_at?->format('d M Y') ?? '-' }}</p>
+                </div>
+                <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                    <p class="text-sm text-slate-500">Tanggal persetujuan</p>
+                    <p class="mt-1 font-semibold text-slate-900">{{ $rkoHeader->approved_at?->format('d M Y') ?? '-' }}</p>
+                </div>
             </div>
 
             <div class="mt-6 rounded-2xl bg-slate-50 px-4 py-4">
@@ -66,19 +78,23 @@
             <article class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-200 px-6 py-5">
                     <h3 class="text-lg font-semibold text-slate-900">Detail Kebutuhan Obat</h3>
-                    <p class="mt-1 text-sm text-slate-500">Rincian item obat, jumlah rencana, dan jumlah yang disetujui pada dokumen ini.</p>
+                    <p class="mt-1 text-sm text-slate-500">Rincian item obat, jumlah rencana, estimasi anggaran, dan prioritas kebutuhan pada dokumen ini.</p>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-[920px] w-full divide-y divide-slate-200 text-sm">
+                    <table class="min-w-[1260px] w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-slate-50 text-left text-slate-500">
                             <tr>
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Kode</th>
                                 <th class="px-4 py-3 font-semibold">Obat</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Jenis</th>
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Kategori</th>
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Satuan</th>
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Rencana</th>
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Disetujui</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Estimasi Harga</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Total Estimasi</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Prioritas</th>
                                 <th class="px-4 py-3 font-semibold">Catatan</th>
                             </tr>
                         </thead>
@@ -90,14 +106,27 @@
                                         <p class="font-medium text-slate-900">{{ $item->medicine->name }}</p>
                                         <p class="text-xs text-slate-500">{{ $item->medicine->brand ?: '-' }}</p>
                                     </td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->medicine->medicine_type ?: '-' }}</td>
                                     <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->medicine->category?->name ?? '-' }}</td>
                                     <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->medicine->unit?->name ?? '-' }}</td>
                                     <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($item->planned_quantity) }}</td>
                                     <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->approved_quantity !== null ? number_format($item->approved_quantity) : '-' }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">Rp {{ number_format((float) $item->estimated_unit_price, 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">Rp {{ number_format((float) $item->total_estimate, 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3">
+                                        <span @class([
+                                            'whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold',
+                                            'bg-rose-100 text-rose-800' => $item->priority === 'tinggi',
+                                            'bg-amber-100 text-amber-800' => $item->priority === 'sedang',
+                                            'bg-sky-100 text-sky-800' => $item->priority === 'rendah',
+                                        ])>
+                                            {{ ucfirst($item->priority) }}
+                                        </span>
+                                    </td>
                                     <td class="px-4 py-3 text-slate-600">{{ $item->notes ?: '-' }}</td>
                                 </tr>
                             @empty
-                                <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada item pada dokumen RKO ini.</td></tr>
+                                <tr><td colspan="11" class="px-4 py-8 text-center text-slate-500">Belum ada item pada dokumen RKO ini.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

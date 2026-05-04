@@ -21,9 +21,11 @@ class Medicine extends Model
         'unit_id',
         'code',
         'name',
+        'medicine_type',
         'brand',
         'dosage',
         'minimum_stock',
+        'standard_price',
         'description',
         'is_active',
     ];
@@ -37,6 +39,7 @@ class Medicine extends Model
     {
         return [
             'minimum_stock' => 'integer',
+            'standard_price' => 'decimal:2',
             'is_active' => 'boolean',
         ];
     }
@@ -74,5 +77,15 @@ class Medicine extends Model
     public function rkoDetails(): HasMany
     {
         return $this->hasMany(RkoDetail::class);
+    }
+
+    public function stocks(): HasMany
+    {
+        return $this->hasMany(MedicineStock::class);
+    }
+
+    public function mutations(): HasMany
+    {
+        return $this->hasMany(StockMutation::class);
     }
 }

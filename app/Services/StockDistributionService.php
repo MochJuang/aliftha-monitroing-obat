@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Medicine;
 use App\Models\MedicineBatch;
+use App\Models\StockMutation;
 use App\Models\StockDistribution;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -31,6 +32,10 @@ class StockDistributionService
             ]);
 
             $this->syncItems($distribution, $data['items'], $distribution->status === 'posted');
+
+            if ($distribution->status === 'posted') {
+                $this->createMutationsFromDistribution($distribution->fresh('items'));
+            }
 
             $this->activityLogService->log(
                 $userId,
@@ -64,6 +69,10 @@ class StockDistributionService
 
             $distribution->items()->delete();
             $this->syncItems($distribution, $data['items'], $distribution->status === 'posted');
+
+            if ($distribution->status === 'posted') {
+                $this->createMutationsFromDistribution($distribution->fresh('items'));
+            }
 
             $this->activityLogService->log(
                 $userId,
@@ -147,6 +156,20 @@ class StockDistributionService
 
                 $remainingQuantity -= $takenQuantity;
             }
+        }
+    }
+
+    private function createMutationsFromDistribution(StockDistribution $distribution): void
+    {
+        foreach ($distribution->items as $item) {
+            StockMutation::create([
+                'medicine_id' => $item->medicine_id,
+                'mutation_date' => $distribution->distributed_date,
+                'mutation_type' => 'KELUAR',
+                'quantity' => (int) $item->quantity,
+                'reference' => "Mutasi Obat / {$distribution->distribution_number}",
+                'notes' => $item->notes,
+            ]);
         }
     }
 }

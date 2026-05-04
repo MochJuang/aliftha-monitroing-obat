@@ -20,7 +20,10 @@ class RkoHeader extends Model
         'rko_number',
         'period_month',
         'period_year',
+        'total_budget',
         'status',
+        'submitted_at',
+        'approved_at',
         'submitted_by',
         'approved_by',
         'notes',
@@ -36,6 +39,9 @@ class RkoHeader extends Model
         return [
             'period_month' => 'integer',
             'period_year' => 'integer',
+            'total_budget' => 'decimal:2',
+            'submitted_at' => 'date',
+            'approved_at' => 'date',
         ];
     }
 

@@ -38,7 +38,7 @@
 
     <div class="md:col-span-2 flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-4">
         <input id="is_active" name="is_active" type="checkbox" value="1" class="rounded border-slate-300 text-amber-600 shadow-sm focus:ring-amber-500" @checked(old('is_active', $destination->is_active ?? true))>
-        <label for="is_active" class="text-sm font-medium text-slate-700">Aktif dan bisa dipilih saat distribusi obat</label>
+        <label for="is_active" class="text-sm font-medium text-slate-700">Aktif dan bisa dipilih saat mutasi obat</label>
     </div>
 </div>
 

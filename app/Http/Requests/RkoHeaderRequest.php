@@ -33,12 +33,17 @@ class RkoHeaderRequest extends FormRequest
             ],
             'period_month' => ['required', 'integer', 'between:1,12'],
             'period_year' => ['required', 'integer', 'min:2020', 'max:2100'],
+            'total_budget' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:draft,submitted,approved,rejected'],
+            'submitted_at' => ['nullable', 'date'],
+            'approved_at' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.medicine_id' => ['required', 'distinct', 'exists:medicines,id'],
             'items.*.planned_quantity' => ['required', 'integer', 'min:1'],
             'items.*.approved_quantity' => ['nullable', 'integer', 'min:0'],
+            'items.*.estimated_unit_price' => ['required', 'numeric', 'min:0'],
+            'items.*.priority' => ['required', 'in:tinggi,sedang,rendah'],
             'items.*.notes' => ['nullable', 'string', 'max:255'],
         ];
     }

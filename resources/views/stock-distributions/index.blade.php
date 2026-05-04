@@ -1,11 +1,11 @@
 <x-app-layout>
-    <x-slot name="header">Distribusi Obat</x-slot>
+    <x-slot name="header">Mutasi Obat</x-slot>
 
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <p class="text-sm text-slate-500">Catat distribusi obat ke puskesmas, klinik, atau bidan sebagai bagian dari monitoring penyaluran obat.</p>
+            <p class="text-sm text-slate-500">Catat mutasi obat ke puskesmas, klinik, atau bidan sebagai bagian dari monitoring penyaluran obat.</p>
             <a href="{{ route('faskes.distribusi.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
-                Tambah Distribusi Obat
+                Tambah Mutasi Obat
             </a>
         </div>
 
@@ -77,7 +77,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada data distribusi obat.</td>
+                                <td colspan="8" class="px-4 py-8 text-center text-slate-500">Belum ada data mutasi obat.</td>
                             </tr>
                         @endforelse
                     </tbody>

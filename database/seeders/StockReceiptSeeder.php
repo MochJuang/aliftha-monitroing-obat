@@ -31,7 +31,7 @@ class StockReceiptSeeder extends Seeder
             return;
         }
 
-        DB::transaction(function () use ($userId, $medicineIds, $sourceIds) {
+        DB::transaction(function () use ($userId, $medicineIds, $sourceIds, $rkoHeaderIds) {
             // Reset sample transaksi agar seeder bisa dijalankan ulang dengan hasil yang konsisten.
             DB::table('stock_distribution_items')->delete();
             DB::table('stock_distributions')->delete();
@@ -158,6 +158,7 @@ class StockReceiptSeeder extends Seeder
                         'expired_at' => $itemData['expired_at'],
                         'quantity' => $itemData['quantity'],
                         'unit_cost' => $itemData['unit_cost'],
+                        'total_realization' => $itemData['quantity'] * $itemData['unit_cost'],
                         'notes' => $itemData['notes'],
                         'created_at' => $receivedAt,
                         'updated_at' => $receivedAt,

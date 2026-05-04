@@ -32,6 +32,11 @@
     </div>
 
     <div>
+        <label for="medicine_type" class="block text-sm font-medium text-slate-700">Jenis obat</label>
+        <input id="medicine_type" name="medicine_type" type="text" value="{{ old('medicine_type', $medicine->medicine_type) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" placeholder="Contoh: Pil, Suntik, Implant, IUD">
+    </div>
+
+    <div>
         <label for="brand" class="block text-sm font-medium text-slate-700">Merek</label>
         <input id="brand" name="brand" type="text" value="{{ old('brand', $medicine->brand) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
     </div>
@@ -44,6 +49,11 @@
     <div>
         <label for="minimum_stock" class="block text-sm font-medium text-slate-700">Stok minimum</label>
         <input id="minimum_stock" name="minimum_stock" type="number" min="0" value="{{ old('minimum_stock', $medicine->minimum_stock ?? 0) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
+    </div>
+
+    <div>
+        <label for="standard_price" class="block text-sm font-medium text-slate-700">Harga standar</label>
+        <input id="standard_price" name="standard_price" type="number" min="0" step="0.01" value="{{ old('standard_price', $medicine->standard_price ?? 0) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
     </div>
 
     <div class="flex items-center gap-3 rounded-2xl border border-slate-200 px-4 py-4">

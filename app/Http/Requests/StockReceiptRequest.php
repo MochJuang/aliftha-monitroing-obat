@@ -38,7 +38,7 @@ class StockReceiptRequest extends FormRequest
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.medicine_id' => ['required', 'exists:medicines,id'],
-            'items.*.batch_number' => ['required', 'string', 'max:100'],
+            'items.*.batch_number' => ['nullable', 'string', 'max:100'],
             'items.*.expired_at' => ['required', 'date'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.unit_cost' => ['nullable', 'numeric', 'min:0'],

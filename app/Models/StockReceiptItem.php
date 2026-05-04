@@ -23,6 +23,7 @@ class StockReceiptItem extends Model
         'expired_at',
         'quantity',
         'unit_cost',
+        'total_realization',
         'notes',
     ];
 
@@ -37,6 +38,7 @@ class StockReceiptItem extends Model
             'expired_at' => 'date',
             'quantity' => 'integer',
             'unit_cost' => 'decimal:2',
+            'total_realization' => 'decimal:2',
         ];
     }
 

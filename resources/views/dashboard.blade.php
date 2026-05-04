@@ -7,7 +7,7 @@
         <div class="overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-7 text-white shadow-xl shadow-slate-300/40">
             <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-300">Ringkasan Hari Ini</p>
             <h3 class="mt-3 max-w-2xl text-3xl font-semibold leading-tight">
-                Dashboard ini merangkum posisi stok, realisasi pengadaan, dan distribusi obat langsung dari data aplikasi.
+                Dashboard ini merangkum posisi stok, realisasi pengadaan, dan mutasi obat langsung dari data aplikasi.
             </h3>
             <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-300">
                 Petugas bisa memantau stok berjalan, kebutuhan yang menipis, dan aktivitas pengadaan serta distribusi harian dari satu halaman utama.
@@ -181,7 +181,7 @@
                                     @if ($transaction['type'] === 'stok_masuk')
                                         <span class="whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">Realisasi Pengadaan</span>
                                     @elseif ($transaction['type'] === 'stok_keluar')
-                                        <span class="whitespace-nowrap rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800">Distribusi Obat</span>
+                                        <span class="whitespace-nowrap rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800">Mutasi Obat</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $transaction['reference_number'] }}</td>
