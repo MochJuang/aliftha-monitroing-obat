@@ -146,7 +146,8 @@
                     </div>
 
 	                    <div class="mt-4 space-y-4">
-		                        <div class="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
+		                        <div class="overflow-x-auto">
+		                        <div class="grid gap-4 min-w-[860px] md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
 		                            <div>
 		                                <label class="block text-sm font-medium text-slate-700">Obat</label>
 		                                <select class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][medicine_id]`" x-model="item.medicine_id" required>
@@ -167,22 +168,25 @@
 		                                <input type="number" min="0" step="0.01" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][estimated_unit_price]`" x-model="item.estimated_unit_price" required>
 		                            </div>
 		                        </div>
+		                        </div>
 	
-	                        <div class="grid gap-4 md:grid-cols-[minmax(0,240px)_minmax(0,1fr)] md:items-end">
-	                            <div>
-	                                <label class="block text-sm font-medium text-slate-700">Prioritas</label>
-	                                <select class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][priority]`" x-model="item.priority" required>
-	                                    <option value="tinggi">Tinggi</option>
+		                        <div class="overflow-x-auto">
+		                        <div class="grid gap-4 min-w-[860px] md:grid-cols-[minmax(0,240px)_minmax(0,1fr)] md:items-end">
+		                            <div>
+		                                <label class="block text-sm font-medium text-slate-700">Prioritas</label>
+		                                <select class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][priority]`" x-model="item.priority" required>
+		                                    <option value="tinggi">Tinggi</option>
 	                                    <option value="sedang">Sedang</option>
 	                                    <option value="rendah">Rendah</option>
 	                                </select>
 	                            </div>
 	
-	                            <div>
-	                                <label class="block text-sm font-medium text-slate-700">Catatan item</label>
-	                                <input type="text" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][notes]`" x-model="item.notes">
-	                            </div>
-	                        </div>
+		                            <div>
+		                                <label class="block text-sm font-medium text-slate-700">Catatan item</label>
+		                                <input type="text" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][notes]`" x-model="item.notes">
+		                            </div>
+		                        </div>
+		                        </div>
 	
 	                        <div>
 	                            <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600" x-show="selectedMedicine(item.medicine_id)">

@@ -95,29 +95,31 @@
                     <button type="button" class="rounded-xl border border-rose-300 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50" @click="removeItem(index)" x-show="items.length > 1">Hapus</button>
                 </div>
 
-                <div class="mt-4 grid gap-4 lg:grid-cols-[minmax(0,2fr)_180px_minmax(0,1fr)]">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700">Obat</label>
-                        <select class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][medicine_id]`" x-model="item.medicine_id" required>
-                            <option value="">Pilih obat</option>
-                            <template x-for="medicine in medicines" :key="medicine.id">
-                                <option :value="medicine.id" x-text="medicine.label"></option>
-                            </template>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700">Jumlah</label>
-                        <input type="number" min="1" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][quantity]`" x-model="item.quantity" required>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700">Catatan item</label>
-                        <input type="text" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][notes]`" x-model="item.notes">
-                    </div>
-                </div>
-            </div>
-        </template>
-    </div>
-</section>
+	                <div class="mt-4 overflow-x-auto">
+	                    <div class="grid gap-4 min-w-[860px] grid-cols-[minmax(0,2fr)_180px_minmax(0,1fr)]">
+	                        <div>
+	                            <label class="block text-sm font-medium text-slate-700">Obat</label>
+	                            <select class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][medicine_id]`" x-model="item.medicine_id" required>
+	                                <option value="">Pilih obat</option>
+	                                <template x-for="medicine in medicines" :key="medicine.id">
+	                                    <option :value="medicine.id" x-text="medicine.label"></option>
+	                                </template>
+	                            </select>
+	                        </div>
+	                        <div>
+	                            <label class="block text-sm font-medium text-slate-700">Jumlah</label>
+	                            <input type="number" min="1" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][quantity]`" x-model="item.quantity" required>
+	                        </div>
+	                        <div>
+	                            <label class="block text-sm font-medium text-slate-700">Catatan item</label>
+	                            <input type="text" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][notes]`" x-model="item.notes">
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
+	        </template>
+	    </div>
+	</section>
 
 <div class="mt-6 flex justify-end gap-3">
     <a href="{{ route('transaksi.mutasi.index') }}" class="rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Batal</a>
