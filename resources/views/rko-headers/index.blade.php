@@ -31,31 +31,31 @@
             </a>
         </div>
 
-	        <div class="mt-6 overflow-x-auto">
-	            <form method="GET" action="{{ route('rko.header.index') }}" class="flex flex-col gap-3 md:flex-row md:flex-nowrap md:items-end min-w-max">
-	                <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor RKO atau catatan..." class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:flex-1 md:min-w-[280px]">
-	                <select name="status" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-44 md:shrink-0">
-	                <option value="">Semua status</option>
-	                <option value="draft" @selected($status === 'draft')>Draft</option>
-	                <option value="submitted" @selected($status === 'submitted')>Diajukan</option>
-	                <option value="approved" @selected($status === 'approved')>Disetujui</option>
-	                <option value="rejected" @selected($status === 'rejected')>Ditolak</option>
-	                </select>
-	                <select name="funding_source_id" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-64 md:shrink-0">
-	                <option value="">Semua sumber dana</option>
-	                @foreach ($fundingSources as $fundingSource)
-	                    <option value="{{ $fundingSource->id }}" @selected($fundingSourceId === (string) $fundingSource->id)>{{ $fundingSource->name }}</option>
-	                @endforeach
-	                </select>
-	                <select name="period_year" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-40 md:shrink-0">
-	                <option value="">Semua tahun</option>
-	                @foreach ($availableYears as $year)
-	                    <option value="{{ $year }}" @selected($periodYear === (string) $year)>{{ $year }}</option>
-	                @endforeach
-	                </select>
-	                <button type="submit" class="rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 md:w-28 md:shrink-0">Filter</button>
-	            </form>
-	        </div>
+		        <div class="mt-6 overflow-x-auto">
+		            <form method="GET" action="{{ route('rko.header.index') }}" class="flex flex-nowrap items-end gap-3 min-w-max">
+		                <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor RKO atau catatan..." class="min-w-[260px] flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+		                <select name="status" class="w-44 shrink-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+		                <option value="">Semua status</option>
+		                <option value="draft" @selected($status === 'draft')>Draft</option>
+		                <option value="submitted" @selected($status === 'submitted')>Diajukan</option>
+		                <option value="approved" @selected($status === 'approved')>Disetujui</option>
+		                <option value="rejected" @selected($status === 'rejected')>Ditolak</option>
+		                </select>
+		                <select name="funding_source_id" class="w-64 shrink-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+		                <option value="">Semua sumber dana</option>
+		                @foreach ($fundingSources as $fundingSource)
+		                    <option value="{{ $fundingSource->id }}" @selected($fundingSourceId === (string) $fundingSource->id)>{{ $fundingSource->name }}</option>
+		                @endforeach
+		                </select>
+		                <select name="period_year" class="w-40 shrink-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+		                <option value="">Semua tahun</option>
+		                @foreach ($availableYears as $year)
+		                    <option value="{{ $year }}" @selected($periodYear === (string) $year)>{{ $year }}</option>
+		                @endforeach
+		                </select>
+		                <button type="submit" class="w-28 shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Filter</button>
+		            </form>
+		        </div>
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">
