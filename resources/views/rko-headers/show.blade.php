@@ -63,26 +63,26 @@
         </article>
 
         <div class="space-y-6">
-            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                    <p class="text-sm text-slate-500">Total rencana</p>
-                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($mutationSummary['total_planned_qty']) }}</p>
-                </article>
-                <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
-                    <p class="text-sm text-slate-500">Total disetujui</p>
-                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($mutationSummary['total_approved_qty']) }}</p>
-                </article>
-                <article class="rounded-[2rem] border border-sky-200 bg-sky-50 p-5 shadow-sm">
-                    <p class="text-sm text-sky-800">Total realisasi pengadaan</p>
-                    <p class="mt-2 text-3xl font-semibold text-sky-900">{{ number_format($realizationSummary['total_quantity']) }}</p>
-                </article>
-                <article class="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-5 shadow-sm md:col-span-2 xl:col-span-3">
-                    <div class="grid gap-4 md:grid-cols-3">
-                        <div>
-                            <p class="text-sm text-emerald-800">Realisasi linked</p>
-                            <p class="mt-2 text-3xl font-semibold text-emerald-900">{{ number_format($realizationSummary['linked_count']) }}</p>
-                        </div>
-                        <div>
+	            <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+	                <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+	                    <p class="text-sm text-slate-500">Total rencana</p>
+	                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($mutationSummary['total_planned_qty']) }}</p>
+	                </article>
+	                <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
+	                    <p class="text-sm text-slate-500">Total disetujui</p>
+	                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($mutationSummary['total_approved_qty']) }}</p>
+	                </article>
+	                <article class="rounded-[2rem] border border-sky-200 bg-sky-50 p-5 shadow-sm sm:col-span-2 lg:col-span-1">
+	                    <p class="text-sm text-sky-800">Total realisasi pengadaan</p>
+	                    <p class="mt-2 text-3xl font-semibold text-sky-900">{{ number_format($realizationSummary['total_quantity']) }}</p>
+	                </article>
+	                <article class="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-5 shadow-sm sm:col-span-2 lg:col-span-3">
+	                    <div class="grid gap-4 sm:grid-cols-3">
+	                        <div>
+	                            <p class="text-sm text-emerald-800">Realisasi linked</p>
+	                            <p class="mt-2 text-3xl font-semibold text-emerald-900">{{ number_format($realizationSummary['linked_count']) }}</p>
+	                        </div>
+	                        <div>
                             <p class="text-sm text-emerald-800">Nilai realisasi</p>
                             <p class="mt-2 text-3xl font-semibold text-emerald-900">Rp {{ number_format($realizationSummary['total_amount'], 0, ',', '.') }}</p>
                         </div>

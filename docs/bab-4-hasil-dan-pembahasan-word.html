@@ -131,37 +131,34 @@ flowchart LR
     <p>Basis data pada aplikasi ini dirancang untuk mendukung kebutuhan monitoring obat kontrasepsi, mulai dari data master, perencanaan kebutuhan, realisasi pengadaan, mutasi obat, hingga pemantauan stok per periode. Struktur basis data tidak hanya menyimpan data pokok, tetapi juga menyediakan relasi yang memudahkan proses pencarian, penyaringan, dan penyusunan laporan.</p>
     <p>Secara umum, kelompok tabel yang digunakan dalam implementasi sistem ini meliputi:</p>
     <ul>
-        <li>tabel master: <code>roles</code>, <code>users</code>, <code>medicine_categories</code>, <code>units</code>, <code>medicines</code>, <code>stock_sources</code>, <code>distribution_destinations</code>,</li>
+        <li>tabel master: <code>roles</code>, <code>users</code>, <code>medicine_categories</code>, <code>units</code>, <code>medicines</code>, <code>funding_sources</code>, <code>distribution_destinations</code>,</li>
         <li>tabel perencanaan: <code>rko_headers</code>, <code>rko_details</code>,</li>
-        <li>tabel transaksi dan monitoring: <code>stock_receipts</code>, <code>stock_receipt_items</code>, <code>stock_distributions</code>, <code>stock_distribution_items</code>, <code>medicine_stocks</code>, <code>stock_mutations</code>,</li>
+        <li>tabel transaksi dan monitoring: <code>procurement_realizations</code>, <code>stock_mutations</code>, <code>stock_mutation_items</code>, <code>medicine_stocks</code>,</li>
         <li>tabel audit: <code>activity_logs</code>.</li>
     </ul>
-    <p>Dalam implementasinya, tabel <code>medicines</code> digunakan untuk menyimpan data obat, tabel <code>rko_headers</code> dan <code>rko_details</code> digunakan untuk menyimpan rencana kebutuhan obat, tabel <code>stock_receipts</code> dan <code>stock_receipt_items</code> digunakan untuk mencatat realisasi pengadaan, tabel <code>stock_distributions</code> dan <code>stock_distribution_items</code> digunakan untuk mencatat mutasi obat ke faskes, tabel <code>medicine_stocks</code> digunakan untuk menyimpan snapshot stok per periode, sedangkan tabel <code>stock_mutations</code> digunakan untuk mencatat riwayat mutasi masuk dan keluar.</p>
+    <p>Dalam implementasinya, tabel <code>medicines</code> digunakan untuk menyimpan data obat. Tabel <code>rko_headers</code> dan <code>rko_details</code> digunakan untuk menyimpan rencana kebutuhan obat, termasuk pemisahan data usulan (estimasi) dan data persetujuan (jumlah serta harga disetujui). Saat RKO disetujui, sistem membentuk data <code>procurement_realizations</code> sebagai catatan realisasi pengadaan. Selanjutnya, transaksi stok pada sistem dicatat pada tabel <code>stock_mutations</code> sebagai header mutasi dan tabel <code>stock_mutation_items</code> sebagai rincian item obat. Tabel <code>medicine_stocks</code> digunakan untuk menyimpan stok terkini (snapshot) per obat yang dapat diperbarui berdasarkan mutasi.</p>
     <div class="mermaid">
 erDiagram
     ROLES ||--o{ USERS : memiliki
     USERS ||--o{ RKO_HEADERS : menyusun
-    USERS ||--o{ STOCK_RECEIPTS : mencatat
-    USERS ||--o{ STOCK_DISTRIBUTIONS : mencatat
+    USERS ||--o{ STOCK_MUTATIONS : mencatat
     USERS ||--o{ ACTIVITY_LOGS : menghasilkan
 
     MEDICINE_CATEGORIES ||--o{ MEDICINES : mengelompokkan
     UNITS ||--o{ MEDICINES : menggunakan
+    FUNDING_SOURCES ||--o{ RKO_HEADERS : mendanai
 
     MEDICINES ||--o{ RKO_DETAILS : direncanakan
     RKO_HEADERS ||--o{ RKO_DETAILS : memiliki
 
-    STOCK_SOURCES ||--o{ STOCK_RECEIPTS : sumber
-    RKO_HEADERS ||--o{ STOCK_RECEIPTS : direalisasikan
-    STOCK_RECEIPTS ||--o{ STOCK_RECEIPT_ITEMS : memiliki
-    MEDICINES ||--o{ STOCK_RECEIPT_ITEMS : diterima
+    RKO_HEADERS ||--o{ PROCUREMENT_REALIZATIONS : direalisasikan
+    MEDICINES ||--o{ PROCUREMENT_REALIZATIONS : direalisasikan
 
-    DISTRIBUTION_DESTINATIONS ||--o{ STOCK_DISTRIBUTIONS : tujuan
-    STOCK_DISTRIBUTIONS ||--o{ STOCK_DISTRIBUTION_ITEMS : memiliki
-    MEDICINES ||--o{ STOCK_DISTRIBUTION_ITEMS : dimutasi
+    DISTRIBUTION_DESTINATIONS ||--o{ STOCK_MUTATIONS : tujuan
 
     MEDICINES ||--o{ MEDICINE_STOCKS : dipantau
-    MEDICINES ||--o{ STOCK_MUTATIONS : memiliki
+    STOCK_MUTATIONS ||--o{ STOCK_MUTATION_ITEMS : memiliki
+    MEDICINES ||--o{ STOCK_MUTATION_ITEMS : dimutasi
     </div>
     <p class="figure-title">Gambar 4.2. Diagram konseptual relasi data pada aplikasi.</p>
 
@@ -201,15 +198,16 @@ flowchart TD
     <p>Ketersediaan master obat yang akurat sangat berpengaruh terhadap modul lain, terutama RKO, realisasi pengadaan, mutasi obat, monitoring stok, dan laporan. Oleh karena itu, modul ini menjadi fondasi utama dalam implementasi sistem.</p>
 
     <h3>4.3.5 Rencana Kebutuhan Obat (RKO)</h3>
-    <p>Modul RKO digunakan untuk mencatat rencana kebutuhan obat pada periode tertentu. Implementasi RKO dibagi menjadi dua bagian, yaitu header dan detail. Bagian header berisi informasi umum seperti nomor RKO, periode, tahun, total anggaran, status dokumen, tanggal pengajuan, tanggal persetujuan, dan keterangan. Sementara itu, bagian detail berisi rincian item obat, jumlah kebutuhan, estimasi harga satuan, total estimasi, prioritas, dan keterangan.</p>
+    <p>Modul RKO digunakan untuk mencatat rencana kebutuhan obat pada periode tertentu. Implementasi RKO dibagi menjadi dua bagian, yaitu header dan detail. Bagian header berisi informasi umum seperti nomor RKO, periode, tahun, sumber dana, total anggaran usulan, status dokumen, tanggal pengajuan, tanggal persetujuan, dan catatan. Sementara itu, bagian detail berisi rincian item obat, jumlah rencana, estimasi harga satuan, prioritas, serta catatan item.</p>
+    <p>Pada implementasi aplikasi ini, proses RKO dibuat dalam dua alur form agar data usulan dan data persetujuan tidak tercampur, yaitu form pengajuan RKO untuk memasukkan data usulan (jumlah rencana dan estimasi harga satuan) serta form persetujuan RKO untuk memasukkan data hasil persetujuan (jumlah disetujui dan harga disetujui).</p>
     <p>Dengan adanya modul ini, proses perencanaan kebutuhan obat dapat didokumentasikan secara sistematis. RKO juga berperan sebagai acuan dalam proses realisasi pengadaan sehingga hubungan antara rencana dan pelaksanaan dapat dipantau.</p>
 
     <h3>4.3.6 Realisasi Pengadaan</h3>
-    <p>Modul realisasi pengadaan digunakan untuk mencatat obat yang benar-benar diterima oleh instansi pada suatu periode. Setiap realisasi pengadaan dapat dihubungkan dengan dokumen RKO tertentu sehingga pengguna dapat membandingkan antara kebutuhan yang direncanakan dan pengadaan yang benar-benar terealisasi.</p>
-    <p>Informasi yang dicatat pada modul ini meliputi nomor realisasi, tanggal penerimaan, sumber pengadaan, referensi RKO, daftar item obat, jumlah realisasi, harga satuan realisasi, total realisasi, serta catatan transaksi. Dengan demikian, modul ini menjadi jembatan antara perencanaan dan kondisi nyata pengadaan obat.</p>
+    <p>Modul realisasi pengadaan digunakan untuk menampilkan data obat yang terealisasi pada suatu periode berdasarkan hasil persetujuan RKO. Pada implementasi ini, realisasi pengadaan dibentuk otomatis saat RKO disetujui, sehingga pengguna tidak perlu melakukan input transaksi pengadaan secara manual.</p>
+    <p>Informasi yang ditampilkan pada modul ini meliputi nomor RKO, periode, sumber dana, item obat, jumlah realisasi, harga satuan disetujui, total nilai, serta catatan item. Dengan demikian, modul ini menjadi jembatan antara perencanaan dan kondisi persetujuan yang kemudian digunakan untuk monitoring.</p>
 
     <h3>4.3.7 Mutasi Obat</h3>
-    <p>Modul mutasi obat digunakan untuk mencatat perpindahan atau penyaluran obat ke fasilitas kesehatan. Pada implementasi ini, mutasi obat berfungsi sebagai pencatatan obat keluar dari instansi menuju faskes tertentu.</p>
+    <p>Modul mutasi obat digunakan untuk mencatat perpindahan atau penyaluran obat ke fasilitas kesehatan. Pada implementasi ini, transaksi manual pada menu mutasi stok dibatasi untuk mutasi keluar agar aplikasi tetap fokus pada monitoring (bukan inventory detail). Mutasi masuk dibentuk otomatis saat dokumen RKO disetujui.</p>
     <p>Data mutasi obat sangat penting dalam konteks monitoring karena menunjukkan bagaimana obat yang telah diterima kemudian disalurkan. Riwayat mutasi tersebut juga menjadi salah satu sumber data bagi penyusunan snapshot stok dan histori pergerakan obat.</p>
 
     <h3>4.3.8 Monitoring Stok</h3>
@@ -276,59 +274,69 @@ flowchart LR
     <div class="placeholder">Tempat screenshot hasil login berhasil</div>
     <p class="figure-title">Gambar 4.7. Tampilan dashboard setelah login berhasil.</p>
 
-    <h3>4.4.3 Hasil Pengujian Master Data</h3>
-    <p class="table-title">Tabel 4.2. Hasil pengujian master data.</p>
-    <table>
-        <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
-        <tr><td>1</td><td>Menambah kategori obat</td><td>Data kategori baru</td><td>Data kategori tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Menambah satuan obat</td><td>Data satuan baru</td><td>Data satuan tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Menambah data obat</td><td>Kode, nama, jenis, kategori, satuan, dan harga standar</td><td>Data obat tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>4</td><td>Menambah data faskes</td><td>Data identitas faskes baru</td><td>Data faskes tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>5</td><td>Mengubah sumber pengadaan</td><td>Perubahan data sumber</td><td>Data sumber pengadaan diperbarui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-    </table>
-    <div class="placeholder">Tempat screenshot halaman data obat</div>
-    <p class="figure-title">Gambar 4.8. Halaman manajemen data obat.</p>
-    <div class="placeholder">Tempat screenshot form tambah data obat</div>
-    <p class="figure-title">Gambar 4.9. Form tambah data obat.</p>
+	    <h3>4.4.3 Hasil Pengujian Master Data</h3>
+	    <p class="table-title">Tabel 4.2. Hasil pengujian master data.</p>
+	    <table>
+	        <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
+	        <tr><td>1</td><td>Menambah kategori obat</td><td>Data kategori baru</td><td>Data kategori tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	        <tr><td>2</td><td>Menambah satuan obat</td><td>Data satuan baru</td><td>Data satuan tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	        <tr><td>3</td><td>Menambah data obat</td><td>Kode, nama, jenis, kategori, satuan, dan harga standar</td><td>Data obat tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	        <tr><td>4</td><td>Mengubah data obat tanpa mengubah kode</td><td>Edit data obat, kode tidak diubah</td><td>Sistem menyimpan perubahan tanpa error validasi kode duplikat</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	        <tr><td>5</td><td>Menambah data faskes</td><td>Data identitas faskes baru</td><td>Data faskes tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	        <tr><td>6</td><td>Mengubah data faskes</td><td>Edit data faskes</td><td>Data faskes diperbarui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	        <tr><td>7</td><td>Menonaktifkan faskes</td><td>Ubah status faskes menjadi nonaktif</td><td>Faskes tidak muncul pada pilihan tujuan mutasi keluar (jika sistem memfilter hanya yang aktif)</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	        <tr><td>8</td><td>Menambah sumber dana</td><td>Kode, nama, jenis, status</td><td>Data sumber dana tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	        <tr><td>9</td><td>Mengubah sumber dana</td><td>Edit data sumber dana</td><td>Data sumber dana diperbarui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	        <tr><td>10</td><td>Menonaktifkan sumber dana</td><td>Ubah status sumber dana menjadi nonaktif</td><td>Sumber dana tidak muncul pada pilihan sumber dana saat membuat RKO (jika sistem memfilter hanya yang aktif)</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	    </table>
+	    <div class="placeholder">Tempat screenshot halaman data obat</div>
+	    <p class="figure-title">Gambar 4.8. Halaman manajemen data obat.</p>
+	    <div class="placeholder">Tempat screenshot form tambah data obat</div>
+	    <p class="figure-title">Gambar 4.9. Form tambah data obat.</p>
+	    <div class="placeholder">Tempat screenshot halaman data faskes</div>
+	    <p class="figure-title">Gambar 4.10. Halaman manajemen data faskes.</p>
+	    <div class="placeholder">Tempat screenshot halaman sumber dana</div>
+	    <p class="figure-title">Gambar 4.11. Halaman manajemen sumber dana.</p>
 
-    <h3>4.4.4 Hasil Pengujian RKO</h3>
+	    <h3>4.4.4 Hasil Pengujian RKO</h3>
     <p class="table-title">Tabel 4.3. Hasil pengujian RKO.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
-        <tr><td>1</td><td>Menambah dokumen RKO</td><td>Data header dan detail item obat</td><td>Dokumen RKO tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Menghitung total estimasi</td><td>Jumlah kebutuhan dan estimasi harga satuan</td><td>Sistem menghitung total estimasi item</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Menampilkan detail RKO</td><td>Memilih salah satu nomor RKO</td><td>Sistem menampilkan informasi header dan item</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-    </table>
-    <div class="placeholder">Tempat screenshot halaman RKO</div>
-    <p class="figure-title">Gambar 4.10. Halaman daftar RKO.</p>
-    <div class="placeholder">Tempat screenshot form input RKO</div>
-    <p class="figure-title">Gambar 4.11. Form input RKO.</p>
+        <tr><td>1</td><td>Membuat pengajuan RKO</td><td>Data header dan detail item obat (rencana + estimasi)</td><td>Pengajuan RKO tersimpan dengan status draft/diajukan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Menghitung total estimasi</td><td>Jumlah rencana dan estimasi harga satuan</td><td>Sistem menghitung total estimasi item</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Melakukan persetujuan RKO</td><td>Status persetujuan, qty disetujui, harga disetujui</td><td>Data persetujuan tersimpan terpisah dari pengajuan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>4</td><td>Membentuk output approval</td><td>RKO disetujui</td><td>Sistem membentuk realisasi pengadaan dan mutasi masuk otomatis</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	    </table>
+	    <div class="placeholder">Tempat screenshot halaman RKO</div>
+	    <p class="figure-title">Gambar 4.12. Halaman daftar RKO.</p>
+	    <div class="placeholder">Tempat screenshot form input RKO</div>
+	    <p class="figure-title">Gambar 4.13. Form input RKO.</p>
 
     <h3>4.4.5 Hasil Pengujian Realisasi Pengadaan</h3>
     <p class="table-title">Tabel 4.4. Hasil pengujian realisasi pengadaan.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
-        <tr><td>1</td><td>Menambah realisasi pengadaan</td><td>Data transaksi dan item obat</td><td>Data realisasi pengadaan tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Menghubungkan realisasi ke RKO</td><td>Memilih referensi RKO pada form</td><td>Realisasi terhubung dengan dokumen RKO</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Menampilkan detail realisasi</td><td>Memilih transaksi pengadaan tertentu</td><td>Sistem menampilkan detail transaksi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-    </table>
-    <div class="placeholder">Tempat screenshot halaman realisasi pengadaan</div>
-    <p class="figure-title">Gambar 4.12. Halaman daftar realisasi pengadaan.</p>
-    <div class="placeholder">Tempat screenshot form realisasi pengadaan</div>
-    <p class="figure-title">Gambar 4.13. Form input realisasi pengadaan.</p>
+        <tr><td>1</td><td>Membentuk realisasi pengadaan otomatis</td><td>RKO disetujui</td><td>Sistem membuat baris realisasi sesuai item yang disetujui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Menampilkan daftar realisasi</td><td>Membuka menu realisasi pengadaan</td><td>Sistem menampilkan daftar data realisasi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Filter realisasi pengadaan</td><td>Filter sumber dana/tahun/pencarian</td><td>Sistem menampilkan data sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+	    </table>
+	    <div class="placeholder">Tempat screenshot halaman realisasi pengadaan</div>
+	    <p class="figure-title">Gambar 4.14. Halaman daftar realisasi pengadaan.</p>
+	    <div class="placeholder">Tempat screenshot form realisasi pengadaan</div>
+	    <p class="figure-title">Gambar 4.15. Form input realisasi pengadaan.</p>
 
     <h3>4.4.6 Hasil Pengujian Mutasi Obat</h3>
     <p class="table-title">Tabel 4.5. Hasil pengujian mutasi obat.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
-        <tr><td>1</td><td>Menambah mutasi obat</td><td>Data faskes tujuan dan item obat</td><td>Data mutasi tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Validasi stok tidak mencukupi</td><td>Jumlah mutasi melebihi stok yang tersedia</td><td>Sistem menolak transaksi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>1</td><td>Menambah mutasi keluar</td><td>Data faskes tujuan (opsional) dan item obat</td><td>Data mutasi keluar tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Membatasi mutasi masuk manual</td><td>Memilih jenis mutasi masuk pada form</td><td>Sistem menolak karena mutasi masuk hanya melalui approval RKO</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>3</td><td>Menampilkan detail mutasi</td><td>Memilih transaksi mutasi tertentu</td><td>Sistem menampilkan detail mutasi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
     <div class="placeholder">Tempat screenshot halaman mutasi obat</div>
-    <p class="figure-title">Gambar 4.14. Halaman daftar mutasi obat.</p>
+	    <p class="figure-title">Gambar 4.16. Halaman daftar mutasi obat.</p>
     <div class="placeholder">Tempat screenshot form mutasi obat</div>
-    <p class="figure-title">Gambar 4.15. Form input mutasi obat.</p>
+	    <p class="figure-title">Gambar 4.17. Form input mutasi obat.</p>
 
     <h3>4.4.7 Hasil Pengujian Monitoring</h3>
     <p class="table-title">Tabel 4.6. Hasil pengujian monitoring.</p>
@@ -339,9 +347,9 @@ flowchart LR
         <tr><td>3</td><td>Menampilkan status stok</td><td>Data snapshot stok tersedia</td><td>Sistem menampilkan status aman, kurang, atau berlebih</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
     <div class="placeholder">Tempat screenshot halaman stok terkini</div>
-    <p class="figure-title">Gambar 4.16. Halaman monitoring stok terkini.</p>
+	    <p class="figure-title">Gambar 4.18. Halaman monitoring stok terkini.</p>
     <div class="placeholder">Tempat screenshot popup detail obat</div>
-    <p class="figure-title">Gambar 4.17. Tampilan detail obat pada monitoring.</p>
+	    <p class="figure-title">Gambar 4.19. Tampilan detail obat pada monitoring.</p>
 
     <h3>4.4.8 Hasil Pengujian Laporan</h3>
     <p class="table-title">Tabel 4.7. Hasil pengujian laporan.</p>
@@ -353,13 +361,13 @@ flowchart LR
         <tr><td>4</td><td>Menampilkan laporan RKO vs realisasi</td><td>Filter periode dan status</td><td>Sistem menampilkan perbandingan rencana dan realisasi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
     <div class="placeholder">Tempat screenshot halaman laporan stok</div>
-    <p class="figure-title">Gambar 4.18. Halaman laporan stok.</p>
+	    <p class="figure-title">Gambar 4.20. Halaman laporan stok.</p>
     <div class="placeholder">Tempat screenshot halaman laporan realisasi pengadaan</div>
-    <p class="figure-title">Gambar 4.19. Halaman laporan realisasi pengadaan.</p>
+	    <p class="figure-title">Gambar 4.21. Halaman laporan realisasi pengadaan.</p>
     <div class="placeholder">Tempat screenshot halaman laporan mutasi obat</div>
-    <p class="figure-title">Gambar 4.20. Halaman laporan mutasi obat.</p>
+	    <p class="figure-title">Gambar 4.22. Halaman laporan mutasi obat.</p>
     <div class="placeholder">Tempat screenshot halaman laporan RKO vs realisasi</div>
-    <p class="figure-title">Gambar 4.21. Halaman laporan RKO vs realisasi.</p>
+	    <p class="figure-title">Gambar 4.23. Halaman laporan RKO vs realisasi.</p>
 
     <h3>4.4.9 Hasil Pengujian Manajemen Pengguna</h3>
     <p class="table-title">Tabel 4.8. Hasil pengujian manajemen pengguna.</p>
@@ -370,9 +378,9 @@ flowchart LR
         <tr><td>3</td><td>Menampilkan detail pengguna</td><td>Memilih salah satu akun</td><td>Sistem menampilkan profil pengguna</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
     <div class="placeholder">Tempat screenshot halaman manajemen pengguna</div>
-    <p class="figure-title">Gambar 4.22. Halaman manajemen pengguna.</p>
+	    <p class="figure-title">Gambar 4.24. Halaman manajemen pengguna.</p>
     <div class="placeholder">Tempat screenshot form tambah pengguna</div>
-    <p class="figure-title">Gambar 4.23. Form tambah pengguna.</p>
+	    <p class="figure-title">Gambar 4.25. Form tambah pengguna.</p>
 
     <h3>4.4.10 Hasil Pengujian Log Aktivitas</h3>
     <p class="table-title">Tabel 4.9. Hasil pengujian log aktivitas.</p>
@@ -382,7 +390,7 @@ flowchart LR
         <tr><td>2</td><td>Filter log aktivitas</td><td>Filter modul, pengguna, dan tanggal</td><td>Sistem menampilkan log sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
     <div class="placeholder">Tempat screenshot halaman log aktivitas</div>
-    <p class="figure-title">Gambar 4.24. Halaman log aktivitas.</p>
+	    <p class="figure-title">Gambar 4.26. Halaman log aktivitas.</p>
 
     <h2>4.5 Pembahasan Hasil Sistem</h2>
     <p>Berdasarkan hasil implementasi dan pengujian yang telah dilakukan, aplikasi monitoring obat kontrasepsi berbasis web ini mampu mendukung proses pencatatan dan pemantauan data secara lebih terstruktur dibandingkan dengan metode manual. Sistem tidak hanya menyimpan data master, tetapi juga menghubungkan proses perencanaan kebutuhan obat dengan realisasi pengadaan dan mutasi obat.</p>
@@ -392,10 +400,11 @@ flowchart LR
     <h2>4.6 Kelebihan dan Keterbatasan Sistem</h2>
     <p>Kelebihan aplikasi yang berhasil diimplementasikan dalam penelitian ini antara lain:</p>
     <ul>
-        <li>mendukung pencatatan master data obat, faskes, dan sumber pengadaan,</li>
+        <li>mendukung pencatatan master data obat, faskes, dan sumber dana,</li>
         <li>mendukung penyusunan RKO beserta detail kebutuhan obat,</li>
-        <li>mendukung pencatatan realisasi pengadaan yang dapat dihubungkan dengan RKO,</li>
-        <li>mendukung pencatatan mutasi obat ke fasilitas kesehatan,</li>
+        <li>mendukung proses persetujuan RKO dengan pemisahan data estimasi dan data persetujuan,</li>
+        <li>membentuk realisasi pengadaan otomatis berdasarkan persetujuan RKO,</li>
+        <li>mendukung pencatatan mutasi keluar obat ke fasilitas kesehatan,</li>
         <li>menyediakan monitoring stok per obat dan snapshot stok per periode,</li>
         <li>menyediakan laporan monitoring, termasuk laporan RKO vs realisasi,</li>
         <li>menyediakan hak akses pengguna dan log aktivitas.</li>

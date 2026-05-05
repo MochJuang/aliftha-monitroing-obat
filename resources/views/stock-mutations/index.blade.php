@@ -24,17 +24,19 @@
             </a>
         </div>
 
-        <form method="GET" action="{{ route('transaksi.mutasi.index') }}" class="mt-6 grid gap-3 xl:grid-cols-[minmax(0,2fr)_220px_180px_180px_140px] xl:items-end">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Cari obat, referensi, atau catatan..." class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-            <select name="type" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-                <option value="">Semua jenis</option>
-                <option value="MASUK" @selected($type === 'MASUK')>MASUK</option>
-                <option value="KELUAR" @selected($type === 'KELUAR')>KELUAR</option>
-            </select>
-            <input type="date" name="date_from" value="{{ $dateFrom }}" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-            <input type="date" name="date_to" value="{{ $dateTo }}" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-            <button type="submit" class="rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Filter</button>
-        </form>
+	        <div class="mt-6 overflow-x-auto">
+	            <form method="GET" action="{{ route('transaksi.mutasi.index') }}" class="flex flex-col gap-3 md:flex-row md:flex-nowrap md:items-end min-w-max">
+	                <input type="text" name="search" value="{{ $search }}" placeholder="Cari obat, referensi, atau catatan..." class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:flex-1 md:min-w-[280px]">
+	                <select name="type" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-40 md:shrink-0">
+	                <option value="">Semua jenis</option>
+	                <option value="MASUK" @selected($type === 'MASUK')>MASUK</option>
+	                <option value="KELUAR" @selected($type === 'KELUAR')>KELUAR</option>
+	                </select>
+	                <input type="date" name="date_from" value="{{ $dateFrom }}" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-40 md:shrink-0">
+	                <input type="date" name="date_to" value="{{ $dateTo }}" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-40 md:shrink-0">
+	                <button type="submit" class="rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 md:w-28 md:shrink-0">Filter</button>
+	            </form>
+	        </div>
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">

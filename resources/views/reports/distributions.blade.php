@@ -18,28 +18,30 @@
         </article>
     </section>
 
-    <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-        <form method="GET" action="{{ route('laporan.distribusi') }}" class="grid gap-3 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_180px_180px_180px_140px] xl:items-end">
-            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor transaksi atau tujuan..." class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-            <select name="destination_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-                <option value="">Semua tujuan</option>
-                @foreach ($destinations as $destination)
-                    <option value="{{ $destination->id }}" @selected($destinationId === (string) $destination->id)>{{ $destination->name }}</option>
-                @endforeach
-            </select>
-            <input type="date" name="date_from" value="{{ $dateFrom }}" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-            <input type="date" name="date_to" value="{{ $dateTo }}" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-            <select name="status" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-                <option value="">Semua status</option>
-                <option value="draft" @selected($status === 'draft')>Draft</option>
-                <option value="posted" @selected($status === 'posted')>Posted</option>
-                <option value="cancelled" @selected($status === 'cancelled')>Cancelled</option>
-            </select>
-            <button type="submit" class="rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Filter</button>
-        </form>
+	    <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+	        <div class="overflow-x-auto">
+	            <form method="GET" action="{{ route('laporan.distribusi') }}" class="flex flex-col gap-3 md:flex-row md:flex-nowrap md:items-end min-w-max">
+	            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor transaksi atau tujuan..." class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:flex-1 md:min-w-[280px]">
+	            <select name="destination_id" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-64 md:shrink-0">
+	                <option value="">Semua tujuan</option>
+	                @foreach ($destinations as $destination)
+	                    <option value="{{ $destination->id }}" @selected($destinationId === (string) $destination->id)>{{ $destination->name }}</option>
+	                @endforeach
+	            </select>
+	            <input type="date" name="date_from" value="{{ $dateFrom }}" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-40 md:shrink-0">
+	            <input type="date" name="date_to" value="{{ $dateTo }}" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-40 md:shrink-0">
+	            <select name="status" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-44 md:shrink-0">
+	                <option value="">Semua status</option>
+	                <option value="draft" @selected($status === 'draft')>Draft</option>
+	                <option value="posted" @selected($status === 'posted')>Posted</option>
+	                <option value="cancelled" @selected($status === 'cancelled')>Cancelled</option>
+	            </select>
+	            <button type="submit" class="rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 md:w-28 md:shrink-0">Filter</button>
+	            </form>
+	        </div>
 
-        <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
-            <div class="overflow-x-auto">
+	        <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
+	            <div class="overflow-x-auto">
                 <table class="min-w-[1100px] w-full divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-slate-500">
                         <tr>
