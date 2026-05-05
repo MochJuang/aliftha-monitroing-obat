@@ -64,9 +64,9 @@ class RkoSeeder extends Seeder
                     'approved_at' => '2026-04-02',
                     'notes' => 'Rencana kebutuhan obat untuk penerimaan awal April dari provinsi.',
                     'items' => [
-                        ['medicine_code' => 'PIL001', 'planned_quantity' => 275, 'approved_quantity' => 250, 'estimated_unit_price' => 12000, 'priority' => 'tinggi', 'notes' => 'Kebutuhan pil KB pelayanan rutin.'],
-                        ['medicine_code' => 'SNT001', 'planned_quantity' => 200, 'approved_quantity' => 180, 'estimated_unit_price' => 18500, 'priority' => 'tinggi', 'notes' => 'Kebutuhan suntik KB layanan reguler.'],
-                        ['medicine_code' => 'IMP001', 'planned_quantity' => 140, 'approved_quantity' => 120, 'estimated_unit_price' => 76000, 'priority' => 'sedang', 'notes' => 'Cadangan implant awal bulan.'],
+                        ['medicine_code' => 'PIL001', 'planned_quantity' => 275, 'approved_quantity' => 250, 'estimated_unit_price' => 12000, 'approved_unit_price' => 11850, 'priority' => 'tinggi', 'notes' => 'Kebutuhan pil KB pelayanan rutin.'],
+                        ['medicine_code' => 'SNT001', 'planned_quantity' => 200, 'approved_quantity' => 180, 'estimated_unit_price' => 18500, 'approved_unit_price' => 18250, 'priority' => 'tinggi', 'notes' => 'Kebutuhan suntik KB layanan reguler.'],
+                        ['medicine_code' => 'IMP001', 'planned_quantity' => 140, 'approved_quantity' => 120, 'estimated_unit_price' => 76000, 'approved_unit_price' => 75250, 'priority' => 'sedang', 'notes' => 'Cadangan implant awal bulan.'],
                     ],
                 ],
                 [
@@ -80,8 +80,8 @@ class RkoSeeder extends Seeder
                     'approved_at' => '2026-04-09',
                     'notes' => 'Rencana tambahan pertengahan April untuk penguatan stok fasilitas kesehatan.',
                     'items' => [
-                        ['medicine_code' => 'PIL001', 'planned_quantity' => 220, 'approved_quantity' => 200, 'estimated_unit_price' => 12100, 'priority' => 'tinggi', 'notes' => 'Tambahan pil KB untuk distribusi lanjutan.'],
-                        ['medicine_code' => 'IUD001', 'planned_quantity' => 60, 'approved_quantity' => 50, 'estimated_unit_price' => 90500, 'priority' => 'sedang', 'notes' => 'Kebutuhan IUD untuk klinik dan puskesmas.'],
+                        ['medicine_code' => 'PIL001', 'planned_quantity' => 220, 'approved_quantity' => 200, 'estimated_unit_price' => 12100, 'approved_unit_price' => 12000, 'priority' => 'tinggi', 'notes' => 'Tambahan pil KB untuk distribusi lanjutan.'],
+                        ['medicine_code' => 'IUD001', 'planned_quantity' => 60, 'approved_quantity' => 50, 'estimated_unit_price' => 90500, 'approved_unit_price' => 89750, 'priority' => 'sedang', 'notes' => 'Kebutuhan IUD untuk klinik dan puskesmas.'],
                     ],
                 ],
                 [
@@ -95,8 +95,8 @@ class RkoSeeder extends Seeder
                     'approved_at' => '2026-04-16',
                     'notes' => 'RKO cadangan gudang menjelang akhir April.',
                     'items' => [
-                        ['medicine_code' => 'SNT001', 'planned_quantity' => 170, 'approved_quantity' => 170, 'estimated_unit_price' => 18750, 'priority' => 'sedang', 'notes' => 'Suntik KB untuk buffer stok.'],
-                        ['medicine_code' => 'IMP001', 'planned_quantity' => 140, 'approved_quantity' => 130, 'estimated_unit_price' => 77500, 'priority' => 'sedang', 'notes' => 'Implant untuk kebutuhan semester I.'],
+                        ['medicine_code' => 'SNT001', 'planned_quantity' => 170, 'approved_quantity' => 170, 'estimated_unit_price' => 18750, 'approved_unit_price' => 18600, 'priority' => 'sedang', 'notes' => 'Suntik KB untuk buffer stok.'],
+                        ['medicine_code' => 'IMP001', 'planned_quantity' => 140, 'approved_quantity' => 130, 'estimated_unit_price' => 77500, 'approved_unit_price' => 76800, 'priority' => 'sedang', 'notes' => 'Implant untuk kebutuhan semester I.'],
                     ],
                 ],
                 [
@@ -110,9 +110,9 @@ class RkoSeeder extends Seeder
                     'approved_at' => null,
                     'notes' => 'Usulan kebutuhan obat bulan Mei yang masih menunggu persetujuan pimpinan.',
                     'items' => [
-                        ['medicine_code' => 'PIL001', 'planned_quantity' => 260, 'approved_quantity' => null, 'estimated_unit_price' => 12200, 'priority' => 'tinggi', 'notes' => 'Rencana layanan pil KB bulan Mei.'],
-                        ['medicine_code' => 'SNT001', 'planned_quantity' => 190, 'approved_quantity' => null, 'estimated_unit_price' => 18800, 'priority' => 'tinggi', 'notes' => 'Rencana penguatan stok suntik KB.'],
-                        ['medicine_code' => 'IUD001', 'planned_quantity' => 40, 'approved_quantity' => null, 'estimated_unit_price' => 91000, 'priority' => 'rendah', 'notes' => 'Tambahan IUD untuk permintaan faskes.'],
+                        ['medicine_code' => 'PIL001', 'planned_quantity' => 260, 'approved_quantity' => null, 'estimated_unit_price' => 12200, 'approved_unit_price' => null, 'priority' => 'tinggi', 'notes' => 'Rencana layanan pil KB bulan Mei.'],
+                        ['medicine_code' => 'SNT001', 'planned_quantity' => 190, 'approved_quantity' => null, 'estimated_unit_price' => 18800, 'approved_unit_price' => null, 'priority' => 'tinggi', 'notes' => 'Rencana penguatan stok suntik KB.'],
+                        ['medicine_code' => 'IUD001', 'planned_quantity' => 40, 'approved_quantity' => null, 'estimated_unit_price' => 91000, 'approved_unit_price' => null, 'priority' => 'rendah', 'notes' => 'Tambahan IUD untuk permintaan faskes.'],
                     ],
                 ],
             ];
@@ -156,6 +156,7 @@ class RkoSeeder extends Seeder
                         'planned_quantity' => $itemData['planned_quantity'],
                         'approved_quantity' => $itemData['approved_quantity'],
                         'estimated_unit_price' => $itemData['estimated_unit_price'],
+                        'approved_unit_price' => $itemData['approved_unit_price'],
                         'total_estimate' => $itemData['planned_quantity'] * $itemData['estimated_unit_price'],
                         'priority' => $itemData['priority'],
                         'notes' => $itemData['notes'],

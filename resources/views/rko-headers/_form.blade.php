@@ -18,7 +18,6 @@
         ? $rkoHeader->items->map(fn ($item) => [
             'medicine_id' => (string) $item->medicine_id,
             'planned_quantity' => $item->planned_quantity,
-            'approved_quantity' => $item->approved_quantity,
             'estimated_unit_price' => $item->estimated_unit_price,
             'priority' => $item->priority,
             'notes' => $item->notes,
@@ -26,7 +25,6 @@
         : [[
             'medicine_id' => '',
             'planned_quantity' => 1,
-            'approved_quantity' => '',
             'estimated_unit_price' => 0,
             'priority' => 'sedang',
             'notes' => '',
@@ -58,7 +56,6 @@
             this.items.push({
                 medicine_id: "",
                 planned_quantity: 1,
-                approved_quantity: "",
                 estimated_unit_price: 0,
                 priority: "sedang",
                 notes: "",
@@ -77,20 +74,17 @@
     }'
     class="space-y-8"
 >
+    <input type="hidden" id="rko_status" name="status" value="{{ old('status', $rkoHeader->status === 'draft' ? 'draft' : 'submitted') }}">
+
     <section class="grid gap-6 lg:grid-cols-2">
         <div>
             <label for="rko_number" class="block text-sm font-medium text-slate-700">Nomor RKO</label>
             <input id="rko_number" name="rko_number" type="text" value="{{ old('rko_number', $nextRkoNumber) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
         </div>
 
-        <div>
-            <label for="status" class="block text-sm font-medium text-slate-700">Status</label>
-            <select id="status" name="status" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
-                <option value="draft" @selected(old('status', $rkoHeader->status) === 'draft')>Draft</option>
-                <option value="submitted" @selected(old('status', $rkoHeader->status) === 'submitted')>Diajukan</option>
-                <option value="approved" @selected(old('status', $rkoHeader->status) === 'approved')>Disetujui</option>
-                <option value="rejected" @selected(old('status', $rkoHeader->status) === 'rejected')>Ditolak</option>
-            </select>
+        <div class="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4">
+            <label class="block text-sm font-medium text-slate-700">Alur dokumen</label>
+            <p class="mt-2 text-sm leading-6 text-slate-600">Form ini hanya untuk pengajuan RKO. Jumlah dan harga yang disetujui akan diisi pada form persetujuan terpisah oleh pihak penyetuju.</p>
         </div>
 
         <div>
@@ -124,16 +118,6 @@
             <input id="total_budget" name="total_budget" type="number" min="0" step="0.01" value="{{ old('total_budget', $rkoHeader->total_budget ?? 0) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
         </div>
 
-        <div>
-            <label for="submitted_at" class="block text-sm font-medium text-slate-700">Tanggal pengajuan</label>
-            <input id="submitted_at" name="submitted_at" type="date" value="{{ old('submitted_at', optional($rkoHeader->submitted_at)->format('Y-m-d')) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-        </div>
-
-        <div>
-            <label for="approved_at" class="block text-sm font-medium text-slate-700">Tanggal persetujuan</label>
-            <input id="approved_at" name="approved_at" type="date" value="{{ old('approved_at', optional($rkoHeader->approved_at)->format('Y-m-d')) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-        </div>
-
         <div class="lg:col-span-2">
             <label for="notes" class="block text-sm font-medium text-slate-700">Catatan</label>
             <textarea id="notes" name="notes" rows="4" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">{{ old('notes', $rkoHeader->notes) }}</textarea>
@@ -144,7 +128,7 @@
         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h3 class="text-lg font-semibold text-slate-900">Detail Kebutuhan Obat</h3>
-                <p class="mt-1 text-sm text-slate-500">Tambahkan item obat yang dibutuhkan untuk periode RKO ini, beserta jumlah rencana dan jumlah yang disetujui jika sudah ada.</p>
+                <p class="mt-1 text-sm text-slate-500">Tambahkan item obat yang dibutuhkan untuk periode RKO ini beserta jumlah rencana dan estimasi harga satuan.</p>
             </div>
             <button type="button" class="rounded-2xl border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100" @click="addItem()">
                 Tambah Item
@@ -175,11 +159,6 @@
                         <div>
                             <label class="block text-sm font-medium text-slate-700">Jumlah rencana</label>
                             <input type="number" min="1" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][planned_quantity]`" x-model="item.planned_quantity" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700">Jumlah disetujui</label>
-                            <input type="number" min="0" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][approved_quantity]`" x-model="item.approved_quantity">
                         </div>
 
                         <div>
@@ -217,8 +196,11 @@
 
     <div class="flex items-center justify-end gap-3">
         <a href="{{ route('rko.header.index') }}" class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Batal</a>
-        <button type="submit" class="rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
-            Simpan RKO
+        <button type="submit" onclick="document.getElementById('rko_status').value='draft'" class="rounded-2xl border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+            Simpan Draft
+        </button>
+        <button type="submit" onclick="document.getElementById('rko_status').value='submitted'" class="rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+            Simpan & Ajukan
         </button>
     </div>
 </div>

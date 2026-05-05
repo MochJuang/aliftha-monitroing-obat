@@ -21,6 +21,7 @@ class RkoDetail extends Model
         'planned_quantity',
         'approved_quantity',
         'estimated_unit_price',
+        'approved_unit_price',
         'total_estimate',
         'priority',
         'notes',
@@ -37,6 +38,7 @@ class RkoDetail extends Model
             'planned_quantity' => 'integer',
             'approved_quantity' => 'integer',
             'estimated_unit_price' => 'decimal:2',
+            'approved_unit_price' => 'decimal:2',
             'total_estimate' => 'decimal:2',
         ];
     }

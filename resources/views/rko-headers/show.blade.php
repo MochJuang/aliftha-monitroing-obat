@@ -9,7 +9,12 @@
                     <h3 class="mt-2 text-2xl font-semibold text-slate-900">{{ $rkoHeader->rko_number }}</h3>
                     <p class="mt-2 text-sm text-slate-500">Periode {{ sprintf('%02d', $rkoHeader->period_month) }}/{{ $rkoHeader->period_year }}</p>
                 </div>
-                <a href="{{ route('rko.header.edit', $rkoHeader) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                <div class="flex items-center gap-3">
+                    @if ($rkoHeader->status !== 'approved')
+                        <a href="{{ route('rko.header.edit', $rkoHeader) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit Pengajuan</a>
+                    @endif
+                    <a href="{{ route('rko.header.approval.edit', $rkoHeader) }}" class="rounded-2xl border border-emerald-300 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-50">Form Persetujuan</a>
+                </div>
             </div>
 
             <div class="mt-8 grid gap-4 sm:grid-cols-2">
@@ -92,11 +97,11 @@
             <article class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-200 px-6 py-5">
                     <h3 class="text-lg font-semibold text-slate-900">Detail Kebutuhan Obat</h3>
-                    <p class="mt-1 text-sm text-slate-500">Rincian item obat, jumlah rencana, estimasi anggaran, dan prioritas kebutuhan pada dokumen ini.</p>
+                    <p class="mt-1 text-sm text-slate-500">Rincian item obat yang mencakup data usulan serta hasil persetujuan agar proses pengajuan dan approval lebih terpisah.</p>
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-[1260px] w-full divide-y divide-slate-200 text-sm">
+                    <table class="min-w-[1440px] w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-slate-50 text-left text-slate-500">
                             <tr>
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Kode</th>
@@ -107,7 +112,9 @@
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Rencana</th>
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Disetujui</th>
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Estimasi Harga</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Harga Disetujui</th>
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Total Estimasi</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Total Disetujui</th>
                                 <th class="px-4 py-3 font-semibold whitespace-nowrap">Prioritas</th>
                                 <th class="px-4 py-3 font-semibold">Catatan</th>
                             </tr>
@@ -126,7 +133,11 @@
                                     <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($item->planned_quantity) }}</td>
                                     <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->approved_quantity !== null ? number_format($item->approved_quantity) : '-' }}</td>
                                     <td class="px-4 py-3 text-slate-600 whitespace-nowrap">Rp {{ number_format((float) $item->estimated_unit_price, 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $item->approved_unit_price !== null ? 'Rp '.number_format((float) $item->approved_unit_price, 0, ',', '.') : '-' }}</td>
                                     <td class="px-4 py-3 text-slate-600 whitespace-nowrap">Rp {{ number_format((float) $item->total_estimate, 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">
+                                        {{ $item->approved_quantity !== null && $item->approved_unit_price !== null ? 'Rp '.number_format((float) $item->approved_quantity * (float) $item->approved_unit_price, 0, ',', '.') : '-' }}
+                                    </td>
                                     <td class="px-4 py-3">
                                         <span @class([
                                             'whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold',
@@ -140,7 +151,7 @@
                                     <td class="px-4 py-3 text-slate-600">{{ $item->notes ?: '-' }}</td>
                                 </tr>
                             @empty
-                                <tr><td colspan="11" class="px-4 py-8 text-center text-slate-500">Belum ada item pada dokumen RKO ini.</td></tr>
+                                <tr><td colspan="13" class="px-4 py-8 text-center text-slate-500">Belum ada item pada dokumen RKO ini.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

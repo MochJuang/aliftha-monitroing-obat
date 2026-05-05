@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RkoApprovalRequest;
 use App\Http\Requests\RkoHeaderRequest;
 use App\Models\ActivityLog;
 use App\Models\FundingSource;
@@ -85,6 +86,7 @@ class RkoHeaderController extends Controller
     {
         $rkoHeader = DB::transaction(function () use ($request) {
             $validated = $request->validated();
+            $submittedAt = $validated['status'] === 'submitted' ? now()->toDateString() : null;
 
             $header = RkoHeader::create([
                 'rko_number' => $validated['rko_number'],
@@ -93,10 +95,10 @@ class RkoHeaderController extends Controller
                 'funding_source_id' => $validated['funding_source_id'],
                 'total_budget' => $validated['total_budget'],
                 'status' => $validated['status'],
-                'submitted_at' => $validated['submitted_at'] ?? null,
-                'approved_at' => $validated['approved_at'] ?? null,
+                'submitted_at' => $submittedAt,
+                'approved_at' => null,
                 'submitted_by' => $request->user()?->id,
-                'approved_by' => $validated['status'] === 'approved' ? $request->user()?->id : null,
+                'approved_by' => null,
                 'notes' => $validated['notes'] ?? null,
             ]);
 
@@ -163,8 +165,14 @@ class RkoHeaderController extends Controller
         return view('rko-headers.show', compact('rkoHeader', 'linkedMutations', 'mutationSummary', 'linkedRealizations', 'realizationSummary'));
     }
 
-    public function edit(RkoHeader $rkoHeader): View
+    public function edit(RkoHeader $rkoHeader): View|RedirectResponse
     {
+        if ($rkoHeader->status === 'approved') {
+            return redirect()
+                ->route('rko.header.approval.edit', $rkoHeader)
+                ->with('warning', 'Dokumen yang sudah disetujui dikelola melalui form persetujuan.');
+        }
+
         $rkoHeader->load('items.medicine');
 
         return view('rko-headers.edit', [
@@ -179,6 +187,9 @@ class RkoHeaderController extends Controller
     {
         DB::transaction(function () use ($request, $rkoHeader) {
             $validated = $request->validated();
+            $submittedAt = $validated['status'] === 'submitted'
+                ? ($rkoHeader->submitted_at?->toDateString() ?? now()->toDateString())
+                : null;
 
             $rkoHeader->update([
                 'rko_number' => $validated['rko_number'],
@@ -187,10 +198,10 @@ class RkoHeaderController extends Controller
                 'funding_source_id' => $validated['funding_source_id'],
                 'total_budget' => $validated['total_budget'],
                 'status' => $validated['status'],
-                'submitted_at' => $validated['submitted_at'] ?? null,
-                'approved_at' => $validated['approved_at'] ?? null,
+                'submitted_at' => $submittedAt,
+                'approved_at' => null,
                 'submitted_by' => $rkoHeader->submitted_by ?? $request->user()?->id,
-                'approved_by' => $validated['status'] === 'approved' ? $request->user()?->id : null,
+                'approved_by' => null,
                 'notes' => $validated['notes'] ?? null,
             ]);
 
@@ -211,6 +222,57 @@ class RkoHeaderController extends Controller
         return redirect()
             ->route('rko.header.show', $rkoHeader)
             ->with('success', 'RKO berhasil diperbarui.');
+    }
+
+    public function editApproval(RkoHeader $rkoHeader): View
+    {
+        $rkoHeader->load('items.medicine.category', 'items.medicine.unit', 'fundingSource');
+
+        return view('rko-headers.approval', [
+            'rkoHeader' => $rkoHeader,
+        ]);
+    }
+
+    public function updateApproval(RkoApprovalRequest $request, RkoHeader $rkoHeader): RedirectResponse
+    {
+        DB::transaction(function () use ($request, $rkoHeader) {
+            $validated = $request->validated();
+            $itemsById = collect($validated['items'])->keyBy(fn (array $item) => (int) $item['id']);
+
+            $rkoHeader->update([
+                'status' => $validated['status'],
+                'approved_at' => $validated['status'] === 'approved' ? $validated['approved_at'] : null,
+                'approved_by' => in_array($validated['status'], ['approved', 'rejected'], true) ? $request->user()?->id : null,
+            ]);
+
+            foreach ($rkoHeader->items as $detail) {
+                $payload = $itemsById->get($detail->id, []);
+
+                $detail->update([
+                    'approved_quantity' => $validated['status'] === 'approved'
+                        ? (int) ($payload['approved_quantity'] ?? 0)
+                        : null,
+                    'approved_unit_price' => $validated['status'] === 'approved'
+                        ? (float) ($payload['approved_unit_price'] ?? 0)
+                        : null,
+                ]);
+            }
+
+            $rkoHeader->refresh()->load('items');
+            $this->syncApprovedOutputs($rkoHeader);
+
+            ActivityLog::create([
+                'user_id' => $request->user()?->id,
+                'module' => 'rko',
+                'action' => 'approve',
+                'description' => "Memperbarui persetujuan RKO {$rkoHeader->rko_number} menjadi {$validated['status']}.",
+                'ip_address' => $request->ip(),
+            ]);
+        });
+
+        return redirect()
+            ->route('rko.header.show', $rkoHeader)
+            ->with('success', 'Persetujuan RKO berhasil diperbarui.');
     }
 
     public function destroy(Request $request, RkoHeader $rkoHeader): RedirectResponse
@@ -244,8 +306,9 @@ class RkoHeaderController extends Controller
             ->map(fn (array $item) => [
                 'medicine_id' => (int) $item['medicine_id'],
                 'planned_quantity' => (int) $item['planned_quantity'],
-                'approved_quantity' => $item['approved_quantity'] !== null && $item['approved_quantity'] !== '' ? (int) $item['approved_quantity'] : null,
+                'approved_quantity' => null,
                 'estimated_unit_price' => (float) ($item['estimated_unit_price'] ?? 0),
+                'approved_unit_price' => null,
                 'total_estimate' => (int) $item['planned_quantity'] * (float) ($item['estimated_unit_price'] ?? 0),
                 'priority' => $item['priority'] ?? 'sedang',
                 'notes' => $item['notes'] ?? null,
@@ -358,7 +421,7 @@ class RkoHeaderController extends Controller
             ->map(fn ($item) => [
                 'medicine_id' => (int) $item->medicine_id,
                 'realized_quantity' => (int) ($item->approved_quantity ?? $item->planned_quantity),
-                'unit_price' => (float) ($item->estimated_unit_price ?? 0),
+                'unit_price' => (float) ($item->approved_unit_price ?? $item->estimated_unit_price ?? 0),
                 'notes' => $item->notes,
             ])
             ->filter(fn (array $item) => $item['realized_quantity'] > 0)

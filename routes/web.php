@@ -96,6 +96,8 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('header/{rkoHeader}', [RkoHeaderController::class, 'show'])->name('header.show');
             Route::get('header/{rkoHeader}/edit', [RkoHeaderController::class, 'edit'])->name('header.edit');
             Route::match(['put', 'patch'], 'header/{rkoHeader}', [RkoHeaderController::class, 'update'])->name('header.update');
+            Route::get('header/{rkoHeader}/persetujuan', [RkoHeaderController::class, 'editApproval'])->name('header.approval.edit');
+            Route::match(['put', 'patch'], 'header/{rkoHeader}/persetujuan', [RkoHeaderController::class, 'updateApproval'])->name('header.approval.update');
             Route::delete('header/{rkoHeader}', [RkoHeaderController::class, 'destroy'])->name('header.destroy');
 
             Route::get('detail', [RkoDetailController::class, 'index'])->name('detail.index');

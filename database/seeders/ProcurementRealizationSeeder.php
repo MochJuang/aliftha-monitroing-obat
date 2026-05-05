@@ -36,7 +36,7 @@ class ProcurementRealizationSeeder extends Seeder
                         continue;
                     }
 
-                    $unitPrice = (float) ($detail->estimated_unit_price ?? 0);
+                    $unitPrice = (float) ($detail->approved_unit_price ?? $detail->estimated_unit_price ?? 0);
 
                     DB::table('procurement_realizations')->insert([
                         'rko_header_id' => $header->id,

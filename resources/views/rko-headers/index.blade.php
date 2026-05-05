@@ -24,7 +24,7 @@
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h3 class="text-lg font-semibold text-slate-900">Daftar RKO</h3>
-                <p class="mt-1 text-sm text-slate-500">Kelola dokumen rencana kebutuhan obat per periode. Saat status disetujui, sistem akan membuat mutasi masuk otomatis.</p>
+                <p class="mt-1 text-sm text-slate-500">Kelola pengajuan RKO per periode, lalu lakukan persetujuan pada form terpisah agar nilai estimasi dan nilai persetujuan tidak tercampur.</p>
             </div>
             <a href="{{ route('rko.header.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
                 Tambah RKO
@@ -101,7 +101,10 @@
                                 <td class="px-4 py-3">
                                     <div class="flex justify-end gap-2 whitespace-nowrap">
                                         <a href="{{ route('rko.header.show', $header) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
-                                        <a href="{{ route('rko.header.edit', $header) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                                        @if ($header->status !== 'approved')
+                                            <a href="{{ route('rko.header.edit', $header) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Pengajuan</a>
+                                        @endif
+                                        <a href="{{ route('rko.header.approval.edit', $header) }}" class="rounded-xl border border-emerald-300 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50">Persetujuan</a>
                                         <form method="POST" action="{{ route('rko.header.destroy', $header) }}" onsubmit="return confirm('Hapus dokumen RKO ini?')">
                                             @csrf
                                             @method('DELETE')
