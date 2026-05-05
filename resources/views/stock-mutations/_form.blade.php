@@ -31,6 +31,8 @@
     class="space-y-6"
 >
 <div class="grid gap-5 md:grid-cols-2">
+    <input type="hidden" name="mutation_type" value="KELUAR">
+
     <div>
         <label for="mutation_number" class="block text-sm font-medium text-slate-700">Nomor mutasi</label>
         <input id="mutation_number" type="text" name="mutation_number" value="{{ old('mutation_number', $mutation->mutation_number) }}" class="mt-1 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
@@ -43,19 +45,17 @@
         @error('mutation_date') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
     </div>
 
-    <div>
-        <label for="mutation_type" class="block text-sm font-medium text-slate-700">Jenis mutasi</label>
-        <select id="mutation_type" name="mutation_type" class="mt-1 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
-            <option value="MASUK" @selected(old('mutation_type', $mutation->mutation_type) === 'MASUK')>MASUK</option>
-            <option value="KELUAR" @selected(old('mutation_type', $mutation->mutation_type) === 'KELUAR')>KELUAR</option>
-        </select>
-        @error('mutation_type') <p class="mt-1 text-sm text-rose-600">{{ $message }}</p> @enderror
+    <div class="rounded-[1.5rem] border border-amber-200 bg-amber-50 px-4 py-4">
+        <p class="text-sm font-semibold text-amber-900">Jenis mutasi</p>
+        <p class="mt-1 text-sm text-amber-800">KELUAR</p>
+        <p class="mt-2 text-xs leading-6 text-amber-700">Mutasi stok manual hanya digunakan untuk pengeluaran obat. Mutasi masuk dibentuk otomatis saat dokumen RKO disetujui.</p>
+        @error('mutation_type') <p class="mt-2 text-sm text-rose-600">{{ $message }}</p> @enderror
     </div>
 
     <div>
-        <label for="distribution_destination_id" class="block text-sm font-medium text-slate-700">Tujuan distribusi (opsional)</label>
+        <label for="distribution_destination_id" class="block text-sm font-medium text-slate-700">Faskes tujuan (opsional)</label>
         <select id="distribution_destination_id" name="distribution_destination_id" class="mt-1 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-            <option value="">Tanpa tujuan distribusi</option>
+            <option value="">Tanpa faskes tujuan</option>
             @foreach ($destinations as $destination)
                 <option value="{{ $destination->id }}" @selected((string) old('distribution_destination_id', $mutation->distribution_destination_id) === (string) $destination->id)>
                     {{ $destination->name }}{{ $destination->destination_type ? ' ('.ucfirst($destination->destination_type).')' : '' }}

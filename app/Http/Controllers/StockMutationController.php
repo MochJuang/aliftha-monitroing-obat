@@ -80,7 +80,7 @@ class StockMutationController extends Controller
             'mutation' => new StockMutation([
                 'mutation_number' => $this->generateNextMutationNumber(),
                 'mutation_date' => now()->toDateString(),
-                'mutation_type' => 'MASUK',
+                'mutation_type' => 'KELUAR',
             ]),
             'medicines' => $this->getMedicines(),
             'destinations' => $this->getDestinations(),
@@ -120,6 +120,14 @@ class StockMutationController extends Controller
 
     public function edit(StockMutation $stockMutation): View
     {
+        if (! $this->isEditableManualOutgoingMutation($stockMutation)) {
+            return redirect()
+                ->route('transaksi.mutasi.show', $stockMutation)
+                ->withErrors([
+                    'mutation' => 'Mutasi masuk dikelola melalui persetujuan RKO dan tidak dapat diedit dari menu transaksi.',
+                ]);
+        }
+
         $stockMutation->load('items');
 
         return view('stock-mutations.edit', [
@@ -136,6 +144,14 @@ class StockMutationController extends Controller
 
     public function update(StockMutationRequest $request, StockMutation $stockMutation): RedirectResponse
     {
+        if (! $this->isEditableManualOutgoingMutation($stockMutation)) {
+            return redirect()
+                ->route('transaksi.mutasi.show', $stockMutation)
+                ->withErrors([
+                    'mutation' => 'Mutasi masuk dikelola melalui persetujuan RKO dan tidak dapat diperbarui dari menu transaksi.',
+                ]);
+        }
+
         DB::transaction(function () use ($request, $stockMutation) {
             $validated = $request->validated();
             $oldMedicineIds = $stockMutation->items()->pluck('medicine_id')->all();
@@ -160,6 +176,14 @@ class StockMutationController extends Controller
 
     public function destroy(Request $request, StockMutation $stockMutation): RedirectResponse
     {
+        if (! $this->isEditableManualOutgoingMutation($stockMutation)) {
+            return redirect()
+                ->route('transaksi.mutasi.show', $stockMutation)
+                ->withErrors([
+                    'mutation' => 'Mutasi masuk dikelola melalui persetujuan RKO dan tidak dapat dihapus dari menu transaksi.',
+                ]);
+        }
+
         DB::transaction(function () use ($request, $stockMutation) {
             $medicineIds = $stockMutation->items()->pluck('medicine_id')->all();
             $mutationNumber = $stockMutation->mutation_number;
@@ -261,7 +285,7 @@ class StockMutationController extends Controller
             'mutation_number' => $validated['mutation_number'],
             'medicine_id' => $firstMedicineId,
             'mutation_date' => $validated['mutation_date'],
-            'mutation_type' => $validated['mutation_type'],
+            'mutation_type' => 'KELUAR',
             'quantity' => $totalQuantity,
             'distribution_destination_id' => $validated['distribution_destination_id'] ?? null,
             'created_by' => $existing?->created_by ?? $createdBy,
@@ -316,5 +340,10 @@ class StockMutationController extends Controller
             'description' => $description,
             'ip_address' => $ipAddress,
         ]);
+    }
+
+    private function isEditableManualOutgoingMutation(StockMutation $stockMutation): bool
+    {
+        return ! $stockMutation->is_auto_generated && $stockMutation->mutation_type === 'KELUAR';
     }
 }

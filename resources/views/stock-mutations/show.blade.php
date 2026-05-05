@@ -30,6 +30,12 @@
         <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
             <h4 class="text-lg font-semibold text-slate-900">Detail Item Mutasi</h4>
 
+            @if ($mutation->mutation_type === 'MASUK' || $mutation->is_auto_generated)
+                <div class="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm leading-6 text-emerald-800">
+                    Mutasi masuk ini dibentuk otomatis dari persetujuan RKO dan tidak dikelola dari menu transaksi manual.
+                </div>
+            @endif
+
             <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
                 <div class="overflow-x-auto">
                     <table class="min-w-[760px] w-full divide-y divide-slate-200 text-sm">
@@ -65,7 +71,9 @@
             </div>
 
             <div class="mt-6 flex justify-end gap-3">
-                <a href="{{ route('transaksi.mutasi.edit', $mutation) }}" class="rounded-2xl border border-amber-300 px-5 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                @if (! $mutation->is_auto_generated && $mutation->mutation_type === 'KELUAR')
+                    <a href="{{ route('transaksi.mutasi.edit', $mutation) }}" class="rounded-2xl border border-amber-300 px-5 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                @endif
                 <a href="{{ route('transaksi.mutasi.index') }}" class="rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Kembali</a>
             </div>
         </article>

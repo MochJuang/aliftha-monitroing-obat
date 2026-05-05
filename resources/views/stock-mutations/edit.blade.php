@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">Edit Mutasi Stok</x-slot>
+    <x-slot name="header">Edit Mutasi Keluar</x-slot>
 
     <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <form method="POST" action="{{ route('transaksi.mutasi.update', $mutation) }}" class="space-y-6">

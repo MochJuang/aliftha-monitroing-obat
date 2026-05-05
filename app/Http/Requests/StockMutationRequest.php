@@ -22,7 +22,7 @@ class StockMutationRequest extends FormRequest
         return [
             'mutation_number' => ['required', 'string', 'max:50', Rule::unique('stock_mutations', 'mutation_number')->ignore($stockMutation)],
             'mutation_date' => ['required', 'date'],
-            'mutation_type' => ['required', Rule::in(['MASUK', 'KELUAR'])],
+            'mutation_type' => ['required', Rule::in(['KELUAR'])],
             'distribution_destination_id' => ['nullable', 'exists:distribution_destinations,id'],
             'reference' => ['nullable', 'string', 'max:150'],
             'notes' => ['nullable', 'string'],
@@ -30,6 +30,13 @@ class StockMutationRequest extends FormRequest
             'items.*.medicine_id' => ['required', 'distinct', 'exists:medicines,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
             'items.*.notes' => ['nullable', 'string'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'mutation_type.in' => 'Mutasi stok manual hanya diperbolehkan untuk jenis keluar. Mutasi masuk dibentuk melalui persetujuan RKO.',
         ];
     }
 }
