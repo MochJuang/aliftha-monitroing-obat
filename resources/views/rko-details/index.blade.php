@@ -23,27 +23,27 @@
         </div>
 
 	        <div class="mt-6 overflow-x-auto">
-	            <form method="GET" action="{{ route('rko.detail.index') }}" class="flex flex-col gap-3 md:flex-row md:flex-nowrap md:items-end min-w-max">
-	                <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor RKO, kode obat, nama obat..." class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:flex-1 md:min-w-[280px]">
-	                <select name="header_id" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-56 md:shrink-0">
+	            <form method="GET" action="{{ route('rko.detail.index') }}" class="flex flex-nowrap items-end gap-3 min-w-max">
+	                <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor RKO, kode obat, nama obat..." class="min-w-[260px] flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+	                <select name="header_id" class="w-56 shrink-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
 	                <option value="">Semua RKO</option>
 	                @foreach ($headers as $header)
 	                    <option value="{{ $header->id }}" @selected($headerId === (string) $header->id)>{{ $header->rko_number }} - {{ sprintf('%02d', $header->period_month) }}/{{ $header->period_year }}</option>
 	                @endforeach
 	                </select>
-	                <select name="medicine_id" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-64 md:shrink-0">
+	                <select name="medicine_id" class="w-64 shrink-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
 	                <option value="">Semua obat</option>
 	                @foreach ($medicines as $medicine)
 	                    <option value="{{ $medicine->id }}" @selected($medicineId === (string) $medicine->id)>{{ $medicine->code }} - {{ $medicine->name }}</option>
 	                @endforeach
 	                </select>
-	                <select name="period_year" class="w-full min-w-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-40 md:shrink-0">
+	                <select name="period_year" class="w-40 shrink-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
 	                <option value="">Semua tahun</option>
 	                @foreach ($availableYears as $year)
 	                    <option value="{{ $year }}" @selected($periodYear === (string) $year)>{{ $year }}</option>
 	                @endforeach
 	                </select>
-	                <button type="submit" class="rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 md:w-28 md:shrink-0">Filter</button>
+	                <button type="submit" class="w-28 shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Filter</button>
 	            </form>
 	        </div>
 

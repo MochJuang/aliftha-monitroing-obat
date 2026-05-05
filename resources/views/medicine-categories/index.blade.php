@@ -13,18 +13,20 @@
             </a>
         </div>
 
-	        <form method="GET" action="{{ route('master-obat.kategori.index') }}" class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
+	        <div class="mt-6 overflow-x-auto">
+	        <form method="GET" action="{{ route('master-obat.kategori.index') }}" class="flex flex-nowrap items-center gap-3 min-w-max">
 	            <input
 	                type="text"
 	                name="search"
 	                value="{{ $search }}"
 	                placeholder="Cari nama atau deskripsi kategori..."
-	                class="w-full min-w-0 flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500"
+	                class="min-w-[260px] flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500"
 	            >
-	            <button type="submit" class="shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 sm:min-w-28">
+	            <button type="submit" class="w-28 shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
 	                Cari
 	            </button>
 	        </form>
+	        </div>
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">

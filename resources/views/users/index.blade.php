@@ -9,21 +9,23 @@
             </a>
         </div>
 
-	        <form method="GET" action="{{ route('users.index') }}" class="mt-6 flex flex-col gap-3 md:flex-row md:items-center">
-	            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama, username, atau email..." class="w-full min-w-0 flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-	            <select name="role_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-52 md:shrink-0">
+	        <div class="mt-6 overflow-x-auto">
+	            <form method="GET" action="{{ route('users.index') }}" class="flex flex-nowrap items-end gap-3 min-w-max">
+	            <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama, username, atau email..." class="min-w-[260px] flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+	            <select name="role_id" class="w-52 shrink-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
 	                <option value="">Semua role</option>
 	                @foreach ($roles as $role)
 	                    <option value="{{ $role->id }}" @selected($roleId === (string) $role->id)>{{ $role->name }}</option>
 	                @endforeach
 	            </select>
-	            <select name="status" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-44 md:shrink-0">
+	            <select name="status" class="w-44 shrink-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
 	                <option value="">Semua status</option>
 	                <option value="active" @selected($status === 'active')>Aktif</option>
 	                <option value="inactive" @selected($status === 'inactive')>Nonaktif</option>
 	            </select>
-	            <button type="submit" class="shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 md:min-w-28">Filter</button>
-	        </form>
+	            <button type="submit" class="w-28 shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Filter</button>
+	            </form>
+	        </div>
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">

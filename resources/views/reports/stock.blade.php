@@ -18,23 +18,25 @@
         </article>
     </section>
 
-    <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-	        <form method="GET" action="{{ route('laporan.stok') }}" class="flex flex-col gap-3 md:flex-row md:items-center">
-	            <input type="text" name="search" value="{{ $search }}" placeholder="Cari kode atau nama obat..." class="w-full min-w-0 flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
-	            <select name="category_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-52 md:shrink-0">
+	    <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+	        <div class="overflow-x-auto">
+	        <form method="GET" action="{{ route('laporan.stok') }}" class="flex flex-nowrap items-end gap-3 min-w-max">
+	            <input type="text" name="search" value="{{ $search }}" placeholder="Cari kode atau nama obat..." class="min-w-[260px] flex-1 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+	            <select name="category_id" class="w-52 shrink-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
 	                <option value="">Semua kategori</option>
 	                @foreach ($categories as $category)
 	                    <option value="{{ $category->id }}" @selected($categoryId === (string) $category->id)>{{ $category->name }}</option>
 	                @endforeach
 	            </select>
-	            <select name="status" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500 md:w-44 md:shrink-0">
+	            <select name="status" class="w-44 shrink-0 rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
 	                <option value="">Semua status</option>
 	                <option value="safe" @selected($status === 'safe')>Aman</option>
 	                <option value="low" @selected($status === 'low')>Menipis</option>
 	                <option value="empty" @selected($status === 'empty')>Habis</option>
 	            </select>
-	            <button type="submit" class="shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 md:min-w-28">Filter</button>
+	            <button type="submit" class="w-28 shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Filter</button>
 	        </form>
+	        </div>
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">
