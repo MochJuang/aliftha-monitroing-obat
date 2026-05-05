@@ -6,19 +6,12 @@
     ])>
         Laporan Stok
     </a>
-    <a href="{{ route('laporan.pengadaan') }}" @class([
+    <a href="{{ route('laporan.mutasi') }}" @class([
         'rounded-full px-4 py-2 text-sm font-semibold transition',
-        'bg-slate-950 text-white' => request()->routeIs('laporan.pengadaan', 'reports.receipts'),
-        'bg-slate-100 text-slate-700 hover:bg-slate-200' => !request()->routeIs('laporan.pengadaan', 'reports.receipts'),
+        'bg-slate-950 text-white' => request()->routeIs('laporan.mutasi', 'reports.mutations'),
+        'bg-slate-100 text-slate-700 hover:bg-slate-200' => !request()->routeIs('laporan.mutasi', 'reports.mutations'),
     ])>
-        Realisasi Pengadaan
-    </a>
-    <a href="{{ route('laporan.distribusi') }}" @class([
-        'rounded-full px-4 py-2 text-sm font-semibold transition',
-        'bg-slate-950 text-white' => request()->routeIs('laporan.distribusi', 'reports.distributions'),
-        'bg-slate-100 text-slate-700 hover:bg-slate-200' => !request()->routeIs('laporan.distribusi', 'reports.distributions'),
-    ])>
-        Mutasi Obat
+        Laporan Mutasi
     </a>
     <a href="{{ route('laporan.rko') }}" @class([
         'rounded-full px-4 py-2 text-sm font-semibold transition',

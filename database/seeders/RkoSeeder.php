@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class RkoSeeder extends Seeder
 {
@@ -29,15 +30,34 @@ class RkoSeeder extends Seeder
             return;
         }
 
-        DB::transaction(function () use ($userId, $medicineIds) {
-            DB::table('rko_details')->delete();
-            DB::table('rko_headers')->delete();
+        $fundingSourceIds = DB::table('funding_sources')->pluck('id', 'code');
+
+        if ($fundingSourceIds->isEmpty()) {
+            $this->command?->warn('Master sumber dana belum tersedia. Jalankan FundingSourceSeeder terlebih dahulu.');
+
+            return;
+        }
+
+        DB::transaction(function () use ($userId, $medicineIds, $fundingSourceIds) {
+            Schema::disableForeignKeyConstraints();
+
+            try {
+                DB::table('stock_mutation_items')->delete();
+                DB::table('stock_mutations')->delete();
+                DB::table('medicine_stocks')->delete();
+                DB::table('procurement_realizations')->delete();
+                DB::table('rko_details')->delete();
+                DB::table('rko_headers')->delete();
+            } finally {
+                Schema::enableForeignKeyConstraints();
+            }
 
             $headers = [
                 [
                     'rko_number' => 'RKO-202604-0001',
                     'period_month' => 4,
                     'period_year' => 2026,
+                    'funding_source_code' => 'APBD',
                     'total_budget' => 19860000,
                     'status' => 'approved',
                     'submitted_at' => '2026-04-01',
@@ -53,6 +73,7 @@ class RkoSeeder extends Seeder
                     'rko_number' => 'RKO-202604-0002',
                     'period_month' => 4,
                     'period_year' => 2026,
+                    'funding_source_code' => 'APBN',
                     'total_budget' => 6930000,
                     'status' => 'approved',
                     'submitted_at' => '2026-04-08',
@@ -67,6 +88,7 @@ class RkoSeeder extends Seeder
                     'rko_number' => 'RKO-202604-0003',
                     'period_month' => 4,
                     'period_year' => 2026,
+                    'funding_source_code' => 'BOKB',
                     'total_budget' => 12777500,
                     'status' => 'approved',
                     'submitted_at' => '2026-04-15',
@@ -81,6 +103,7 @@ class RkoSeeder extends Seeder
                     'rko_number' => 'RKO-202605-0001',
                     'period_month' => 5,
                     'period_year' => 2026,
+                    'funding_source_code' => 'DAK',
                     'total_budget' => 9580000,
                     'status' => 'submitted',
                     'submitted_at' => '2026-05-01',
@@ -108,6 +131,7 @@ class RkoSeeder extends Seeder
                     'rko_number' => $headerData['rko_number'],
                     'period_month' => $headerData['period_month'],
                     'period_year' => $headerData['period_year'],
+                    'funding_source_id' => $fundingSourceIds[$headerData['funding_source_code']] ?? null,
                     'total_budget' => $headerData['total_budget'],
                     'status' => $headerData['status'],
                     'submitted_at' => $headerData['submitted_at'],

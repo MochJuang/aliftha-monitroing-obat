@@ -3,18 +3,19 @@
 
 ## 4.1 Gambaran Umum Hasil Penelitian
 
-Hasil dari penelitian ini adalah sebuah aplikasi monitoring obat kontrasepsi berbasis web yang dibangun menggunakan framework Laravel dan database MariaDB/MySQL. Aplikasi ini dirancang untuk membantu proses pengelolaan data obat, pencatatan transaksi stok masuk dan stok keluar, penyesuaian stok, monitoring kondisi stok, penyusunan laporan, serta pengelolaan pengguna pada lingkungan Dinas Pengendalian Penduduk dan Keluarga Berencana.
+Hasil dari penelitian ini adalah sebuah aplikasi monitoring obat kontrasepsi berbasis web yang dibangun untuk mendukung proses pencatatan, pemantauan, dan pelaporan data obat kontrasepsi pada Dinas Pengendalian Penduduk dan Keluarga Berencana Kota Sukabumi. Aplikasi dikembangkan menggunakan framework Laravel dan basis data MariaDB/MySQL sehingga dapat diakses melalui browser dan digunakan oleh lebih dari satu pengguna sesuai hak akses masing-masing.
 
-Secara umum, aplikasi yang dibangun telah mengintegrasikan proses pencatatan persediaan ke dalam satu sistem terpusat. Dengan demikian, data stok dapat diperbarui secara lebih cepat, proses pencarian data menjadi lebih mudah, dan risiko kesalahan pencatatan manual dapat dikurangi.
+Berbeda dengan sistem pencatatan manual yang sebelumnya banyak bergantung pada lembar kerja spreadsheet, aplikasi yang dibangun pada penelitian ini menempatkan data dalam satu sistem terintegrasi. Dengan demikian, proses pengelolaan data obat, penyusunan RKO, pencatatan realisasi pengadaan, pencatatan mutasi obat, monitoring stok, dan penyusunan laporan dapat dilakukan secara lebih terstruktur, lebih cepat, dan lebih mudah ditelusuri.
 
-Adapun modul utama yang berhasil diimplementasikan dalam aplikasi ini meliputi:
+Secara umum, modul utama yang berhasil diimplementasikan dalam aplikasi ini meliputi:
 
 - autentikasi pengguna,
-- dashboard,
-- manajemen master data,
-- transaksi stok masuk,
-- transaksi stok keluar,
-- penyesuaian stok,
+- dashboard monitoring,
+- manajemen data faskes,
+- manajemen master obat,
+- rencana kebutuhan obat (RKO),
+- realisasi pengadaan,
+- mutasi obat,
 - monitoring stok,
 - laporan,
 - manajemen pengguna, dan
@@ -24,9 +25,9 @@ Adapun modul utama yang berhasil diimplementasikan dalam aplikasi ini meliputi:
 
 ### 4.2.1 Implementasi Perangkat Lunak
 
-Implementasi perangkat lunak yang digunakan dalam pembangunan aplikasi ini terdiri atas beberapa komponen utama. Sistem dikembangkan menggunakan bahasa pemrograman PHP dengan framework Laravel. Untuk pengelolaan basis data digunakan MariaDB/MySQL. Antarmuka aplikasi dibangun menggunakan Blade Template, CSS, dan JavaScript yang terintegrasi dalam ekosistem Laravel.
+Implementasi perangkat lunak pada penelitian ini menggunakan pendekatan pengembangan aplikasi web. Sistem dibangun menggunakan bahasa pemrograman PHP dengan framework Laravel, sedangkan antarmuka dikembangkan menggunakan Blade Template, CSS, dan JavaScript yang terintegrasi pada ekosistem Laravel. Basis data yang digunakan adalah MariaDB/MySQL.
 
-Perangkat lunak yang digunakan dalam implementasi sistem ini adalah sebagai berikut:
+Perangkat lunak yang digunakan dalam implementasi sistem ini meliputi:
 
 - sistem operasi untuk pengembangan,
 - web server Apache atau Laravel development server,
@@ -40,71 +41,74 @@ Perangkat lunak yang digunakan dalam implementasi sistem ini adalah sebagai beri
 ```mermaid
 flowchart LR
     A["Pengguna"] --> B["Web Browser"]
-    B --> C["Aplikasi Laravel"]
-    C --> D["MariaDB / MySQL"]
-    C --> E["Laporan dan Monitoring"]
-    C --> F["Autentikasi dan Hak Akses"]
+    B --> C["Aplikasi Monitoring Obat Kontrasepsi"]
+    C --> D["Laravel"]
+    D --> E["MariaDB / MySQL"]
+    D --> F["Dashboard, Monitoring, dan Laporan"]
+    D --> G["Autentikasi dan Hak Akses"]
 ```
 
 Gambar 4.1. Arsitektur umum implementasi perangkat lunak aplikasi.
 
 ### 4.2.2 Implementasi Basis Data
 
-Basis data pada aplikasi ini dirancang untuk mendukung seluruh proses bisnis utama dalam pengelolaan stok obat kontrasepsi. Struktur basis data terdiri atas tabel master, tabel transaksi, dan tabel pendukung audit.
+Basis data pada aplikasi ini dirancang untuk mendukung kebutuhan monitoring obat kontrasepsi, mulai dari data master, perencanaan kebutuhan, realisasi pengadaan, mutasi obat, hingga pemantauan stok per periode. Struktur basis data tidak hanya menyimpan data pokok, tetapi juga menyediakan relasi yang memudahkan proses pencarian, penyaringan, dan penyusunan laporan.
 
-Tabel master digunakan untuk menyimpan data dasar yang relatif jarang berubah, seperti data obat, kategori obat, satuan, sumber stok, tujuan distribusi, role, dan pengguna. Tabel transaksi digunakan untuk mencatat pergerakan stok, baik stok masuk, stok keluar, maupun penyesuaian stok. Selain itu, terdapat tabel log aktivitas yang digunakan untuk mencatat jejak aktivitas pengguna dalam sistem.
-
-Secara umum, kelompok tabel dalam sistem ini meliputi:
+Secara umum, kelompok tabel yang digunakan dalam implementasi sistem ini meliputi:
 
 - tabel master: `roles`, `users`, `medicine_categories`, `units`, `medicines`, `stock_sources`, `distribution_destinations`,
-- tabel transaksi: `stock_receipts`, `stock_receipt_items`, `medicine_batches`, `stock_distributions`, `stock_distribution_items`, `stock_adjustments`, `stock_adjustment_items`,
+- tabel perencanaan: `rko_headers`, `rko_details`,
+- tabel transaksi dan monitoring: `stock_receipts`, `stock_receipt_items`, `stock_distributions`, `stock_distribution_items`, `medicine_stocks`, `stock_mutations`,
 - tabel audit: `activity_logs`.
+
+Dalam implementasinya, tabel `medicines` digunakan untuk menyimpan data obat, tabel `rko_headers` dan `rko_details` digunakan untuk menyimpan rencana kebutuhan obat, tabel `stock_receipts` dan `stock_receipt_items` digunakan untuk mencatat realisasi pengadaan, tabel `stock_distributions` dan `stock_distribution_items` digunakan untuk mencatat mutasi obat ke faskes, tabel `medicine_stocks` digunakan untuk menyimpan snapshot stok per periode, sedangkan tabel `stock_mutations` digunakan untuk mencatat riwayat mutasi masuk dan keluar.
 
 ```mermaid
 erDiagram
     ROLES ||--o{ USERS : memiliki
-    USERS ||--o{ STOCK_RECEIPTS : membuat
-    USERS ||--o{ STOCK_DISTRIBUTIONS : membuat
-    USERS ||--o{ STOCK_ADJUSTMENTS : membuat
-    USERS ||--o{ ACTIVITY_LOGS : mencatat
+    USERS ||--o{ RKO_HEADERS : menyusun
+    USERS ||--o{ STOCK_RECEIPTS : mencatat
+    USERS ||--o{ STOCK_DISTRIBUTIONS : mencatat
+    USERS ||--o{ ACTIVITY_LOGS : menghasilkan
 
     MEDICINE_CATEGORIES ||--o{ MEDICINES : mengelompokkan
     UNITS ||--o{ MEDICINES : menggunakan
-    MEDICINES ||--o{ STOCK_RECEIPT_ITEMS : dicatat
-    MEDICINES ||--o{ MEDICINE_BATCHES : memiliki
-    MEDICINES ||--o{ STOCK_DISTRIBUTION_ITEMS : disalurkan
-    MEDICINES ||--o{ STOCK_ADJUSTMENT_ITEMS : disesuaikan
+
+    MEDICINES ||--o{ RKO_DETAILS : direncanakan
+    RKO_HEADERS ||--o{ RKO_DETAILS : memiliki
 
     STOCK_SOURCES ||--o{ STOCK_RECEIPTS : sumber
+    RKO_HEADERS ||--o{ STOCK_RECEIPTS : direalisasikan
     STOCK_RECEIPTS ||--o{ STOCK_RECEIPT_ITEMS : memiliki
-    STOCK_RECEIPT_ITEMS ||--o{ MEDICINE_BATCHES : membentuk
+    MEDICINES ||--o{ STOCK_RECEIPT_ITEMS : diterima
 
     DISTRIBUTION_DESTINATIONS ||--o{ STOCK_DISTRIBUTIONS : tujuan
     STOCK_DISTRIBUTIONS ||--o{ STOCK_DISTRIBUTION_ITEMS : memiliki
+    MEDICINES ||--o{ STOCK_DISTRIBUTION_ITEMS : dimutasi
 
-    STOCK_ADJUSTMENTS ||--o{ STOCK_ADJUSTMENT_ITEMS : memiliki
-    MEDICINE_BATCHES ||--o{ STOCK_ADJUSTMENT_ITEMS : disesuaikan
+    MEDICINES ||--o{ MEDICINE_STOCKS : dipantau
+    MEDICINES ||--o{ STOCK_MUTATIONS : memiliki
 ```
 
 Gambar 4.2. Diagram konseptual relasi data pada aplikasi.
 
 ### 4.2.3 Implementasi Hak Akses Pengguna
 
-Hak akses pengguna pada aplikasi ini dibedakan berdasarkan peran masing-masing pengguna. Pembagian hak akses bertujuan agar setiap pengguna hanya dapat mengakses fitur yang sesuai dengan tugas dan tanggung jawabnya.
+Hak akses pengguna pada aplikasi ini dibedakan berdasarkan peran masing-masing pengguna. Pembagian hak akses dilakukan agar pengguna hanya dapat mengakses menu dan fungsi yang sesuai dengan tugasnya.
 
-Hak akses dalam aplikasi ini terdiri atas:
+Hak akses utama dalam aplikasi ini terdiri atas:
 
 - `admin`, yaitu pengguna yang memiliki akses penuh terhadap seluruh modul sistem,
-- `petugas_gudang`, yaitu pengguna yang berfokus pada pengelolaan data transaksi dan monitoring stok,
-- `pimpinan`, yaitu pengguna yang berfokus pada pemantauan dashboard, monitoring, laporan, dan log aktivitas tertentu.
+- `petugas_gudang`, yaitu pengguna yang berfokus pada pengelolaan data master, RKO, realisasi pengadaan, mutasi obat, monitoring, dan laporan,
+- `pimpinan`, yaitu pengguna yang berfokus pada pemantauan dashboard, monitoring, laporan, dan log aktivitas.
 
-Penerapan hak akses dilakukan melalui proses autentikasi dan middleware pada Laravel sehingga sistem dapat membatasi route, menu, dan aksi tertentu berdasarkan role pengguna.
+Implementasi hak akses dilakukan melalui autentikasi dan middleware pada Laravel, sehingga sistem dapat membatasi route, menu, dan tindakan tertentu berdasarkan role pengguna.
 
 ```mermaid
 flowchart TD
     A["Pengguna Login"] --> B{"Role Pengguna"}
     B -->|Admin| C["Akses seluruh modul"]
-    B -->|Petugas Gudang| D["Master data, transaksi, monitoring"]
+    B -->|Petugas Gudang| D["Master data, RKO, pengadaan, mutasi, monitoring"]
     B -->|Pimpinan| E["Dashboard, monitoring, laporan, log"]
 ```
 
@@ -114,89 +118,95 @@ Gambar 4.3. Diagram pembagian hak akses pengguna.
 
 ### 4.3.1 Halaman Login
 
-Halaman login digunakan sebagai gerbang awal bagi pengguna sebelum dapat mengakses sistem. Pengguna diwajibkan memasukkan kredensial yang valid agar dapat masuk ke dalam aplikasi. Fitur ini penting untuk menjaga keamanan data dan memastikan hanya pihak yang berwenang yang dapat mengakses sistem.
+Halaman login berfungsi sebagai pintu masuk pengguna ke dalam sistem. Pada halaman ini, pengguna harus memasukkan kredensial yang sesuai agar dapat mengakses aplikasi. Fitur login penting untuk menjaga keamanan data dan memastikan bahwa hanya pengguna yang berwenang yang dapat menggunakan sistem.
 
-Pada implementasinya, sistem akan memverifikasi data login pengguna terhadap data pengguna yang tersimpan di basis data. Jika data sesuai, pengguna akan diarahkan ke halaman dashboard. Jika tidak sesuai, sistem akan menampilkan pesan kesalahan.
+Ketika proses login berhasil, pengguna akan diarahkan ke dashboard sesuai hak akses yang dimilikinya. Sebaliknya, apabila data login tidak sesuai, sistem akan menampilkan pesan kesalahan.
 
-### 4.3.2 Dashboard
+### 4.3.2 Dashboard Monitoring
 
-Dashboard berfungsi sebagai halaman utama setelah pengguna berhasil login. Halaman ini menampilkan ringkasan informasi penting yang dibutuhkan pengguna secara cepat, seperti jumlah obat aktif, total stok saat ini, obat dengan stok menipis, batch yang hampir kedaluwarsa, serta ringkasan transaksi harian.
+Dashboard merupakan halaman utama setelah pengguna berhasil login. Dashboard menampilkan ringkasan informasi penting yang dibutuhkan pengguna secara cepat, seperti jumlah obat aktif, total stok yang tercatat, jumlah dokumen RKO, realisasi pengadaan, mutasi obat, serta indikator kondisi stok.
 
-Keberadaan dashboard membantu pengguna memperoleh gambaran umum kondisi persediaan tanpa harus membuka laporan atau detail transaksi satu per satu.
+Dashboard membantu pengguna memperoleh gambaran umum kondisi obat kontrasepsi tanpa harus membuka setiap halaman secara terpisah. Dengan demikian, dashboard berfungsi sebagai media monitoring awal bagi admin, petugas, maupun pimpinan.
 
-### 4.3.3 Manajemen Master Data
+### 4.3.3 Manajemen Data Faskes
 
-Modul master data digunakan untuk mengelola seluruh data dasar yang menjadi fondasi sistem. Data yang termasuk ke dalam modul ini antara lain kategori obat, satuan, data obat, sumber stok, dan tujuan distribusi.
+Modul data faskes digunakan untuk menyimpan data fasilitas kesehatan yang menjadi tujuan mutasi obat. Data ini meliputi identitas faskes, jenis faskes, informasi kontak, serta status aktif atau nonaktif.
 
-Melalui modul ini, admin atau petugas dapat menambah, mengubah, melihat, dan menonaktifkan data sesuai kebutuhan. Keakuratan master data sangat berpengaruh terhadap proses transaksi stok dan kualitas laporan yang dihasilkan.
+Data faskes penting karena menjadi acuan pada proses mutasi obat. Dengan data faskes yang terkelola dengan baik, proses pencatatan mutasi menjadi lebih rapi dan tujuan penyaluran obat dapat ditelusuri dengan lebih mudah.
 
-### 4.3.4 Transaksi Stok Masuk
+### 4.3.4 Manajemen Master Obat
 
-Modul stok masuk digunakan untuk mencatat penerimaan obat dari pusat atau sumber distribusi tertentu. Setiap transaksi stok masuk akan menghasilkan detail item penerimaan dan membentuk data batch obat.
+Modul master obat digunakan untuk mengelola data obat kontrasepsi yang akan dipantau dalam sistem. Data yang dikelola meliputi kode obat, nama obat, jenis obat, kategori, satuan, harga standar, status aktif, dan stok minimum.
 
-Dalam implementasi sistem ini, setiap item penerimaan dicatat dengan informasi jumlah, nomor batch, tanggal diterima, dan tanggal kedaluwarsa. Pencatatan batch penting untuk mendukung monitoring stok dan proses pengeluaran obat berdasarkan prinsip FEFO.
+Ketersediaan master obat yang akurat sangat berpengaruh terhadap modul lain, terutama RKO, realisasi pengadaan, mutasi obat, monitoring stok, dan laporan. Oleh karena itu, modul ini menjadi fondasi utama dalam implementasi sistem.
 
-### 4.3.5 Transaksi Stok Keluar
+### 4.3.5 Rencana Kebutuhan Obat (RKO)
 
-Modul stok keluar digunakan untuk mencatat distribusi obat ke fasilitas kesehatan atau pihak tujuan. Proses pengeluaran stok pada sistem ini tidak hanya mengurangi total stok, tetapi juga mengambil stok dari batch yang memiliki tanggal kedaluwarsa paling dekat.
+Modul RKO digunakan untuk mencatat rencana kebutuhan obat pada periode tertentu. Implementasi RKO dibagi menjadi dua bagian, yaitu header dan detail. Bagian header berisi informasi umum seperti nomor RKO, periode, tahun, total anggaran, status dokumen, tanggal pengajuan, tanggal persetujuan, dan keterangan. Sementara itu, bagian detail berisi rincian item obat, jumlah kebutuhan, estimasi harga satuan, total estimasi, prioritas, dan keterangan.
 
-Penerapan metode FEFO pada modul ini membantu mengurangi risiko obat kedaluwarsa tersimpan terlalu lama di gudang. Dengan demikian, distribusi obat menjadi lebih terkendali dan sesuai dengan karakteristik barang medis.
+Dengan adanya modul ini, proses perencanaan kebutuhan obat dapat didokumentasikan secara sistematis. RKO juga berperan sebagai acuan dalam proses realisasi pengadaan sehingga hubungan antara rencana dan pelaksanaan dapat dipantau.
 
-### 4.3.6 Penyesuaian Stok
+### 4.3.6 Realisasi Pengadaan
 
-Modul penyesuaian stok digunakan ketika terjadi perbedaan antara stok fisik di lapangan dengan stok yang tercatat di dalam sistem. Selisih tersebut dapat disebabkan oleh berbagai faktor, seperti kesalahan pencatatan, kehilangan barang, atau hasil pemeriksaan ulang.
+Modul realisasi pengadaan digunakan untuk mencatat obat yang benar-benar diterima oleh instansi pada suatu periode. Setiap realisasi pengadaan dapat dihubungkan dengan dokumen RKO tertentu sehingga pengguna dapat membandingkan antara kebutuhan yang direncanakan dan pengadaan yang benar-benar terealisasi.
 
-Melalui modul ini, pengguna dapat memilih batch obat tertentu, memasukkan jumlah stok aktual, lalu sistem akan menghitung selisih stok secara otomatis. Hasil penyesuaian akan disimpan sebagai histori agar proses audit tetap dapat dilakukan.
+Informasi yang dicatat pada modul ini meliputi nomor realisasi, tanggal penerimaan, sumber pengadaan, referensi RKO, daftar item obat, jumlah realisasi, harga satuan realisasi, total realisasi, serta catatan transaksi. Dengan demikian, modul ini menjadi jembatan antara perencanaan dan kondisi nyata pengadaan obat.
 
-### 4.3.7 Monitoring Stok
+### 4.3.7 Mutasi Obat
 
-Modul monitoring stok berfungsi untuk menampilkan kondisi stok terkini secara lebih rinci. Dalam aplikasi ini, monitoring terbagi menjadi beberapa bagian, yaitu stok terkini per obat, monitoring batch dan kedaluwarsa, serta kartu stok.
+Modul mutasi obat digunakan untuk mencatat perpindahan atau penyaluran obat ke fasilitas kesehatan. Pada implementasi ini, mutasi obat berfungsi sebagai pencatatan obat keluar dari instansi menuju faskes tertentu.
 
-Halaman stok terkini membantu pengguna melihat jumlah stok yang masih tersedia untuk setiap obat. Halaman batch dan kedaluwarsa membantu pengguna memantau batch yang hampir atau sudah melewati masa kedaluwarsa. Sementara itu, kartu stok menampilkan histori pergerakan stok masuk, keluar, dan penyesuaian untuk suatu obat atau batch tertentu.
+Data mutasi obat sangat penting dalam konteks monitoring karena menunjukkan bagaimana obat yang telah diterima kemudian disalurkan. Riwayat mutasi tersebut juga menjadi salah satu sumber data bagi penyusunan snapshot stok dan histori pergerakan obat.
+
+### 4.3.8 Monitoring Stok
+
+Modul monitoring stok berfungsi untuk menampilkan kondisi stok obat secara ringkas dan terstruktur. Pada aplikasi ini, monitoring berfokus pada stok per obat dan stok per periode, bukan pada pelacakan teknis yang terlalu rinci. Dengan pendekatan ini, aplikasi lebih menekankan fungsi pemantauan, evaluasi, dan pelaporan.
+
+Monitoring stok menampilkan jumlah stok yang tersedia, status kondisi stok, dan ringkasan mutasi yang terjadi. Selain itu, pengguna juga dapat melihat detail obat melalui popup sehingga informasi penting tetap dapat diakses dengan cepat tanpa harus berpindah halaman.
 
 ```mermaid
 flowchart LR
-    A["Stok Masuk"] --> B["Batch Obat"]
-    B --> C["Stok Tersedia"]
-    C --> D["Stok Keluar"]
-    C --> E["Penyesuaian Stok"]
-    B --> F["Monitoring Kedaluwarsa"]
-    C --> G["Laporan dan Dashboard"]
+    A["RKO"] --> B["Realisasi Pengadaan"]
+    B --> C["Mutasi Obat"]
+    B --> D["Stok Periodik"]
+    C --> D
+    D --> E["Dashboard Monitoring"]
+    D --> F["Laporan"]
 ```
 
-Gambar 4.4. Diagram alur utama pergerakan stok pada aplikasi.
+Gambar 4.4. Diagram alur utama data monitoring pada aplikasi.
 
-### 4.3.8 Laporan
+### 4.3.9 Laporan
 
-Modul laporan digunakan untuk menyajikan data dalam bentuk yang lebih terstruktur dan mudah dibaca. Aplikasi ini menyediakan beberapa jenis laporan, yaitu laporan stok, laporan stok masuk, laporan stok keluar, dan laporan penyesuaian stok.
+Modul laporan digunakan untuk menyajikan data dalam bentuk yang lebih terstruktur dan mudah dibaca. Laporan yang tersedia pada aplikasi ini meliputi laporan stok, laporan realisasi pengadaan, laporan mutasi obat, dan laporan RKO vs realisasi.
 
-Laporan dapat difilter berdasarkan kriteria tertentu agar pengguna dapat menyesuaikan informasi yang ingin dilihat. Fitur ini mempermudah penyusunan dokumen administrasi dan membantu pimpinan dalam proses evaluasi.
+Khusus laporan RKO vs realisasi, sistem menampilkan perbandingan antara kebutuhan yang direncanakan dan realisasi pengadaan yang telah dicatat. Fitur ini menjadi bagian penting dari monitoring karena membantu pengguna melihat capaian pengadaan serta selisih yang masih perlu ditindaklanjuti.
 
-### 4.3.9 Manajemen Pengguna
+### 4.3.10 Manajemen Pengguna
 
-Modul manajemen pengguna digunakan untuk mengelola akun yang dapat mengakses sistem. Pada modul ini, admin dapat menambah pengguna baru, mengubah data pengguna, melihat detail pengguna, serta mengatur status aktif atau nonaktif akun.
+Modul manajemen pengguna digunakan untuk mengelola akun yang dapat mengakses sistem. Admin dapat menambah pengguna baru, mengubah data pengguna, melihat detail pengguna, serta mengatur status aktif atau nonaktif akun.
 
-Pengelolaan akun pengguna penting untuk menjaga keamanan sistem serta memastikan distribusi hak akses berjalan sesuai kebutuhan organisasi.
+Pengelolaan akun penting untuk menjaga keamanan sistem dan memastikan bahwa pembagian hak akses berjalan sesuai kebutuhan organisasi.
 
-### 4.3.10 Log Aktivitas
+### 4.3.11 Log Aktivitas
 
-Modul log aktivitas digunakan untuk mencatat tindakan penting yang dilakukan oleh pengguna di dalam sistem. Catatan aktivitas ini dapat membantu proses pengawasan, pelacakan perubahan data, dan audit penggunaan sistem.
+Modul log aktivitas digunakan untuk mencatat tindakan penting yang dilakukan oleh pengguna di dalam sistem. Informasi yang dicatat meliputi nama pengguna, modul yang diakses, aksi yang dilakukan, deskripsi aktivitas, waktu kejadian, dan alamat IP.
 
-Informasi yang dicatat pada log aktivitas meliputi nama pengguna, modul yang diakses, jenis aksi, deskripsi aktivitas, waktu kejadian, dan alamat IP. Dengan adanya log aktivitas, pengelolaan sistem menjadi lebih transparan dan terkontrol.
+Keberadaan log aktivitas membantu proses pengawasan dan audit, serta mempermudah penelusuran apabila terjadi perubahan data tertentu pada sistem.
 
 ## 4.4 Pengujian Sistem
 
 ### 4.4.1 Metode Pengujian
 
-Pengujian sistem dilakukan menggunakan metode *black box testing*. Metode ini digunakan untuk menguji fungsi-fungsi sistem berdasarkan masukan dan keluaran yang dihasilkan, tanpa melihat secara langsung kode program di dalamnya.
+Pengujian sistem dilakukan menggunakan metode *black box testing*. Metode ini digunakan untuk menguji fungsi sistem berdasarkan masukan dan keluaran yang dihasilkan tanpa melihat kode program secara langsung.
 
-Pengujian dilakukan pada setiap modul utama aplikasi untuk memastikan bahwa setiap fitur dapat berjalan sesuai kebutuhan. Fokus pengujian meliputi:
+Fokus pengujian pada penelitian ini meliputi:
 
 - validasi login,
 - pengelolaan master data,
-- pencatatan stok masuk,
-- pencatatan stok keluar,
-- penyesuaian stok,
+- pengelolaan RKO,
+- pencatatan realisasi pengadaan,
+- pencatatan mutasi obat,
 - monitoring stok,
 - pembuatan laporan,
 - manajemen pengguna, dan
@@ -239,9 +249,9 @@ Tabel 4.2. Hasil pengujian master data.
 | --- | --- | --- | --- | --- | --- |
 | 1 | Menambah kategori obat | Data kategori baru | Data kategori tersimpan | Sesuai harapan | Berhasil |
 | 2 | Menambah satuan obat | Data satuan baru | Data satuan tersimpan | Sesuai harapan | Berhasil |
-| 3 | Menambah data obat | Kode, nama, kategori, satuan, dan stok minimum | Data obat tersimpan | Sesuai harapan | Berhasil |
-| 4 | Mengubah data sumber stok | Perubahan data sumber | Data sumber stok diperbarui | Sesuai harapan | Berhasil |
-| 5 | Mengubah tujuan distribusi | Perubahan data tujuan | Data tujuan distribusi diperbarui | Sesuai harapan | Berhasil |
+| 3 | Menambah data obat | Kode, nama, jenis, kategori, satuan, dan harga standar | Data obat tersimpan | Sesuai harapan | Berhasil |
+| 4 | Menambah data faskes | Data identitas faskes baru | Data faskes tersimpan | Sesuai harapan | Berhasil |
+| 5 | Mengubah sumber pengadaan | Perubahan data sumber | Data sumber pengadaan diperbarui | Sesuai harapan | Berhasil |
 
 Tempat screenshot halaman data obat.
 
@@ -251,59 +261,59 @@ Tempat screenshot form tambah data obat.
 
 Gambar 4.9. Form tambah data obat.
 
-### 4.4.4 Hasil Pengujian Stok Masuk
+### 4.4.4 Hasil Pengujian RKO
 
-Tabel 4.3. Hasil pengujian stok masuk.
-
-| No | Skenario Pengujian | Input | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
-| --- | --- | --- | --- | --- | --- |
-| 1 | Menambah transaksi stok masuk | Data penerimaan dan item obat | Transaksi stok masuk tersimpan | Sesuai harapan | Berhasil |
-| 2 | Membentuk batch obat | Data nomor batch, jumlah, dan kedaluwarsa | Batch obat terbentuk pada sistem | Sesuai harapan | Berhasil |
-| 3 | Menampilkan detail penerimaan | Pilih transaksi stok masuk | Sistem menampilkan detail transaksi | Sesuai harapan | Berhasil |
-
-Tempat screenshot halaman stok masuk.
-
-Gambar 4.10. Halaman daftar stok masuk.
-
-Tempat screenshot form tambah stok masuk.
-
-Gambar 4.11. Form input transaksi stok masuk.
-
-### 4.4.5 Hasil Pengujian Stok Keluar
-
-Tabel 4.4. Hasil pengujian stok keluar.
+Tabel 4.3. Hasil pengujian RKO.
 
 | No | Skenario Pengujian | Input | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Menambah transaksi stok keluar | Data distribusi dan item obat | Transaksi stok keluar tersimpan | Sesuai harapan | Berhasil |
-| 2 | Pengambilan batch berdasarkan FEFO | Permintaan obat dengan lebih dari satu batch | Sistem memilih batch dengan kedaluwarsa terdekat | Sesuai harapan | Berhasil |
-| 3 | Validasi stok tidak cukup | Jumlah permintaan melebihi stok tersedia | Sistem menolak transaksi | Sesuai harapan | Berhasil |
+| 1 | Menambah dokumen RKO | Data header dan detail item obat | Dokumen RKO tersimpan | Sesuai harapan | Berhasil |
+| 2 | Menghitung total estimasi | Jumlah kebutuhan dan estimasi harga satuan | Sistem menghitung total estimasi item | Sesuai harapan | Berhasil |
+| 3 | Menampilkan detail RKO | Memilih salah satu nomor RKO | Sistem menampilkan informasi header dan item | Sesuai harapan | Berhasil |
 
-Tempat screenshot halaman stok keluar.
+Tempat screenshot halaman RKO.
 
-Gambar 4.12. Halaman daftar stok keluar.
+Gambar 4.10. Halaman daftar RKO.
 
-Tempat screenshot form transaksi stok keluar.
+Tempat screenshot form input RKO.
 
-Gambar 4.13. Form input transaksi stok keluar.
+Gambar 4.11. Form input RKO.
 
-### 4.4.6 Hasil Pengujian Penyesuaian Stok
+### 4.4.5 Hasil Pengujian Realisasi Pengadaan
 
-Tabel 4.5. Hasil pengujian penyesuaian stok.
+Tabel 4.4. Hasil pengujian realisasi pengadaan.
 
 | No | Skenario Pengujian | Input | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Menambah penyesuaian stok | Batch, stok sistem, stok aktual | Data penyesuaian tersimpan | Sesuai harapan | Berhasil |
-| 2 | Menghitung selisih otomatis | Stok sistem dan stok aktual | Selisih dihitung otomatis | Sesuai harapan | Berhasil |
-| 3 | Memperbarui stok batch | Hasil penyesuaian disimpan | `qty_remaining` batch berubah sesuai stok aktual | Sesuai harapan | Berhasil |
+| 1 | Menambah realisasi pengadaan | Data transaksi dan item obat | Data realisasi pengadaan tersimpan | Sesuai harapan | Berhasil |
+| 2 | Menghubungkan realisasi ke RKO | Memilih referensi RKO pada form | Realisasi terhubung dengan dokumen RKO | Sesuai harapan | Berhasil |
+| 3 | Menampilkan detail realisasi | Memilih transaksi pengadaan tertentu | Sistem menampilkan detail transaksi | Sesuai harapan | Berhasil |
 
-Tempat screenshot halaman penyesuaian stok.
+Tempat screenshot halaman realisasi pengadaan.
 
-Gambar 4.14. Halaman daftar penyesuaian stok.
+Gambar 4.12. Halaman daftar realisasi pengadaan.
 
-Tempat screenshot form penyesuaian stok.
+Tempat screenshot form realisasi pengadaan.
 
-Gambar 4.15. Form input penyesuaian stok.
+Gambar 4.13. Form input realisasi pengadaan.
+
+### 4.4.6 Hasil Pengujian Mutasi Obat
+
+Tabel 4.5. Hasil pengujian mutasi obat.
+
+| No | Skenario Pengujian | Input | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Menambah mutasi obat | Data faskes tujuan dan item obat | Data mutasi tersimpan | Sesuai harapan | Berhasil |
+| 2 | Validasi stok tidak mencukupi | Jumlah mutasi melebihi stok yang tersedia | Sistem menolak transaksi | Sesuai harapan | Berhasil |
+| 3 | Menampilkan detail mutasi | Memilih transaksi mutasi tertentu | Sistem menampilkan detail mutasi | Sesuai harapan | Berhasil |
+
+Tempat screenshot halaman mutasi obat.
+
+Gambar 4.14. Halaman daftar mutasi obat.
+
+Tempat screenshot form mutasi obat.
+
+Gambar 4.15. Form input mutasi obat.
 
 ### 4.4.7 Hasil Pengujian Monitoring
 
@@ -312,20 +322,16 @@ Tabel 4.6. Hasil pengujian monitoring.
 | No | Skenario Pengujian | Input | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Menampilkan stok terkini | Membuka menu monitoring stok | Sistem menampilkan stok per obat | Sesuai harapan | Berhasil |
-| 2 | Menampilkan batch hampir kedaluwarsa | Membuka menu batch dan kedaluwarsa | Sistem menampilkan daftar batch sesuai status | Sesuai harapan | Berhasil |
-| 3 | Menampilkan kartu stok | Memilih obat dan filter periode | Sistem menampilkan histori mutasi stok | Sesuai harapan | Berhasil |
+| 2 | Menampilkan detail obat | Memilih tombol detail pada data obat | Sistem menampilkan popup detail obat | Sesuai harapan | Berhasil |
+| 3 | Menampilkan status stok | Data snapshot stok tersedia | Sistem menampilkan status aman, kurang, atau berlebih | Sesuai harapan | Berhasil |
 
 Tempat screenshot halaman stok terkini.
 
 Gambar 4.16. Halaman monitoring stok terkini.
 
-Tempat screenshot halaman batch dan kedaluwarsa.
+Tempat screenshot popup detail obat.
 
-Gambar 4.17. Halaman monitoring batch dan kedaluwarsa.
-
-Tempat screenshot halaman kartu stok.
-
-Gambar 4.18. Halaman kartu stok obat.
+Gambar 4.17. Tampilan detail obat pada monitoring.
 
 ### 4.4.8 Hasil Pengujian Laporan
 
@@ -334,25 +340,25 @@ Tabel 4.7. Hasil pengujian laporan.
 | No | Skenario Pengujian | Input | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Menampilkan laporan stok | Filter laporan stok | Sistem menampilkan data stok sesuai filter | Sesuai harapan | Berhasil |
-| 2 | Menampilkan laporan stok masuk | Filter tanggal dan sumber | Sistem menampilkan data stok masuk | Sesuai harapan | Berhasil |
-| 3 | Menampilkan laporan stok keluar | Filter tanggal dan tujuan | Sistem menampilkan data stok keluar | Sesuai harapan | Berhasil |
-| 4 | Menampilkan laporan penyesuaian | Filter tanggal dan jenis penyesuaian | Sistem menampilkan data penyesuaian | Sesuai harapan | Berhasil |
+| 2 | Menampilkan laporan realisasi pengadaan | Filter tanggal dan sumber | Sistem menampilkan data pengadaan sesuai filter | Sesuai harapan | Berhasil |
+| 3 | Menampilkan laporan mutasi obat | Filter tanggal dan faskes | Sistem menampilkan data mutasi sesuai filter | Sesuai harapan | Berhasil |
+| 4 | Menampilkan laporan RKO vs realisasi | Filter periode dan status | Sistem menampilkan perbandingan rencana dan realisasi | Sesuai harapan | Berhasil |
 
 Tempat screenshot halaman laporan stok.
 
-Gambar 4.19. Halaman laporan stok.
+Gambar 4.18. Halaman laporan stok.
 
-Tempat screenshot halaman laporan stok masuk.
+Tempat screenshot halaman laporan realisasi pengadaan.
 
-Gambar 4.20. Halaman laporan stok masuk.
+Gambar 4.19. Halaman laporan realisasi pengadaan.
 
-Tempat screenshot halaman laporan stok keluar.
+Tempat screenshot halaman laporan mutasi obat.
 
-Gambar 4.21. Halaman laporan stok keluar.
+Gambar 4.20. Halaman laporan mutasi obat.
 
-Tempat screenshot halaman laporan penyesuaian stok.
+Tempat screenshot halaman laporan RKO vs realisasi.
 
-Gambar 4.22. Halaman laporan penyesuaian stok.
+Gambar 4.21. Halaman laporan RKO vs realisasi.
 
 ### 4.4.9 Hasil Pengujian Manajemen Pengguna
 
@@ -360,17 +366,17 @@ Tabel 4.8. Hasil pengujian manajemen pengguna.
 
 | No | Skenario Pengujian | Input | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Menambah pengguna baru | Data pengguna baru | Data pengguna tersimpan | Sesuai harapan | Berhasil |
-| 2 | Mengubah data pengguna | Perubahan data akun | Data pengguna diperbarui | Sesuai harapan | Berhasil |
-| 3 | Menonaktifkan akun | Ubah status akun | Akun berubah menjadi nonaktif | Sesuai harapan | Berhasil |
+| 1 | Menambah pengguna baru | Data akun dan role | Data pengguna tersimpan | Sesuai harapan | Berhasil |
+| 2 | Mengubah status pengguna | Aktif atau nonaktif | Status pengguna diperbarui | Sesuai harapan | Berhasil |
+| 3 | Menampilkan detail pengguna | Memilih salah satu akun | Sistem menampilkan profil pengguna | Sesuai harapan | Berhasil |
 
 Tempat screenshot halaman manajemen pengguna.
 
-Gambar 4.23. Halaman manajemen pengguna.
+Gambar 4.22. Halaman manajemen pengguna.
 
 Tempat screenshot form tambah pengguna.
 
-Gambar 4.24. Form tambah pengguna.
+Gambar 4.23. Form tambah pengguna.
 
 ### 4.4.10 Hasil Pengujian Log Aktivitas
 
@@ -378,46 +384,42 @@ Tabel 4.9. Hasil pengujian log aktivitas.
 
 | No | Skenario Pengujian | Input | Hasil yang Diharapkan | Hasil Pengujian | Kesimpulan |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Menampilkan data log aktivitas | Membuka menu log aktivitas | Sistem menampilkan riwayat aktivitas pengguna | Sesuai harapan | Berhasil |
-| 2 | Melakukan filter log | Filter user, modul, atau tanggal | Sistem menampilkan hasil sesuai filter | Sesuai harapan | Berhasil |
+| 1 | Menampilkan daftar log aktivitas | Membuka menu log aktivitas | Sistem menampilkan catatan aktivitas pengguna | Sesuai harapan | Berhasil |
+| 2 | Filter log aktivitas | Filter modul, pengguna, dan tanggal | Sistem menampilkan log sesuai filter | Sesuai harapan | Berhasil |
 
 Tempat screenshot halaman log aktivitas.
 
-Gambar 4.25. Halaman log aktivitas pengguna.
+Gambar 4.24. Halaman log aktivitas.
 
 ## 4.5 Pembahasan Hasil Sistem
 
-Berdasarkan hasil implementasi dan pengujian yang telah dilakukan, aplikasi monitoring obat kontrasepsi berbasis web ini dapat mendukung proses pengelolaan stok secara lebih terstruktur dibandingkan dengan metode manual. Sistem mampu mencatat data obat, transaksi stok masuk, transaksi stok keluar, dan penyesuaian stok dalam satu basis data terintegrasi.
+Berdasarkan hasil implementasi dan pengujian yang telah dilakukan, aplikasi monitoring obat kontrasepsi berbasis web ini mampu mendukung proses pencatatan dan pemantauan data secara lebih terstruktur dibandingkan dengan metode manual. Sistem tidak hanya menyimpan data master, tetapi juga menghubungkan proses perencanaan kebutuhan obat dengan realisasi pengadaan dan mutasi obat.
 
-Penerapan pencatatan batch serta metode FEFO memberikan nilai tambah pada sistem, karena proses distribusi obat menjadi lebih terarah dan membantu mengurangi risiko kedaluwarsa. Selain itu, fitur monitoring dan laporan mempermudah pengguna dalam mengetahui kondisi stok terkini serta riwayat pergerakan obat.
+Penerapan modul RKO memberikan nilai tambah karena sistem dapat digunakan bukan hanya untuk mencatat kondisi saat ini, tetapi juga untuk memantau hubungan antara rencana kebutuhan dan pengadaan yang benar-benar terjadi. Selain itu, keberadaan laporan RKO vs realisasi membantu pengguna melihat tingkat ketercapaian pengadaan secara lebih jelas.
 
-Dari sisi pengelolaan pengguna, sistem telah menerapkan pembagian hak akses yang sesuai dengan kebutuhan peran pengguna. Keberadaan log aktivitas juga membantu meningkatkan pengawasan terhadap penggunaan sistem.
-
-Secara keseluruhan, hasil implementasi menunjukkan bahwa aplikasi yang dibangun telah memenuhi kebutuhan utama pengelolaan stok obat kontrasepsi, yaitu pencatatan yang lebih akurat, monitoring yang lebih cepat, dan penyajian informasi yang lebih terintegrasi.
+Fitur monitoring stok, mutasi obat, dan laporan periodik juga menunjukkan bahwa sistem telah menjalankan fungsi monitoring secara nyata. Informasi yang ditampilkan tidak lagi sekadar data mentah, tetapi telah diolah menjadi ringkasan yang dapat membantu proses evaluasi dan pengambilan keputusan.
 
 ## 4.6 Kelebihan dan Keterbatasan Sistem
 
-### 4.6.1 Kelebihan Sistem
+Kelebihan aplikasi yang berhasil diimplementasikan dalam penelitian ini antara lain:
 
-Kelebihan dari sistem yang dibangun antara lain:
+- mendukung pencatatan master data obat, faskes, dan sumber pengadaan,
+- mendukung penyusunan RKO beserta detail kebutuhan obat,
+- mendukung pencatatan realisasi pengadaan yang dapat dihubungkan dengan RKO,
+- mendukung pencatatan mutasi obat ke fasilitas kesehatan,
+- menyediakan monitoring stok per obat dan snapshot stok per periode,
+- menyediakan laporan monitoring, termasuk laporan RKO vs realisasi,
+- menyediakan hak akses pengguna dan log aktivitas.
 
-- berbasis web sehingga mudah diakses melalui browser,
-- mendukung pencatatan stok masuk, stok keluar, dan penyesuaian stok,
-- menerapkan pengelolaan stok berbasis batch,
-- mendukung metode FEFO,
-- menyediakan monitoring stok dan kedaluwarsa,
-- menyediakan laporan yang lebih terstruktur,
-- mendukung multi-user dengan pembagian hak akses.
+Adapun keterbatasan sistem pada implementasi saat ini antara lain:
 
-### 4.6.2 Keterbatasan Sistem
-
-Adapun keterbatasan dari sistem ini antara lain:
-
-- fitur ekspor laporan ke PDF atau Excel belum dibahas secara mendalam,
-- sistem masih berfokus pada kebutuhan internal pengelolaan stok,
-- notifikasi otomatis untuk stok menipis atau batch hampir kedaluwarsa belum menjadi fokus utama,
-- integrasi dengan sistem eksternal belum diterapkan.
+- integrasi otomatis dengan sistem lain belum diterapkan, sehingga data masih diinput pada aplikasi ini,
+- snapshot stok per periode masih bergantung pada proses pencatatan dan pembaruan data yang dilakukan pengguna,
+- fitur notifikasi otomatis untuk status stok belum menjadi fokus utama,
+- ekspor laporan ke format dokumen tertentu belum menjadi fokus implementasi utama penelitian ini.
 
 ## 4.7 Kesimpulan Bab
 
-Berdasarkan hasil implementasi dan pengujian yang telah dilakukan pada BAB IV, dapat disimpulkan bahwa aplikasi monitoring obat kontrasepsi berbasis web ini telah berhasil dibangun sesuai kebutuhan utama sistem. Fitur-fitur yang tersedia mampu mendukung proses pengelolaan stok obat, monitoring kondisi persediaan, penyusunan laporan, serta pengendalian akses pengguna. Hasil pengujian menunjukkan bahwa fungsi-fungsi utama sistem telah berjalan sesuai dengan tujuan yang diharapkan.
+Berdasarkan pembahasan pada bab ini dapat disimpulkan bahwa aplikasi yang dibangun telah berhasil diimplementasikan sebagai aplikasi monitoring obat kontrasepsi berbasis web. Implementasi sistem telah mencakup modul utama yang dibutuhkan, yaitu master data, RKO, realisasi pengadaan, mutasi obat, monitoring stok, laporan, manajemen pengguna, dan log aktivitas.
+
+Hasil pengujian menunjukkan bahwa fungsi-fungsi utama sistem dapat berjalan sesuai dengan kebutuhan. Dengan demikian, aplikasi ini dapat digunakan sebagai sarana untuk membantu Dinas Pengendalian Penduduk dan Keluarga Berencana dalam memantau data obat kontrasepsi secara lebih efektif, terstruktur, dan mudah dilaporkan.

@@ -59,7 +59,7 @@
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Realisasi Posted</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Selisih ke Disetujui</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Cakupan</th>
-                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Linked Pengadaan</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Baris Realisasi</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Penyusun</th>
                         </tr>
                     </thead>
@@ -111,7 +111,7 @@
                                         {{ number_format($coverage, 1) }}%
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($report->linked_receipts_count ?? 0)) }}</td>
+                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($report->realization_rows_count ?? 0)) }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $report->submitter?->name ?? '-' }}</td>
                             </tr>
                             <tr x-cloak x-show="open" x-transition>

@@ -85,16 +85,17 @@
     <h1>HASIL DAN PEMBAHASAN</h1>
 
     <h2>4.1 Gambaran Umum Hasil Penelitian</h2>
-    <p>Hasil dari penelitian ini adalah sebuah aplikasi monitoring obat kontrasepsi berbasis web yang dibangun menggunakan framework Laravel dan database MariaDB/MySQL. Aplikasi ini dirancang untuk membantu proses pengelolaan data obat, pencatatan transaksi stok masuk dan stok keluar, penyesuaian stok, monitoring kondisi stok, penyusunan laporan, serta pengelolaan pengguna pada lingkungan Dinas Pengendalian Penduduk dan Keluarga Berencana.</p>
-    <p>Secara umum, aplikasi yang dibangun telah mengintegrasikan proses pencatatan persediaan ke dalam satu sistem terpusat. Dengan demikian, data stok dapat diperbarui secara lebih cepat, proses pencarian data menjadi lebih mudah, dan risiko kesalahan pencatatan manual dapat dikurangi.</p>
-    <p>Adapun modul utama yang berhasil diimplementasikan dalam aplikasi ini meliputi:</p>
+    <p>Hasil dari penelitian ini adalah sebuah aplikasi monitoring obat kontrasepsi berbasis web yang dibangun untuk mendukung proses pencatatan, pemantauan, dan pelaporan data obat kontrasepsi pada Dinas Pengendalian Penduduk dan Keluarga Berencana Kota Sukabumi. Aplikasi dikembangkan menggunakan framework Laravel dan basis data MariaDB/MySQL sehingga dapat diakses melalui browser dan digunakan oleh lebih dari satu pengguna sesuai hak akses masing-masing.</p>
+    <p>Berbeda dengan sistem pencatatan manual yang sebelumnya banyak bergantung pada lembar kerja spreadsheet, aplikasi yang dibangun pada penelitian ini menempatkan data dalam satu sistem terintegrasi. Dengan demikian, proses pengelolaan data obat, penyusunan RKO, pencatatan realisasi pengadaan, pencatatan mutasi obat, monitoring stok, dan penyusunan laporan dapat dilakukan secara lebih terstruktur, lebih cepat, dan lebih mudah ditelusuri.</p>
+    <p>Secara umum, modul utama yang berhasil diimplementasikan dalam aplikasi ini meliputi:</p>
     <ul>
         <li>autentikasi pengguna,</li>
-        <li>dashboard,</li>
-        <li>manajemen master data,</li>
-        <li>transaksi stok masuk,</li>
-        <li>transaksi stok keluar,</li>
-        <li>penyesuaian stok,</li>
+        <li>dashboard monitoring,</li>
+        <li>manajemen data faskes,</li>
+        <li>manajemen master obat,</li>
+        <li>rencana kebutuhan obat (RKO),</li>
+        <li>realisasi pengadaan,</li>
+        <li>mutasi obat,</li>
         <li>monitoring stok,</li>
         <li>laporan,</li>
         <li>manajemen pengguna, dan</li>
@@ -103,8 +104,8 @@
 
     <h2>4.2 Implementasi Sistem</h2>
     <h3>4.2.1 Implementasi Perangkat Lunak</h3>
-    <p>Implementasi perangkat lunak yang digunakan dalam pembangunan aplikasi ini terdiri atas beberapa komponen utama. Sistem dikembangkan menggunakan bahasa pemrograman PHP dengan framework Laravel. Untuk pengelolaan basis data digunakan MariaDB/MySQL. Antarmuka aplikasi dibangun menggunakan Blade Template, CSS, dan JavaScript yang terintegrasi dalam ekosistem Laravel.</p>
-    <p>Perangkat lunak yang digunakan dalam implementasi sistem ini adalah sebagai berikut:</p>
+    <p>Implementasi perangkat lunak pada penelitian ini menggunakan pendekatan pengembangan aplikasi web. Sistem dibangun menggunakan bahasa pemrograman PHP dengan framework Laravel, sedangkan antarmuka dikembangkan menggunakan Blade Template, CSS, dan JavaScript yang terintegrasi pada ekosistem Laravel. Basis data yang digunakan adalah MariaDB/MySQL.</p>
+    <p>Perangkat lunak yang digunakan dalam implementasi sistem ini meliputi:</p>
     <ul>
         <li>sistem operasi untuk pengembangan,</li>
         <li>web server Apache atau Laravel development server,</li>
@@ -118,128 +119,135 @@
     <div class="mermaid">
 flowchart LR
     A["Pengguna"] --> B["Web Browser"]
-    B --> C["Aplikasi Laravel"]
-    C --> D["MariaDB / MySQL"]
-    C --> E["Laporan dan Monitoring"]
-    C --> F["Autentikasi dan Hak Akses"]
+    B --> C["Aplikasi Monitoring Obat Kontrasepsi"]
+    C --> D["Laravel"]
+    D --> E["MariaDB / MySQL"]
+    D --> F["Dashboard, Monitoring, dan Laporan"]
+    D --> G["Autentikasi dan Hak Akses"]
     </div>
     <p class="figure-title">Gambar 4.1. Arsitektur umum implementasi perangkat lunak aplikasi.</p>
 
     <h3>4.2.2 Implementasi Basis Data</h3>
-    <p>Basis data pada aplikasi ini dirancang untuk mendukung seluruh proses bisnis utama dalam pengelolaan stok obat kontrasepsi. Struktur basis data terdiri atas tabel master, tabel transaksi, dan tabel pendukung audit.</p>
-    <p>Tabel master digunakan untuk menyimpan data dasar yang relatif jarang berubah, seperti data obat, kategori obat, satuan, sumber stok, tujuan distribusi, role, dan pengguna. Tabel transaksi digunakan untuk mencatat pergerakan stok, baik stok masuk, stok keluar, maupun penyesuaian stok. Selain itu, terdapat tabel log aktivitas yang digunakan untuk mencatat jejak aktivitas pengguna dalam sistem.</p>
-    <p>Secara umum, kelompok tabel dalam sistem ini meliputi:</p>
+    <p>Basis data pada aplikasi ini dirancang untuk mendukung kebutuhan monitoring obat kontrasepsi, mulai dari data master, perencanaan kebutuhan, realisasi pengadaan, mutasi obat, hingga pemantauan stok per periode. Struktur basis data tidak hanya menyimpan data pokok, tetapi juga menyediakan relasi yang memudahkan proses pencarian, penyaringan, dan penyusunan laporan.</p>
+    <p>Secara umum, kelompok tabel yang digunakan dalam implementasi sistem ini meliputi:</p>
     <ul>
         <li>tabel master: <code>roles</code>, <code>users</code>, <code>medicine_categories</code>, <code>units</code>, <code>medicines</code>, <code>stock_sources</code>, <code>distribution_destinations</code>,</li>
-        <li>tabel transaksi: <code>stock_receipts</code>, <code>stock_receipt_items</code>, <code>medicine_batches</code>, <code>stock_distributions</code>, <code>stock_distribution_items</code>, <code>stock_adjustments</code>, <code>stock_adjustment_items</code>,</li>
+        <li>tabel perencanaan: <code>rko_headers</code>, <code>rko_details</code>,</li>
+        <li>tabel transaksi dan monitoring: <code>stock_receipts</code>, <code>stock_receipt_items</code>, <code>stock_distributions</code>, <code>stock_distribution_items</code>, <code>medicine_stocks</code>, <code>stock_mutations</code>,</li>
         <li>tabel audit: <code>activity_logs</code>.</li>
     </ul>
+    <p>Dalam implementasinya, tabel <code>medicines</code> digunakan untuk menyimpan data obat, tabel <code>rko_headers</code> dan <code>rko_details</code> digunakan untuk menyimpan rencana kebutuhan obat, tabel <code>stock_receipts</code> dan <code>stock_receipt_items</code> digunakan untuk mencatat realisasi pengadaan, tabel <code>stock_distributions</code> dan <code>stock_distribution_items</code> digunakan untuk mencatat mutasi obat ke faskes, tabel <code>medicine_stocks</code> digunakan untuk menyimpan snapshot stok per periode, sedangkan tabel <code>stock_mutations</code> digunakan untuk mencatat riwayat mutasi masuk dan keluar.</p>
     <div class="mermaid">
 erDiagram
     ROLES ||--o{ USERS : memiliki
-    USERS ||--o{ STOCK_RECEIPTS : membuat
-    USERS ||--o{ STOCK_DISTRIBUTIONS : membuat
-    USERS ||--o{ STOCK_ADJUSTMENTS : membuat
-    USERS ||--o{ ACTIVITY_LOGS : mencatat
+    USERS ||--o{ RKO_HEADERS : menyusun
+    USERS ||--o{ STOCK_RECEIPTS : mencatat
+    USERS ||--o{ STOCK_DISTRIBUTIONS : mencatat
+    USERS ||--o{ ACTIVITY_LOGS : menghasilkan
 
     MEDICINE_CATEGORIES ||--o{ MEDICINES : mengelompokkan
     UNITS ||--o{ MEDICINES : menggunakan
-    MEDICINES ||--o{ STOCK_RECEIPT_ITEMS : dicatat
-    MEDICINES ||--o{ MEDICINE_BATCHES : memiliki
-    MEDICINES ||--o{ STOCK_DISTRIBUTION_ITEMS : disalurkan
-    MEDICINES ||--o{ STOCK_ADJUSTMENT_ITEMS : disesuaikan
+
+    MEDICINES ||--o{ RKO_DETAILS : direncanakan
+    RKO_HEADERS ||--o{ RKO_DETAILS : memiliki
 
     STOCK_SOURCES ||--o{ STOCK_RECEIPTS : sumber
+    RKO_HEADERS ||--o{ STOCK_RECEIPTS : direalisasikan
     STOCK_RECEIPTS ||--o{ STOCK_RECEIPT_ITEMS : memiliki
-    STOCK_RECEIPT_ITEMS ||--o{ MEDICINE_BATCHES : membentuk
+    MEDICINES ||--o{ STOCK_RECEIPT_ITEMS : diterima
 
     DISTRIBUTION_DESTINATIONS ||--o{ STOCK_DISTRIBUTIONS : tujuan
     STOCK_DISTRIBUTIONS ||--o{ STOCK_DISTRIBUTION_ITEMS : memiliki
+    MEDICINES ||--o{ STOCK_DISTRIBUTION_ITEMS : dimutasi
 
-    STOCK_ADJUSTMENTS ||--o{ STOCK_ADJUSTMENT_ITEMS : memiliki
-    MEDICINE_BATCHES ||--o{ STOCK_ADJUSTMENT_ITEMS : disesuaikan
+    MEDICINES ||--o{ MEDICINE_STOCKS : dipantau
+    MEDICINES ||--o{ STOCK_MUTATIONS : memiliki
     </div>
     <p class="figure-title">Gambar 4.2. Diagram konseptual relasi data pada aplikasi.</p>
 
     <h3>4.2.3 Implementasi Hak Akses Pengguna</h3>
-    <p>Hak akses pengguna pada aplikasi ini dibedakan berdasarkan peran masing-masing pengguna. Pembagian hak akses bertujuan agar setiap pengguna hanya dapat mengakses fitur yang sesuai dengan tugas dan tanggung jawabnya.</p>
-    <p>Hak akses dalam aplikasi ini terdiri atas:</p>
+    <p>Hak akses pengguna pada aplikasi ini dibedakan berdasarkan peran masing-masing pengguna. Pembagian hak akses dilakukan agar pengguna hanya dapat mengakses menu dan fungsi yang sesuai dengan tugasnya.</p>
+    <p>Hak akses utama dalam aplikasi ini terdiri atas:</p>
     <ul>
         <li><code>admin</code>, yaitu pengguna yang memiliki akses penuh terhadap seluruh modul sistem,</li>
-        <li><code>petugas_gudang</code>, yaitu pengguna yang berfokus pada pengelolaan data transaksi dan monitoring stok,</li>
-        <li><code>pimpinan</code>, yaitu pengguna yang berfokus pada pemantauan dashboard, monitoring, laporan, dan log aktivitas tertentu.</li>
+        <li><code>petugas_gudang</code>, yaitu pengguna yang berfokus pada pengelolaan data master, RKO, realisasi pengadaan, mutasi obat, monitoring, dan laporan,</li>
+        <li><code>pimpinan</code>, yaitu pengguna yang berfokus pada pemantauan dashboard, monitoring, laporan, dan log aktivitas.</li>
     </ul>
-    <p>Penerapan hak akses dilakukan melalui proses autentikasi dan middleware pada Laravel sehingga sistem dapat membatasi route, menu, dan aksi tertentu berdasarkan role pengguna.</p>
+    <p>Implementasi hak akses dilakukan melalui autentikasi dan middleware pada Laravel, sehingga sistem dapat membatasi route, menu, dan tindakan tertentu berdasarkan role pengguna.</p>
     <div class="mermaid">
 flowchart TD
     A["Pengguna Login"] --> B{"Role Pengguna"}
     B -->|Admin| C["Akses seluruh modul"]
-    B -->|Petugas Gudang| D["Master data, transaksi, monitoring"]
+    B -->|Petugas Gudang| D["Master data, RKO, pengadaan, mutasi, monitoring"]
     B -->|Pimpinan| E["Dashboard, monitoring, laporan, log"]
     </div>
     <p class="figure-title">Gambar 4.3. Diagram pembagian hak akses pengguna.</p>
 
     <h2>4.3 Pembahasan Fitur Aplikasi</h2>
     <h3>4.3.1 Halaman Login</h3>
-    <p>Halaman login digunakan sebagai gerbang awal bagi pengguna sebelum dapat mengakses sistem. Pengguna diwajibkan memasukkan kredensial yang valid agar dapat masuk ke dalam aplikasi. Fitur ini penting untuk menjaga keamanan data dan memastikan hanya pihak yang berwenang yang dapat mengakses sistem.</p>
-    <p>Pada implementasinya, sistem akan memverifikasi data login pengguna terhadap data pengguna yang tersimpan di basis data. Jika data sesuai, pengguna akan diarahkan ke halaman dashboard. Jika tidak sesuai, sistem akan menampilkan pesan kesalahan.</p>
+    <p>Halaman login berfungsi sebagai pintu masuk pengguna ke dalam sistem. Pada halaman ini, pengguna harus memasukkan kredensial yang sesuai agar dapat mengakses aplikasi. Fitur login penting untuk menjaga keamanan data dan memastikan bahwa hanya pengguna yang berwenang yang dapat menggunakan sistem.</p>
+    <p>Ketika proses login berhasil, pengguna akan diarahkan ke dashboard sesuai hak akses yang dimilikinya. Sebaliknya, apabila data login tidak sesuai, sistem akan menampilkan pesan kesalahan.</p>
 
-    <h3>4.3.2 Dashboard</h3>
-    <p>Dashboard berfungsi sebagai halaman utama setelah pengguna berhasil login. Halaman ini menampilkan ringkasan informasi penting yang dibutuhkan pengguna secara cepat, seperti jumlah obat aktif, total stok saat ini, obat dengan stok menipis, batch yang hampir kedaluwarsa, serta ringkasan transaksi harian.</p>
-    <p>Keberadaan dashboard membantu pengguna memperoleh gambaran umum kondisi persediaan tanpa harus membuka laporan atau detail transaksi satu per satu.</p>
+    <h3>4.3.2 Dashboard Monitoring</h3>
+    <p>Dashboard merupakan halaman utama setelah pengguna berhasil login. Dashboard menampilkan ringkasan informasi penting yang dibutuhkan pengguna secara cepat, seperti jumlah obat aktif, total stok yang tercatat, jumlah dokumen RKO, realisasi pengadaan, mutasi obat, serta indikator kondisi stok.</p>
+    <p>Dashboard membantu pengguna memperoleh gambaran umum kondisi obat kontrasepsi tanpa harus membuka setiap halaman secara terpisah. Dengan demikian, dashboard berfungsi sebagai media monitoring awal bagi admin, petugas, maupun pimpinan.</p>
 
-    <h3>4.3.3 Manajemen Master Data</h3>
-    <p>Modul master data digunakan untuk mengelola seluruh data dasar yang menjadi fondasi sistem. Data yang termasuk ke dalam modul ini antara lain kategori obat, satuan, data obat, sumber stok, dan tujuan distribusi.</p>
-    <p>Melalui modul ini, admin atau petugas dapat menambah, mengubah, melihat, dan menonaktifkan data sesuai kebutuhan. Keakuratan master data sangat berpengaruh terhadap proses transaksi stok dan kualitas laporan yang dihasilkan.</p>
+    <h3>4.3.3 Manajemen Data Faskes</h3>
+    <p>Modul data faskes digunakan untuk menyimpan data fasilitas kesehatan yang menjadi tujuan mutasi obat. Data ini meliputi identitas faskes, jenis faskes, informasi kontak, serta status aktif atau nonaktif.</p>
+    <p>Data faskes penting karena menjadi acuan pada proses mutasi obat. Dengan data faskes yang terkelola dengan baik, proses pencatatan mutasi menjadi lebih rapi dan tujuan penyaluran obat dapat ditelusuri dengan lebih mudah.</p>
 
-    <h3>4.3.4 Transaksi Stok Masuk</h3>
-    <p>Modul stok masuk digunakan untuk mencatat penerimaan obat dari pusat atau sumber distribusi tertentu. Setiap transaksi stok masuk akan menghasilkan detail item penerimaan dan membentuk data batch obat.</p>
-    <p>Dalam implementasi sistem ini, setiap item penerimaan dicatat dengan informasi jumlah, nomor batch, tanggal diterima, dan tanggal kedaluwarsa. Pencatatan batch penting untuk mendukung monitoring stok dan proses pengeluaran obat berdasarkan prinsip FEFO.</p>
+    <h3>4.3.4 Manajemen Master Obat</h3>
+    <p>Modul master obat digunakan untuk mengelola data obat kontrasepsi yang akan dipantau dalam sistem. Data yang dikelola meliputi kode obat, nama obat, jenis obat, kategori, satuan, harga standar, status aktif, dan stok minimum.</p>
+    <p>Ketersediaan master obat yang akurat sangat berpengaruh terhadap modul lain, terutama RKO, realisasi pengadaan, mutasi obat, monitoring stok, dan laporan. Oleh karena itu, modul ini menjadi fondasi utama dalam implementasi sistem.</p>
 
-    <h3>4.3.5 Transaksi Stok Keluar</h3>
-    <p>Modul stok keluar digunakan untuk mencatat distribusi obat ke fasilitas kesehatan atau pihak tujuan. Proses pengeluaran stok pada sistem ini tidak hanya mengurangi total stok, tetapi juga mengambil stok dari batch yang memiliki tanggal kedaluwarsa paling dekat.</p>
-    <p>Penerapan metode FEFO pada modul ini membantu mengurangi risiko obat kedaluwarsa tersimpan terlalu lama di gudang. Dengan demikian, distribusi obat menjadi lebih terkendali dan sesuai dengan karakteristik barang medis.</p>
+    <h3>4.3.5 Rencana Kebutuhan Obat (RKO)</h3>
+    <p>Modul RKO digunakan untuk mencatat rencana kebutuhan obat pada periode tertentu. Implementasi RKO dibagi menjadi dua bagian, yaitu header dan detail. Bagian header berisi informasi umum seperti nomor RKO, periode, tahun, total anggaran, status dokumen, tanggal pengajuan, tanggal persetujuan, dan keterangan. Sementara itu, bagian detail berisi rincian item obat, jumlah kebutuhan, estimasi harga satuan, total estimasi, prioritas, dan keterangan.</p>
+    <p>Dengan adanya modul ini, proses perencanaan kebutuhan obat dapat didokumentasikan secara sistematis. RKO juga berperan sebagai acuan dalam proses realisasi pengadaan sehingga hubungan antara rencana dan pelaksanaan dapat dipantau.</p>
 
-    <h3>4.3.6 Penyesuaian Stok</h3>
-    <p>Modul penyesuaian stok digunakan ketika terjadi perbedaan antara stok fisik di lapangan dengan stok yang tercatat di dalam sistem. Selisih tersebut dapat disebabkan oleh berbagai faktor, seperti kesalahan pencatatan, kehilangan barang, atau hasil pemeriksaan ulang.</p>
-    <p>Melalui modul ini, pengguna dapat memilih batch obat tertentu, memasukkan jumlah stok aktual, lalu sistem akan menghitung selisih stok secara otomatis. Hasil penyesuaian akan disimpan sebagai histori agar proses audit tetap dapat dilakukan.</p>
+    <h3>4.3.6 Realisasi Pengadaan</h3>
+    <p>Modul realisasi pengadaan digunakan untuk mencatat obat yang benar-benar diterima oleh instansi pada suatu periode. Setiap realisasi pengadaan dapat dihubungkan dengan dokumen RKO tertentu sehingga pengguna dapat membandingkan antara kebutuhan yang direncanakan dan pengadaan yang benar-benar terealisasi.</p>
+    <p>Informasi yang dicatat pada modul ini meliputi nomor realisasi, tanggal penerimaan, sumber pengadaan, referensi RKO, daftar item obat, jumlah realisasi, harga satuan realisasi, total realisasi, serta catatan transaksi. Dengan demikian, modul ini menjadi jembatan antara perencanaan dan kondisi nyata pengadaan obat.</p>
 
-    <h3>4.3.7 Monitoring Stok</h3>
-    <p>Modul monitoring stok berfungsi untuk menampilkan kondisi stok terkini secara lebih rinci. Dalam aplikasi ini, monitoring terbagi menjadi beberapa bagian, yaitu stok terkini per obat, monitoring batch dan kedaluwarsa, serta kartu stok.</p>
-    <p>Halaman stok terkini membantu pengguna melihat jumlah stok yang masih tersedia untuk setiap obat. Halaman batch dan kedaluwarsa membantu pengguna memantau batch yang hampir atau sudah melewati masa kedaluwarsa. Sementara itu, kartu stok menampilkan histori pergerakan stok masuk, keluar, dan penyesuaian untuk suatu obat atau batch tertentu.</p>
+    <h3>4.3.7 Mutasi Obat</h3>
+    <p>Modul mutasi obat digunakan untuk mencatat perpindahan atau penyaluran obat ke fasilitas kesehatan. Pada implementasi ini, mutasi obat berfungsi sebagai pencatatan obat keluar dari instansi menuju faskes tertentu.</p>
+    <p>Data mutasi obat sangat penting dalam konteks monitoring karena menunjukkan bagaimana obat yang telah diterima kemudian disalurkan. Riwayat mutasi tersebut juga menjadi salah satu sumber data bagi penyusunan snapshot stok dan histori pergerakan obat.</p>
+
+    <h3>4.3.8 Monitoring Stok</h3>
+    <p>Modul monitoring stok berfungsi untuk menampilkan kondisi stok obat secara ringkas dan terstruktur. Pada aplikasi ini, monitoring berfokus pada stok per obat dan stok per periode, bukan pada pelacakan teknis yang terlalu rinci. Dengan pendekatan ini, aplikasi lebih menekankan fungsi pemantauan, evaluasi, dan pelaporan.</p>
+    <p>Monitoring stok menampilkan jumlah stok yang tersedia, status kondisi stok, dan ringkasan mutasi yang terjadi. Selain itu, pengguna juga dapat melihat detail obat melalui popup sehingga informasi penting tetap dapat diakses dengan cepat tanpa harus berpindah halaman.</p>
     <div class="mermaid">
 flowchart LR
-    A["Stok Masuk"] --> B["Batch Obat"]
-    B --> C["Stok Tersedia"]
-    C --> D["Stok Keluar"]
-    C --> E["Penyesuaian Stok"]
-    B --> F["Monitoring Kedaluwarsa"]
-    C --> G["Laporan dan Dashboard"]
+    A["RKO"] --> B["Realisasi Pengadaan"]
+    B --> C["Mutasi Obat"]
+    B --> D["Stok Periodik"]
+    C --> D
+    D --> E["Dashboard Monitoring"]
+    D --> F["Laporan"]
     </div>
-    <p class="figure-title">Gambar 4.4. Diagram alur utama pergerakan stok pada aplikasi.</p>
+    <p class="figure-title">Gambar 4.4. Diagram alur utama data monitoring pada aplikasi.</p>
 
-    <h3>4.3.8 Laporan</h3>
-    <p>Modul laporan digunakan untuk menyajikan data dalam bentuk yang lebih terstruktur dan mudah dibaca. Aplikasi ini menyediakan beberapa jenis laporan, yaitu laporan stok, laporan stok masuk, laporan stok keluar, dan laporan penyesuaian stok.</p>
-    <p>Laporan dapat difilter berdasarkan kriteria tertentu agar pengguna dapat menyesuaikan informasi yang ingin dilihat. Fitur ini mempermudah penyusunan dokumen administrasi dan membantu pimpinan dalam proses evaluasi.</p>
+    <h3>4.3.9 Laporan</h3>
+    <p>Modul laporan digunakan untuk menyajikan data dalam bentuk yang lebih terstruktur dan mudah dibaca. Laporan yang tersedia pada aplikasi ini meliputi laporan stok, laporan realisasi pengadaan, laporan mutasi obat, dan laporan RKO vs realisasi.</p>
+    <p>Khusus laporan RKO vs realisasi, sistem menampilkan perbandingan antara kebutuhan yang direncanakan dan realisasi pengadaan yang telah dicatat. Fitur ini menjadi bagian penting dari monitoring karena membantu pengguna melihat capaian pengadaan serta selisih yang masih perlu ditindaklanjuti.</p>
 
-    <h3>4.3.9 Manajemen Pengguna</h3>
-    <p>Modul manajemen pengguna digunakan untuk mengelola akun yang dapat mengakses sistem. Pada modul ini, admin dapat menambah pengguna baru, mengubah data pengguna, melihat detail pengguna, serta mengatur status aktif atau nonaktif akun.</p>
-    <p>Pengelolaan akun pengguna penting untuk menjaga keamanan sistem serta memastikan distribusi hak akses berjalan sesuai kebutuhan organisasi.</p>
+    <h3>4.3.10 Manajemen Pengguna</h3>
+    <p>Modul manajemen pengguna digunakan untuk mengelola akun yang dapat mengakses sistem. Admin dapat menambah pengguna baru, mengubah data pengguna, melihat detail pengguna, serta mengatur status aktif atau nonaktif akun.</p>
+    <p>Pengelolaan akun penting untuk menjaga keamanan sistem dan memastikan bahwa pembagian hak akses berjalan sesuai kebutuhan organisasi.</p>
 
-    <h3>4.3.10 Log Aktivitas</h3>
-    <p>Modul log aktivitas digunakan untuk mencatat tindakan penting yang dilakukan oleh pengguna di dalam sistem. Catatan aktivitas ini dapat membantu proses pengawasan, pelacakan perubahan data, dan audit penggunaan sistem.</p>
-    <p>Informasi yang dicatat pada log aktivitas meliputi nama pengguna, modul yang diakses, jenis aksi, deskripsi aktivitas, waktu kejadian, dan alamat IP. Dengan adanya log aktivitas, pengelolaan sistem menjadi lebih transparan dan terkontrol.</p>
+    <h3>4.3.11 Log Aktivitas</h3>
+    <p>Modul log aktivitas digunakan untuk mencatat tindakan penting yang dilakukan oleh pengguna di dalam sistem. Informasi yang dicatat meliputi nama pengguna, modul yang diakses, aksi yang dilakukan, deskripsi aktivitas, waktu kejadian, dan alamat IP.</p>
+    <p>Keberadaan log aktivitas membantu proses pengawasan dan audit, serta mempermudah penelusuran apabila terjadi perubahan data tertentu pada sistem.</p>
 
     <h2>4.4 Pengujian Sistem</h2>
     <h3>4.4.1 Metode Pengujian</h3>
-    <p>Pengujian sistem dilakukan menggunakan metode <i>black box testing</i>. Metode ini digunakan untuk menguji fungsi-fungsi sistem berdasarkan masukan dan keluaran yang dihasilkan, tanpa melihat secara langsung kode program di dalamnya.</p>
-    <p>Pengujian dilakukan pada setiap modul utama aplikasi untuk memastikan bahwa setiap fitur dapat berjalan sesuai kebutuhan. Fokus pengujian meliputi:</p>
+    <p>Pengujian sistem dilakukan menggunakan metode <i>black box testing</i>. Metode ini digunakan untuk menguji fungsi sistem berdasarkan masukan dan keluaran yang dihasilkan tanpa melihat kode program secara langsung.</p>
+    <p>Fokus pengujian pada penelitian ini meliputi:</p>
     <ul>
         <li>validasi login,</li>
         <li>pengelolaan master data,</li>
-        <li>pencatatan stok masuk,</li>
-        <li>pencatatan stok keluar,</li>
-        <li>penyesuaian stok,</li>
+        <li>pengelolaan RKO,</li>
+        <li>pencatatan realisasi pengadaan,</li>
+        <li>pencatatan mutasi obat,</li>
         <li>monitoring stok,</li>
         <li>pembuatan laporan,</li>
         <li>manajemen pengguna, dan</li>
@@ -274,147 +282,139 @@ flowchart LR
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Menambah kategori obat</td><td>Data kategori baru</td><td>Data kategori tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>2</td><td>Menambah satuan obat</td><td>Data satuan baru</td><td>Data satuan tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Menambah data obat</td><td>Kode, nama, kategori, satuan, dan stok minimum</td><td>Data obat tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>4</td><td>Mengubah data sumber stok</td><td>Perubahan data sumber</td><td>Data sumber stok diperbarui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>5</td><td>Mengubah tujuan distribusi</td><td>Perubahan data tujuan</td><td>Data tujuan distribusi diperbarui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Menambah data obat</td><td>Kode, nama, jenis, kategori, satuan, dan harga standar</td><td>Data obat tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>4</td><td>Menambah data faskes</td><td>Data identitas faskes baru</td><td>Data faskes tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>5</td><td>Mengubah sumber pengadaan</td><td>Perubahan data sumber</td><td>Data sumber pengadaan diperbarui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
     <div class="placeholder">Tempat screenshot halaman data obat</div>
     <p class="figure-title">Gambar 4.8. Halaman manajemen data obat.</p>
     <div class="placeholder">Tempat screenshot form tambah data obat</div>
     <p class="figure-title">Gambar 4.9. Form tambah data obat.</p>
 
-    <h3>4.4.4 Hasil Pengujian Stok Masuk</h3>
-    <p class="table-title">Tabel 4.3. Hasil pengujian stok masuk.</p>
+    <h3>4.4.4 Hasil Pengujian RKO</h3>
+    <p class="table-title">Tabel 4.3. Hasil pengujian RKO.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
-        <tr><td>1</td><td>Menambah transaksi stok masuk</td><td>Data penerimaan dan item obat</td><td>Transaksi stok masuk tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Membentuk batch obat</td><td>Data nomor batch, jumlah, dan kedaluwarsa</td><td>Batch obat terbentuk pada sistem</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Menampilkan detail penerimaan</td><td>Pilih transaksi stok masuk</td><td>Sistem menampilkan detail transaksi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>1</td><td>Menambah dokumen RKO</td><td>Data header dan detail item obat</td><td>Dokumen RKO tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Menghitung total estimasi</td><td>Jumlah kebutuhan dan estimasi harga satuan</td><td>Sistem menghitung total estimasi item</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Menampilkan detail RKO</td><td>Memilih salah satu nomor RKO</td><td>Sistem menampilkan informasi header dan item</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
-    <div class="placeholder">Tempat screenshot halaman stok masuk</div>
-    <p class="figure-title">Gambar 4.10. Halaman daftar stok masuk.</p>
-    <div class="placeholder">Tempat screenshot form tambah stok masuk</div>
-    <p class="figure-title">Gambar 4.11. Form input transaksi stok masuk.</p>
+    <div class="placeholder">Tempat screenshot halaman RKO</div>
+    <p class="figure-title">Gambar 4.10. Halaman daftar RKO.</p>
+    <div class="placeholder">Tempat screenshot form input RKO</div>
+    <p class="figure-title">Gambar 4.11. Form input RKO.</p>
 
-    <h3>4.4.5 Hasil Pengujian Stok Keluar</h3>
-    <p class="table-title">Tabel 4.4. Hasil pengujian stok keluar.</p>
+    <h3>4.4.5 Hasil Pengujian Realisasi Pengadaan</h3>
+    <p class="table-title">Tabel 4.4. Hasil pengujian realisasi pengadaan.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
-        <tr><td>1</td><td>Menambah transaksi stok keluar</td><td>Data distribusi dan item obat</td><td>Transaksi stok keluar tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Pengambilan batch berdasarkan FEFO</td><td>Permintaan obat dengan lebih dari satu batch</td><td>Sistem memilih batch dengan kedaluwarsa terdekat</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Validasi stok tidak cukup</td><td>Jumlah permintaan melebihi stok tersedia</td><td>Sistem menolak transaksi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>1</td><td>Menambah realisasi pengadaan</td><td>Data transaksi dan item obat</td><td>Data realisasi pengadaan tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Menghubungkan realisasi ke RKO</td><td>Memilih referensi RKO pada form</td><td>Realisasi terhubung dengan dokumen RKO</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Menampilkan detail realisasi</td><td>Memilih transaksi pengadaan tertentu</td><td>Sistem menampilkan detail transaksi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
-    <div class="placeholder">Tempat screenshot halaman stok keluar</div>
-    <p class="figure-title">Gambar 4.12. Halaman daftar stok keluar.</p>
-    <div class="placeholder">Tempat screenshot form transaksi stok keluar</div>
-    <p class="figure-title">Gambar 4.13. Form input transaksi stok keluar.</p>
+    <div class="placeholder">Tempat screenshot halaman realisasi pengadaan</div>
+    <p class="figure-title">Gambar 4.12. Halaman daftar realisasi pengadaan.</p>
+    <div class="placeholder">Tempat screenshot form realisasi pengadaan</div>
+    <p class="figure-title">Gambar 4.13. Form input realisasi pengadaan.</p>
 
-    <h3>4.4.6 Hasil Pengujian Penyesuaian Stok</h3>
-    <p class="table-title">Tabel 4.5. Hasil pengujian penyesuaian stok.</p>
+    <h3>4.4.6 Hasil Pengujian Mutasi Obat</h3>
+    <p class="table-title">Tabel 4.5. Hasil pengujian mutasi obat.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
-        <tr><td>1</td><td>Menambah penyesuaian stok</td><td>Batch, stok sistem, stok aktual</td><td>Data penyesuaian tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Menghitung selisih otomatis</td><td>Stok sistem dan stok aktual</td><td>Selisih dihitung otomatis</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Memperbarui stok batch</td><td>Hasil penyesuaian disimpan</td><td><code>qty_remaining</code> batch berubah sesuai stok aktual</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>1</td><td>Menambah mutasi obat</td><td>Data faskes tujuan dan item obat</td><td>Data mutasi tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Validasi stok tidak mencukupi</td><td>Jumlah mutasi melebihi stok yang tersedia</td><td>Sistem menolak transaksi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Menampilkan detail mutasi</td><td>Memilih transaksi mutasi tertentu</td><td>Sistem menampilkan detail mutasi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
-    <div class="placeholder">Tempat screenshot halaman penyesuaian stok</div>
-    <p class="figure-title">Gambar 4.14. Halaman daftar penyesuaian stok.</p>
-    <div class="placeholder">Tempat screenshot form penyesuaian stok</div>
-    <p class="figure-title">Gambar 4.15. Form input penyesuaian stok.</p>
+    <div class="placeholder">Tempat screenshot halaman mutasi obat</div>
+    <p class="figure-title">Gambar 4.14. Halaman daftar mutasi obat.</p>
+    <div class="placeholder">Tempat screenshot form mutasi obat</div>
+    <p class="figure-title">Gambar 4.15. Form input mutasi obat.</p>
 
     <h3>4.4.7 Hasil Pengujian Monitoring</h3>
     <p class="table-title">Tabel 4.6. Hasil pengujian monitoring.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Menampilkan stok terkini</td><td>Membuka menu monitoring stok</td><td>Sistem menampilkan stok per obat</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Menampilkan batch hampir kedaluwarsa</td><td>Membuka menu batch dan kedaluwarsa</td><td>Sistem menampilkan daftar batch sesuai status</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Menampilkan kartu stok</td><td>Memilih obat dan filter periode</td><td>Sistem menampilkan histori mutasi stok</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Menampilkan detail obat</td><td>Memilih tombol detail pada data obat</td><td>Sistem menampilkan popup detail obat</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Menampilkan status stok</td><td>Data snapshot stok tersedia</td><td>Sistem menampilkan status aman, kurang, atau berlebih</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
     <div class="placeholder">Tempat screenshot halaman stok terkini</div>
     <p class="figure-title">Gambar 4.16. Halaman monitoring stok terkini.</p>
-    <div class="placeholder">Tempat screenshot halaman batch dan kedaluwarsa</div>
-    <p class="figure-title">Gambar 4.17. Halaman monitoring batch dan kedaluwarsa.</p>
-    <div class="placeholder">Tempat screenshot halaman kartu stok</div>
-    <p class="figure-title">Gambar 4.18. Halaman kartu stok obat.</p>
+    <div class="placeholder">Tempat screenshot popup detail obat</div>
+    <p class="figure-title">Gambar 4.17. Tampilan detail obat pada monitoring.</p>
 
     <h3>4.4.8 Hasil Pengujian Laporan</h3>
     <p class="table-title">Tabel 4.7. Hasil pengujian laporan.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Menampilkan laporan stok</td><td>Filter laporan stok</td><td>Sistem menampilkan data stok sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Menampilkan laporan stok masuk</td><td>Filter tanggal dan sumber</td><td>Sistem menampilkan data stok masuk</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Menampilkan laporan stok keluar</td><td>Filter tanggal dan tujuan</td><td>Sistem menampilkan data stok keluar</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>4</td><td>Menampilkan laporan penyesuaian</td><td>Filter tanggal dan jenis penyesuaian</td><td>Sistem menampilkan data penyesuaian</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Menampilkan laporan realisasi pengadaan</td><td>Filter tanggal dan sumber</td><td>Sistem menampilkan data pengadaan sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Menampilkan laporan mutasi obat</td><td>Filter tanggal dan faskes</td><td>Sistem menampilkan data mutasi sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>4</td><td>Menampilkan laporan RKO vs realisasi</td><td>Filter periode dan status</td><td>Sistem menampilkan perbandingan rencana dan realisasi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
     <div class="placeholder">Tempat screenshot halaman laporan stok</div>
-    <p class="figure-title">Gambar 4.19. Halaman laporan stok.</p>
-    <div class="placeholder">Tempat screenshot halaman laporan stok masuk</div>
-    <p class="figure-title">Gambar 4.20. Halaman laporan stok masuk.</p>
-    <div class="placeholder">Tempat screenshot halaman laporan stok keluar</div>
-    <p class="figure-title">Gambar 4.21. Halaman laporan stok keluar.</p>
-    <div class="placeholder">Tempat screenshot halaman laporan penyesuaian stok</div>
-    <p class="figure-title">Gambar 4.22. Halaman laporan penyesuaian stok.</p>
+    <p class="figure-title">Gambar 4.18. Halaman laporan stok.</p>
+    <div class="placeholder">Tempat screenshot halaman laporan realisasi pengadaan</div>
+    <p class="figure-title">Gambar 4.19. Halaman laporan realisasi pengadaan.</p>
+    <div class="placeholder">Tempat screenshot halaman laporan mutasi obat</div>
+    <p class="figure-title">Gambar 4.20. Halaman laporan mutasi obat.</p>
+    <div class="placeholder">Tempat screenshot halaman laporan RKO vs realisasi</div>
+    <p class="figure-title">Gambar 4.21. Halaman laporan RKO vs realisasi.</p>
 
     <h3>4.4.9 Hasil Pengujian Manajemen Pengguna</h3>
     <p class="table-title">Tabel 4.8. Hasil pengujian manajemen pengguna.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
-        <tr><td>1</td><td>Menambah pengguna baru</td><td>Data pengguna baru</td><td>Data pengguna tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Mengubah data pengguna</td><td>Perubahan data akun</td><td>Data pengguna diperbarui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Menonaktifkan akun</td><td>Ubah status akun</td><td>Akun berubah menjadi nonaktif</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>1</td><td>Menambah pengguna baru</td><td>Data akun dan role</td><td>Data pengguna tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Mengubah status pengguna</td><td>Aktif atau nonaktif</td><td>Status pengguna diperbarui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Menampilkan detail pengguna</td><td>Memilih salah satu akun</td><td>Sistem menampilkan profil pengguna</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
     <div class="placeholder">Tempat screenshot halaman manajemen pengguna</div>
-    <p class="figure-title">Gambar 4.23. Halaman manajemen pengguna.</p>
+    <p class="figure-title">Gambar 4.22. Halaman manajemen pengguna.</p>
     <div class="placeholder">Tempat screenshot form tambah pengguna</div>
-    <p class="figure-title">Gambar 4.24. Form tambah pengguna.</p>
+    <p class="figure-title">Gambar 4.23. Form tambah pengguna.</p>
 
     <h3>4.4.10 Hasil Pengujian Log Aktivitas</h3>
     <p class="table-title">Tabel 4.9. Hasil pengujian log aktivitas.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
-        <tr><td>1</td><td>Menampilkan data log aktivitas</td><td>Membuka menu log aktivitas</td><td>Sistem menampilkan riwayat aktivitas pengguna</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Melakukan filter log</td><td>Filter user, modul, atau tanggal</td><td>Sistem menampilkan hasil sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>1</td><td>Menampilkan daftar log aktivitas</td><td>Membuka menu log aktivitas</td><td>Sistem menampilkan catatan aktivitas pengguna</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Filter log aktivitas</td><td>Filter modul, pengguna, dan tanggal</td><td>Sistem menampilkan log sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
     <div class="placeholder">Tempat screenshot halaman log aktivitas</div>
-    <p class="figure-title">Gambar 4.25. Halaman log aktivitas pengguna.</p>
+    <p class="figure-title">Gambar 4.24. Halaman log aktivitas.</p>
 
     <h2>4.5 Pembahasan Hasil Sistem</h2>
-    <p>Berdasarkan hasil implementasi dan pengujian yang telah dilakukan, aplikasi monitoring obat kontrasepsi berbasis web ini dapat mendukung proses pengelolaan stok secara lebih terstruktur dibandingkan dengan metode manual. Sistem mampu mencatat data obat, transaksi stok masuk, transaksi stok keluar, dan penyesuaian stok dalam satu basis data terintegrasi.</p>
-    <p>Penerapan pencatatan batch serta metode FEFO memberikan nilai tambah pada sistem, karena proses distribusi obat menjadi lebih terarah dan membantu mengurangi risiko kedaluwarsa. Selain itu, fitur monitoring dan laporan mempermudah pengguna dalam mengetahui kondisi stok terkini serta riwayat pergerakan obat.</p>
-    <p>Dari sisi pengelolaan pengguna, sistem telah menerapkan pembagian hak akses yang sesuai dengan kebutuhan peran pengguna. Keberadaan log aktivitas juga membantu meningkatkan pengawasan terhadap penggunaan sistem.</p>
-    <p>Secara keseluruhan, hasil implementasi menunjukkan bahwa aplikasi yang dibangun telah memenuhi kebutuhan utama pengelolaan stok obat kontrasepsi, yaitu pencatatan yang lebih akurat, monitoring yang lebih cepat, dan penyajian informasi yang lebih terintegrasi.</p>
+    <p>Berdasarkan hasil implementasi dan pengujian yang telah dilakukan, aplikasi monitoring obat kontrasepsi berbasis web ini mampu mendukung proses pencatatan dan pemantauan data secara lebih terstruktur dibandingkan dengan metode manual. Sistem tidak hanya menyimpan data master, tetapi juga menghubungkan proses perencanaan kebutuhan obat dengan realisasi pengadaan dan mutasi obat.</p>
+    <p>Penerapan modul RKO memberikan nilai tambah karena sistem dapat digunakan bukan hanya untuk mencatat kondisi saat ini, tetapi juga untuk memantau hubungan antara rencana kebutuhan dan pengadaan yang benar-benar terjadi. Selain itu, keberadaan laporan RKO vs realisasi membantu pengguna melihat tingkat ketercapaian pengadaan secara lebih jelas.</p>
+    <p>Fitur monitoring stok, mutasi obat, dan laporan periodik juga menunjukkan bahwa sistem telah menjalankan fungsi monitoring secara nyata. Informasi yang ditampilkan tidak lagi sekadar data mentah, tetapi telah diolah menjadi ringkasan yang dapat membantu proses evaluasi dan pengambilan keputusan.</p>
 
     <h2>4.6 Kelebihan dan Keterbatasan Sistem</h2>
-    <h3>4.6.1 Kelebihan Sistem</h3>
-    <p>Kelebihan dari sistem yang dibangun antara lain:</p>
+    <p>Kelebihan aplikasi yang berhasil diimplementasikan dalam penelitian ini antara lain:</p>
     <ul>
-        <li>berbasis web sehingga mudah diakses melalui browser,</li>
-        <li>mendukung pencatatan stok masuk, stok keluar, dan penyesuaian stok,</li>
-        <li>menerapkan pengelolaan stok berbasis batch,</li>
-        <li>mendukung metode FEFO,</li>
-        <li>menyediakan monitoring stok dan kedaluwarsa,</li>
-        <li>menyediakan laporan yang lebih terstruktur,</li>
-        <li>mendukung multi-user dengan pembagian hak akses.</li>
+        <li>mendukung pencatatan master data obat, faskes, dan sumber pengadaan,</li>
+        <li>mendukung penyusunan RKO beserta detail kebutuhan obat,</li>
+        <li>mendukung pencatatan realisasi pengadaan yang dapat dihubungkan dengan RKO,</li>
+        <li>mendukung pencatatan mutasi obat ke fasilitas kesehatan,</li>
+        <li>menyediakan monitoring stok per obat dan snapshot stok per periode,</li>
+        <li>menyediakan laporan monitoring, termasuk laporan RKO vs realisasi,</li>
+        <li>menyediakan hak akses pengguna dan log aktivitas.</li>
     </ul>
-
-    <h3>4.6.2 Keterbatasan Sistem</h3>
-    <p>Adapun keterbatasan dari sistem ini antara lain:</p>
+    <p>Adapun keterbatasan sistem pada implementasi saat ini antara lain:</p>
     <ul>
-        <li>fitur ekspor laporan ke PDF atau Excel belum dibahas secara mendalam,</li>
-        <li>sistem masih berfokus pada kebutuhan internal pengelolaan stok,</li>
-        <li>notifikasi otomatis untuk stok menipis atau batch hampir kedaluwarsa belum menjadi fokus utama,</li>
-        <li>integrasi dengan sistem eksternal belum diterapkan.</li>
+        <li>integrasi otomatis dengan sistem lain belum diterapkan, sehingga data masih diinput pada aplikasi ini,</li>
+        <li>snapshot stok per periode masih bergantung pada proses pencatatan dan pembaruan data yang dilakukan pengguna,</li>
+        <li>fitur notifikasi otomatis untuk status stok belum menjadi fokus utama,</li>
+        <li>ekspor laporan ke format dokumen tertentu belum menjadi fokus implementasi utama penelitian ini.</li>
     </ul>
 
     <h2>4.7 Kesimpulan Bab</h2>
-    <p>Berdasarkan hasil implementasi dan pengujian yang telah dilakukan pada BAB IV, dapat disimpulkan bahwa aplikasi monitoring obat kontrasepsi berbasis web ini telah berhasil dibangun sesuai kebutuhan utama sistem. Fitur-fitur yang tersedia mampu mendukung proses pengelolaan stok obat, monitoring kondisi persediaan, penyusunan laporan, serta pengendalian akses pengguna. Hasil pengujian menunjukkan bahwa fungsi-fungsi utama sistem telah berjalan sesuai dengan tujuan yang diharapkan.</p>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
-    <script>
-        mermaid.initialize({
-            startOnLoad: true,
-            theme: "default",
-            securityLevel: "loose"
-        });
+    <p>Berdasarkan pembahasan pada bab ini dapat disimpulkan bahwa aplikasi yang dibangun telah berhasil diimplementasikan sebagai aplikasi monitoring obat kontrasepsi berbasis web. Implementasi sistem telah mencakup modul utama yang dibutuhkan, yaitu master data, RKO, realisasi pengadaan, mutasi obat, monitoring stok, laporan, manajemen pengguna, dan log aktivitas.</p>
+    <p>Hasil pengujian menunjukkan bahwa fungsi-fungsi utama sistem dapat berjalan sesuai dengan kebutuhan. Dengan demikian, aplikasi ini dapat digunakan sebagai sarana untuk membantu Dinas Pengendalian Penduduk dan Keluarga Berencana dalam memantau data obat kontrasepsi secara lebih efektif, terstruktur, dan mudah dilaporkan.</p>
+
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
     </script>
 </body>
 </html>

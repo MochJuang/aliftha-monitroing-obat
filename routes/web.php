@@ -3,16 +3,16 @@
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\DistributionDestinationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FundingSourceController;
 use App\Http\Controllers\MedicineCategoryController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProcurementRealizationController;
 use App\Http\Controllers\RkoDetailController;
 use App\Http\Controllers\RkoHeaderController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\StockDistributionController;
+use App\Http\Controllers\StockMutationController;
 use App\Http\Controllers\StockMonitoringController;
-use App\Http\Controllers\StockReceiptController;
-use App\Http\Controllers\StockSourceController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
@@ -40,10 +40,9 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('units', UnitController::class);
         Route::resource('medicines', MedicineController::class);
         Route::resource('rko-headers', RkoHeaderController::class);
-        Route::resource('stock-sources', StockSourceController::class);
+        Route::resource('funding-sources', FundingSourceController::class);
         Route::resource('distribution-destinations', DistributionDestinationController::class);
-        Route::resource('stock-receipts', StockReceiptController::class);
-        Route::resource('stock-distributions', StockDistributionController::class);
+        Route::resource('stock-mutations', StockMutationController::class);
 
         Route::prefix('master-obat')->name('master-obat.')->group(function () {
             Route::get('kategori-obat', [MedicineCategoryController::class, 'index'])->name('kategori.index');
@@ -76,43 +75,21 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('create', [DistributionDestinationController::class, 'create'])->name('create');
             Route::post('/', [DistributionDestinationController::class, 'store'])->name('store');
 
-            Route::prefix('distribusi-obat')->name('distribusi.')->group(function () {
-                Route::get('/', [StockDistributionController::class, 'index'])->name('index');
-                Route::get('create', [StockDistributionController::class, 'create'])->name('create');
-                Route::post('/', [StockDistributionController::class, 'store'])->name('store');
-                Route::get('{stockDistribution}', [StockDistributionController::class, 'show'])->name('show');
-                Route::get('{stockDistribution}/edit', [StockDistributionController::class, 'edit'])->name('edit');
-                Route::match(['put', 'patch'], '{stockDistribution}', [StockDistributionController::class, 'update'])->name('update');
-                Route::delete('{stockDistribution}', [StockDistributionController::class, 'destroy'])->name('destroy');
-            });
-
             Route::get('{distributionDestination}', [DistributionDestinationController::class, 'show'])->name('show');
             Route::get('{distributionDestination}/edit', [DistributionDestinationController::class, 'edit'])->name('edit');
             Route::match(['put', 'patch'], '{distributionDestination}', [DistributionDestinationController::class, 'update'])->name('update');
             Route::delete('{distributionDestination}', [DistributionDestinationController::class, 'destroy'])->name('destroy');
         });
 
-        Route::prefix('pengadaan')->name('pengadaan.')->group(function () {
-            Route::prefix('sumber')->name('sumber.')->group(function () {
-                Route::get('/', [StockSourceController::class, 'index'])->name('index');
-                Route::get('create', [StockSourceController::class, 'create'])->name('create');
-                Route::post('/', [StockSourceController::class, 'store'])->name('store');
-                Route::get('{stockSource}', [StockSourceController::class, 'show'])->name('show');
-                Route::get('{stockSource}/edit', [StockSourceController::class, 'edit'])->name('edit');
-                Route::match(['put', 'patch'], '{stockSource}', [StockSourceController::class, 'update'])->name('update');
-                Route::delete('{stockSource}', [StockSourceController::class, 'destroy'])->name('destroy');
-            });
-
-            Route::get('realisasi', [StockReceiptController::class, 'index'])->name('index');
-            Route::get('realisasi/create', [StockReceiptController::class, 'create'])->name('create');
-            Route::post('realisasi', [StockReceiptController::class, 'store'])->name('store');
-            Route::get('realisasi/{stockReceipt}', [StockReceiptController::class, 'show'])->name('show');
-            Route::get('realisasi/{stockReceipt}/edit', [StockReceiptController::class, 'edit'])->name('edit');
-            Route::match(['put', 'patch'], 'realisasi/{stockReceipt}', [StockReceiptController::class, 'update'])->name('update');
-            Route::delete('realisasi/{stockReceipt}', [StockReceiptController::class, 'destroy'])->name('destroy');
-        });
-
         Route::prefix('rko')->name('rko.')->group(function () {
+            Route::get('sumber-dana', [FundingSourceController::class, 'index'])->name('sumber-dana.index');
+            Route::get('sumber-dana/create', [FundingSourceController::class, 'create'])->name('sumber-dana.create');
+            Route::post('sumber-dana', [FundingSourceController::class, 'store'])->name('sumber-dana.store');
+            Route::get('sumber-dana/{fundingSource}', [FundingSourceController::class, 'show'])->name('sumber-dana.show');
+            Route::get('sumber-dana/{fundingSource}/edit', [FundingSourceController::class, 'edit'])->name('sumber-dana.edit');
+            Route::match(['put', 'patch'], 'sumber-dana/{fundingSource}', [FundingSourceController::class, 'update'])->name('sumber-dana.update');
+            Route::delete('sumber-dana/{fundingSource}', [FundingSourceController::class, 'destroy'])->name('sumber-dana.destroy');
+
             Route::get('header', [RkoHeaderController::class, 'index'])->name('header.index');
             Route::get('header/create', [RkoHeaderController::class, 'create'])->name('header.create');
             Route::post('header', [RkoHeaderController::class, 'store'])->name('header.store');
@@ -123,13 +100,23 @@ Route::middleware(['auth', 'active'])->group(function () {
 
             Route::get('detail', [RkoDetailController::class, 'index'])->name('detail.index');
         });
+
+        Route::prefix('transaksi')->name('transaksi.')->group(function () {
+            Route::get('mutasi-stok', [StockMutationController::class, 'index'])->name('mutasi.index');
+            Route::get('mutasi-stok/create', [StockMutationController::class, 'create'])->name('mutasi.create');
+            Route::post('mutasi-stok', [StockMutationController::class, 'store'])->name('mutasi.store');
+            Route::get('mutasi-stok/{stockMutation}', [StockMutationController::class, 'show'])->name('mutasi.show');
+            Route::get('mutasi-stok/{stockMutation}/edit', [StockMutationController::class, 'edit'])->name('mutasi.edit');
+            Route::match(['put', 'patch'], 'mutasi-stok/{stockMutation}', [StockMutationController::class, 'update'])->name('mutasi.update');
+            Route::delete('mutasi-stok/{stockMutation}', [StockMutationController::class, 'destroy'])->name('mutasi.destroy');
+        });
     });
 
     Route::middleware('role:admin,petugas_gudang,pimpinan')->group(function () {
+        Route::get('procurement-realizations', [ProcurementRealizationController::class, 'index'])->name('procurement-realizations.index');
         Route::get('stock-monitoring/current-stock', [StockMonitoringController::class, 'currentStock'])->name('stock-monitoring.current-stock');
         Route::get('reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
-        Route::get('reports/receipts', [ReportController::class, 'receipts'])->name('reports.receipts');
-        Route::get('reports/distributions', [ReportController::class, 'distributions'])->name('reports.distributions');
+        Route::get('reports/mutations', [ReportController::class, 'mutations'])->name('reports.mutations');
         Route::get('reports/rko-realization', [ReportController::class, 'rkoRealization'])->name('reports.rko-realization');
 
         Route::prefix('monitoring')->name('monitoring.')->group(function () {
@@ -138,9 +125,12 @@ Route::middleware(['auth', 'active'])->group(function () {
 
         Route::prefix('laporan')->name('laporan.')->group(function () {
             Route::get('stok', [ReportController::class, 'stock'])->name('stok');
-            Route::get('realisasi-pengadaan', [ReportController::class, 'receipts'])->name('pengadaan');
-            Route::get('distribusi-obat', [ReportController::class, 'distributions'])->name('distribusi');
+            Route::get('mutasi-stok', [ReportController::class, 'mutations'])->name('mutasi');
             Route::get('rko-vs-realisasi', [ReportController::class, 'rkoRealization'])->name('rko');
+        });
+
+        Route::prefix('rko')->name('rko.')->group(function () {
+            Route::get('realisasi-pengadaan', [ProcurementRealizationController::class, 'index'])->name('realisasi.index');
         });
     });
 

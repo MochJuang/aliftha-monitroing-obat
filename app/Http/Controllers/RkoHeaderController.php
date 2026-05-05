@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\RkoHeaderRequest;
 use App\Models\ActivityLog;
+use App\Models\FundingSource;
 use App\Models\Medicine;
 use App\Models\RkoHeader;
+use App\Models\StockMutation;
+use App\Http\Controllers\StockMutationController;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,9 +22,10 @@ class RkoHeaderController extends Controller
         $search = trim((string) $request->string('search'));
         $status = trim((string) $request->string('status'));
         $periodYear = trim((string) $request->string('period_year'));
+        $fundingSourceId = trim((string) $request->string('funding_source_id'));
 
         $baseQuery = RkoHeader::query()
-            ->with(['submitter', 'approver'])
+            ->with(['submitter', 'approver', 'fundingSource'])
             ->withCount('items')
             ->withSum('items', 'planned_quantity')
             ->withSum('items', 'approved_quantity')
@@ -32,7 +36,8 @@ class RkoHeaderController extends Controller
                 });
             })
             ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn (Builder $query) => $query->where('status', $status))
-            ->when($periodYear !== '', fn (Builder $query) => $query->where('period_year', (int) $periodYear));
+            ->when($periodYear !== '', fn (Builder $query) => $query->where('period_year', (int) $periodYear))
+            ->when($fundingSourceId !== '', fn (Builder $query) => $query->where('funding_source_id', $fundingSourceId));
 
         $headers = (clone $baseQuery)
             ->orderByDesc('period_year')
@@ -54,7 +59,9 @@ class RkoHeaderController extends Controller
             ->orderByDesc('period_year')
             ->pluck('period_year');
 
-        return view('rko-headers.index', compact('headers', 'summary', 'search', 'status', 'periodYear', 'availableYears'));
+        $fundingSources = FundingSource::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']);
+
+        return view('rko-headers.index', compact('headers', 'summary', 'search', 'status', 'periodYear', 'fundingSourceId', 'availableYears', 'fundingSources'));
     }
 
     public function create(): View
@@ -69,6 +76,7 @@ class RkoHeaderController extends Controller
         return view('rko-headers.create', [
             'rkoHeader' => $rkoHeader,
             'medicines' => Medicine::with(['category', 'unit'])->where('is_active', true)->orderBy('name')->get(),
+            'fundingSources' => FundingSource::query()->where('is_active', true)->orderBy('name')->get(),
             'nextRkoNumber' => $this->generateNextRkoNumber(),
         ]);
     }
@@ -82,6 +90,7 @@ class RkoHeaderController extends Controller
                 'rko_number' => $validated['rko_number'],
                 'period_month' => $validated['period_month'],
                 'period_year' => $validated['period_year'],
+                'funding_source_id' => $validated['funding_source_id'],
                 'total_budget' => $validated['total_budget'],
                 'status' => $validated['status'],
                 'submitted_at' => $validated['submitted_at'] ?? null,
@@ -92,6 +101,8 @@ class RkoHeaderController extends Controller
             ]);
 
             $header->items()->createMany($this->normalizeItems($validated['items']));
+            $header->load('items');
+            $this->syncApprovedOutputs($header);
 
             ActivityLog::create([
                 'user_id' => $request->user()?->id,
@@ -116,27 +127,40 @@ class RkoHeaderController extends Controller
             'approver',
             'items.medicine.category',
             'items.medicine.unit',
-            'stockReceipts.source',
-            'stockReceipts.receiver',
+            'fundingSource',
+            'stockMutations.items.medicine.unit',
+            'procurementRealizations.medicine.unit',
+            'procurementRealizations.fundingSource',
         ]);
 
-        $linkedReceipts = $rkoHeader->stockReceipts()
-            ->with(['source', 'receiver'])
+        $linkedMutations = $rkoHeader->stockMutations()
+            ->where('mutation_type', 'MASUK')
+            ->with(['items.medicine.unit'])
             ->withCount('items')
             ->withSum('items', 'quantity')
-            ->latest('received_date')
+            ->latest('mutation_date')
             ->latest('id')
             ->get();
 
-        $receiptSummary = [
-            'linked_count' => $linkedReceipts->count(),
-            'posted_count' => $linkedReceipts->where('status', 'posted')->count(),
-            'total_realized_qty' => (int) $linkedReceipts->sum(fn ($receipt) => (int) ($receipt->items_sum_quantity ?? 0)),
+        $mutationSummary = [
+            'linked_count' => $linkedMutations->count(),
+            'total_realized_qty' => (int) $linkedMutations->sum(fn ($mutation) => (int) ($mutation->items_sum_quantity ?? 0)),
             'total_planned_qty' => (int) $rkoHeader->items->sum('planned_quantity'),
             'total_approved_qty' => (int) $rkoHeader->items->sum(fn ($item) => (int) ($item->approved_quantity ?? 0)),
         ];
 
-        return view('rko-headers.show', compact('rkoHeader', 'linkedReceipts', 'receiptSummary'));
+        $linkedRealizations = $rkoHeader->procurementRealizations()
+            ->with(['medicine.unit', 'fundingSource'])
+            ->orderBy('medicine_id')
+            ->get();
+
+        $realizationSummary = [
+            'linked_count' => $linkedRealizations->count(),
+            'total_quantity' => (int) $linkedRealizations->sum('realized_quantity'),
+            'total_amount' => (float) $linkedRealizations->sum('total_amount'),
+        ];
+
+        return view('rko-headers.show', compact('rkoHeader', 'linkedMutations', 'mutationSummary', 'linkedRealizations', 'realizationSummary'));
     }
 
     public function edit(RkoHeader $rkoHeader): View
@@ -146,6 +170,7 @@ class RkoHeaderController extends Controller
         return view('rko-headers.edit', [
             'rkoHeader' => $rkoHeader,
             'medicines' => Medicine::with(['category', 'unit'])->where('is_active', true)->orderBy('name')->get(),
+            'fundingSources' => FundingSource::query()->where('is_active', true)->orderBy('name')->get(),
             'nextRkoNumber' => $rkoHeader->rko_number,
         ]);
     }
@@ -159,6 +184,7 @@ class RkoHeaderController extends Controller
                 'rko_number' => $validated['rko_number'],
                 'period_month' => $validated['period_month'],
                 'period_year' => $validated['period_year'],
+                'funding_source_id' => $validated['funding_source_id'],
                 'total_budget' => $validated['total_budget'],
                 'status' => $validated['status'],
                 'submitted_at' => $validated['submitted_at'] ?? null,
@@ -170,6 +196,8 @@ class RkoHeaderController extends Controller
 
             $rkoHeader->items()->delete();
             $rkoHeader->items()->createMany($this->normalizeItems($validated['items']));
+            $rkoHeader->load('items');
+            $this->syncApprovedOutputs($rkoHeader);
 
             ActivityLog::create([
                 'user_id' => $request->user()?->id,
@@ -244,5 +272,116 @@ class RkoHeaderController extends Controller
         $sequence = (int) substr($lastNumber, -4) + 1;
 
         return $prefix.str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
+    }
+
+    private function syncApprovedOutputs(RkoHeader $header): void
+    {
+        $this->syncApprovedMutation($header);
+        $this->syncApprovedProcurementRealizations($header);
+    }
+
+    private function syncApprovedMutation(RkoHeader $header): void
+    {
+        $autoMutation = $header->stockMutations()
+            ->where('mutation_type', 'MASUK')
+            ->where('is_auto_generated', true)
+            ->first();
+
+        $oldMedicineIds = $autoMutation?->items()->pluck('medicine_id')->all() ?? [];
+
+        if ($header->status !== 'approved') {
+            $autoMutation?->delete();
+            if ($oldMedicineIds !== []) {
+                app(StockMutationController::class)->syncMedicineStocks($oldMedicineIds);
+            }
+
+            return;
+        }
+
+        $items = $header->items
+            ->map(fn ($item) => [
+                'medicine_id' => (int) $item->medicine_id,
+                'quantity' => (int) ($item->approved_quantity ?? $item->planned_quantity),
+                'notes' => $item->notes,
+            ])
+            ->filter(fn (array $item) => $item['quantity'] > 0)
+            ->values();
+
+        if ($items->isEmpty()) {
+            $autoMutation?->delete();
+            if ($oldMedicineIds !== []) {
+                app(StockMutationController::class)->syncMedicineStocks($oldMedicineIds);
+            }
+
+            return;
+        }
+
+        $firstMedicineId = (int) $items->first()['medicine_id'];
+        $totalQuantity = (int) $items->sum('quantity');
+
+        $payload = [
+            'mutation_number' => 'AUTO-'.$header->rko_number,
+            'medicine_id' => $firstMedicineId,
+            'rko_header_id' => $header->id,
+            'is_auto_generated' => true,
+            'created_by' => $header->approved_by ?? $header->submitted_by,
+            'mutation_date' => $header->approved_at?->toDateString() ?? now()->toDateString(),
+            'mutation_type' => 'MASUK',
+            'quantity' => $totalQuantity,
+            'reference' => 'RKO Disetujui / '.$header->rko_number,
+            'notes' => 'Mutasi masuk otomatis dari persetujuan RKO.',
+        ];
+
+        if ($autoMutation) {
+            $autoMutation->update($payload);
+            $autoMutation->items()->delete();
+        } else {
+            $autoMutation = StockMutation::create($payload);
+        }
+
+        $autoMutation->items()->createMany($items->all());
+
+        app(StockMutationController::class)->syncMedicineStocks(
+            array_unique([...$oldMedicineIds, ...$items->pluck('medicine_id')->all()])
+        );
+    }
+
+    private function syncApprovedProcurementRealizations(RkoHeader $header): void
+    {
+        if ($header->status !== 'approved') {
+            $header->procurementRealizations()->delete();
+
+            return;
+        }
+
+        $items = $header->items
+            ->map(fn ($item) => [
+                'medicine_id' => (int) $item->medicine_id,
+                'realized_quantity' => (int) ($item->approved_quantity ?? $item->planned_quantity),
+                'unit_price' => (float) ($item->estimated_unit_price ?? 0),
+                'notes' => $item->notes,
+            ])
+            ->filter(fn (array $item) => $item['realized_quantity'] > 0)
+            ->values();
+
+        $header->procurementRealizations()->delete();
+
+        if ($items->isEmpty() || ! $header->funding_source_id) {
+            return;
+        }
+
+        $header->procurementRealizations()->createMany(
+            $items->map(fn (array $item) => [
+                'funding_source_id' => $header->funding_source_id,
+                'medicine_id' => $item['medicine_id'],
+                'period_month' => (int) $header->period_month,
+                'period_year' => (int) $header->period_year,
+                'realization_date' => $header->approved_at?->toDateString() ?? now()->toDateString(),
+                'realized_quantity' => $item['realized_quantity'],
+                'unit_price' => $item['unit_price'],
+                'total_amount' => $item['realized_quantity'] * $item['unit_price'],
+                'notes' => $item['notes'],
+            ])->all()
+        );
     }
 }

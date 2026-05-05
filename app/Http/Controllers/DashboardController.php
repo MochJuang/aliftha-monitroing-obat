@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
 use App\Models\Medicine;
-use App\Models\MedicineBatch;
+use App\Models\MedicineStock;
 use App\Models\RkoHeader;
+use App\Models\StockMutation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -17,12 +18,12 @@ class DashboardController extends Controller
     public function __invoke(): View
     {
         $today = now()->toDateString();
-
-        $currentStockSubquery = MedicineBatch::query()
-            ->selectRaw('SUM(qty_remaining)')
+        $currentStockSubquery = MedicineStock::query()
+            ->select('quantity')
             ->whereColumn('medicine_id', 'medicines.id')
-            ->where('qty_remaining', '>', 0)
-            ->whereDate('expired_at', '>=', $today);
+            ->orderByDesc('period')
+            ->orderByDesc('id')
+            ->limit(1);
 
         $stockSummaryBaseQuery = Medicine::query()
             ->where('is_active', true)
@@ -34,10 +35,10 @@ class DashboardController extends Controller
 
         $summary = [
             'active_medicines' => Medicine::query()->where('is_active', true)->count(),
-            'total_current_stock' => (int) MedicineBatch::query()
-                ->where('qty_remaining', '>', 0)
-                ->whereDate('expired_at', '>=', $today)
-                ->sum('qty_remaining'),
+            'total_current_stock' => (int) DB::query()
+                ->fromSub($stockSummaryBaseQuery->toBase(), 'stock_summary')
+                ->selectRaw('COALESCE(SUM(COALESCE(current_stock, 0)), 0) as total_stock')
+                ->value('total_stock'),
             'low_stock_medicines' => DB::query()
                 ->fromSub($stockSummaryBaseQuery->toBase(), 'stock_summary')
                 ->whereRaw('COALESCE(current_stock, 0) > 0 AND COALESCE(current_stock, 0) <= minimum_stock')
@@ -52,11 +53,11 @@ class DashboardController extends Controller
             'total_headers' => RkoHeader::count(),
             'approved_headers' => RkoHeader::where('status', 'approved')->count(),
             'total_approved_qty' => (int) DB::table('rko_details')->sum('approved_quantity'),
-            'total_realized_qty' => (int) DB::table('stock_receipt_items')
-                ->join('stock_receipts', 'stock_receipts.id', '=', 'stock_receipt_items.receipt_id')
-                ->whereNotNull('stock_receipts.rko_header_id')
-                ->where('stock_receipts.status', 'posted')
-                ->sum('stock_receipt_items.quantity'),
+            'total_realized_qty' => (int) DB::table('stock_mutation_items')
+                ->join('stock_mutations', 'stock_mutations.id', '=', 'stock_mutation_items.stock_mutation_id')
+                ->whereNotNull('stock_mutations.rko_header_id')
+                ->where('stock_mutations.mutation_type', 'MASUK')
+                ->sum('stock_mutation_items.quantity'),
         ];
 
         $rkoSummary['coverage_percent'] = $rkoSummary['total_approved_qty'] > 0
@@ -64,24 +65,22 @@ class DashboardController extends Controller
             : 0;
 
         $todayMovements = [
-            'receipts_count' => DB::table('stock_receipts')
-                ->where('status', 'posted')
-                ->whereDate('received_date', $today)
+            'receipts_count' => StockMutation::query()
+                ->where('mutation_type', 'MASUK')
+                ->whereDate('mutation_date', $today)
                 ->count(),
-            'receipts_qty' => (int) DB::table('stock_receipt_items')
-                ->join('stock_receipts', 'stock_receipts.id', '=', 'stock_receipt_items.receipt_id')
-                ->where('stock_receipts.status', 'posted')
-                ->whereDate('stock_receipts.received_date', $today)
-                ->sum('stock_receipt_items.quantity'),
-            'distributions_count' => DB::table('stock_distributions')
-                ->where('status', 'posted')
-                ->whereDate('distributed_date', $today)
+            'receipts_qty' => (int) StockMutation::query()
+                ->where('mutation_type', 'MASUK')
+                ->whereDate('mutation_date', $today)
+                ->sum('quantity'),
+            'distributions_count' => StockMutation::query()
+                ->where('mutation_type', 'KELUAR')
+                ->whereDate('mutation_date', $today)
                 ->count(),
-            'distributions_qty' => (int) DB::table('stock_distribution_items')
-                ->join('stock_distributions', 'stock_distributions.id', '=', 'stock_distribution_items.distribution_id')
-                ->where('stock_distributions.status', 'posted')
-                ->whereDate('stock_distributions.distributed_date', $today)
-                ->sum('stock_distribution_items.quantity'),
+            'distributions_qty' => (int) StockMutation::query()
+                ->where('mutation_type', 'KELUAR')
+                ->whereDate('mutation_date', $today)
+                ->sum('quantity'),
         ];
 
         $lowStockMedicines = DB::query()
@@ -127,50 +126,19 @@ class DashboardController extends Controller
 
     private function buildRecentTransactions(): Collection
     {
-        $recentReceipts = DB::table('stock_receipts')
-            ->join('stock_sources', 'stock_sources.id', '=', 'stock_receipts.source_id')
-            ->where('stock_receipts.status', 'posted')
-            ->orderByDesc('stock_receipts.received_date')
-            ->orderByDesc('stock_receipts.id')
-            ->limit(5)
-            ->get([
-                'stock_receipts.received_date as movement_date',
-                'stock_receipts.receipt_number as reference_number',
-                'stock_sources.name as counterpart_name',
-                'stock_receipts.notes',
-            ])
-            ->map(fn ($item) => [
+        return StockMutation::query()
+            ->orderByDesc('mutation_date')
+            ->orderByDesc('id')
+            ->limit(8)
+            ->get(['mutation_date as movement_date', 'mutation_type', 'reference as reference_number', 'notes'])
+            ->map(fn (StockMutation $item) => [
                 'movement_date' => $item->movement_date,
-                'sort_type' => 1,
-                'type' => 'stok_masuk',
+                'sort_type' => $item->mutation_type === 'MASUK' ? 1 : 2,
+                'type' => $item->mutation_type === 'MASUK' ? 'stok_masuk' : 'stok_keluar',
                 'reference_number' => $item->reference_number,
-                'counterpart_name' => $item->counterpart_name,
+                'counterpart_name' => null,
                 'notes' => $item->notes,
-            ]);
-
-        $recentDistributions = DB::table('stock_distributions')
-            ->join('distribution_destinations', 'distribution_destinations.id', '=', 'stock_distributions.destination_id')
-            ->where('stock_distributions.status', 'posted')
-            ->orderByDesc('stock_distributions.distributed_date')
-            ->orderByDesc('stock_distributions.id')
-            ->limit(5)
-            ->get([
-                'stock_distributions.distributed_date as movement_date',
-                'stock_distributions.distribution_number as reference_number',
-                'distribution_destinations.name as counterpart_name',
-                'stock_distributions.notes',
             ])
-            ->map(fn ($item) => [
-                'movement_date' => $item->movement_date,
-                'sort_type' => 2,
-                'type' => 'stok_keluar',
-                'reference_number' => $item->reference_number,
-                'counterpart_name' => $item->counterpart_name,
-                'notes' => $item->notes,
-            ]);
-
-        return $recentReceipts
-            ->concat($recentDistributions)
             ->sortByDesc(fn (array $item) => sprintf('%s-%s', $item['movement_date'], $item['sort_type']))
             ->take(8)
             ->values();

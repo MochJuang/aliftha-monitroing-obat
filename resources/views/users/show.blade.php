@@ -47,12 +47,8 @@
 
             <div class="mt-4 space-y-4">
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
-                    <p class="text-sm text-slate-500">Realisasi pengadaan dibuat</p>
-                    <p class="mt-1 text-2xl font-semibold text-slate-900">{{ number_format($user->stock_receipts_count) }}</p>
-                </div>
-                <div class="rounded-2xl bg-slate-50 px-4 py-4">
-                    <p class="text-sm text-slate-500">Distribusi obat dibuat</p>
-                    <p class="mt-1 text-2xl font-semibold text-slate-900">{{ number_format($user->stock_distributions_count) }}</p>
+                    <p class="text-sm text-slate-500">Mutasi stok dibuat</p>
+                    <p class="mt-1 text-2xl font-semibold text-slate-900">{{ number_format($user->stock_mutations_count) }}</p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
                     <p class="text-sm text-slate-500">Log aktivitas</p>

@@ -108,6 +108,18 @@
         </div>
 
         <div>
+            <label for="funding_source_id" class="block text-sm font-medium text-slate-700">Sumber dana</label>
+            <select id="funding_source_id" name="funding_source_id" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
+                <option value="">Pilih sumber dana</option>
+                @foreach ($fundingSources as $fundingSource)
+                    <option value="{{ $fundingSource->id }}" @selected((string) old('funding_source_id', $rkoHeader->funding_source_id) === (string) $fundingSource->id)>
+                        {{ $fundingSource->code }} - {{ $fundingSource->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
+        <div>
             <label for="total_budget" class="block text-sm font-medium text-slate-700">Total anggaran</label>
             <input id="total_budget" name="total_budget" type="number" min="0" step="0.01" value="{{ old('total_budget', $rkoHeader->total_budget ?? 0) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
         </div>

@@ -1,0 +1,11 @@
+<x-app-layout>
+    <x-slot name="header">Edit Mutasi Stok</x-slot>
+
+    <section class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+        <form method="POST" action="{{ route('transaksi.mutasi.update', $mutation) }}" class="space-y-6">
+            @csrf
+            @method('PUT')
+            @include('stock-mutations._form')
+        </form>
+    </section>
+</x-app-layout>

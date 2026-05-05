@@ -11,7 +11,6 @@
             'title' => 'Faskes',
             'items' => [
                 ['label' => 'Data Faskes', 'href' => route('faskes.index'), 'active' => request()->routeIs('faskes.index', 'faskes.create', 'faskes.show', 'faskes.edit', 'distribution-destinations.*')],
-                ['label' => 'Mutasi Obat', 'href' => route('faskes.distribusi.index'), 'active' => request()->routeIs('faskes.distribusi.*', 'stock-distributions.*')],
             ],
         ],
         [
@@ -25,15 +24,16 @@
         [
             'title' => 'RKO',
             'items' => [
+                ['label' => 'Sumber Dana', 'href' => route('rko.sumber-dana.index'), 'active' => request()->routeIs('rko.sumber-dana.*', 'funding-sources.*')],
                 ['label' => 'RKO Header', 'href' => route('rko.header.index'), 'active' => request()->routeIs('rko.header.*', 'rko-headers.*')],
                 ['label' => 'RKO Detail', 'href' => route('rko.detail.index'), 'active' => request()->routeIs('rko.detail.*')],
+                ['label' => 'Realisasi Pengadaan', 'href' => route('rko.realisasi.index'), 'active' => request()->routeIs('rko.realisasi.*', 'procurement-realizations.*')],
             ],
         ],
         [
-            'title' => 'Realisasi Pengadaan',
+            'title' => 'Transaksi',
             'items' => [
-                ['label' => 'Sumber Pengadaan', 'href' => route('pengadaan.sumber.index'), 'active' => request()->routeIs('pengadaan.sumber.*', 'stock-sources.*')],
-                ['label' => 'Realisasi Pengadaan', 'href' => route('pengadaan.index'), 'active' => request()->routeIs('pengadaan.index', 'pengadaan.create', 'pengadaan.show', 'pengadaan.edit', 'stock-receipts.*')],
+                ['label' => 'Mutasi Stok', 'href' => route('transaksi.mutasi.index'), 'active' => request()->routeIs('transaksi.mutasi.*', 'stock-mutations.*')],
             ],
         ],
         [
@@ -62,7 +62,7 @@
         <a href="{{ route('dashboard') }}" class="block">
             <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-300">DPPKB Kota Sukabumi</p>
             <h1 class="mt-2 text-lg font-semibold leading-tight">Monitoring Obat Kontrasepsi</h1>
-            <p class="mt-2 text-sm text-slate-400">Panel internal monitoring kebutuhan, pengadaan, distribusi, dan pelaporan obat KB.</p>
+            <p class="mt-2 text-sm text-slate-400">Panel internal monitoring kebutuhan, mutasi, dan pelaporan obat KB.</p>
         </a>
     </div>
 

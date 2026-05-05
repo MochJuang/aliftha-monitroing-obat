@@ -174,11 +174,11 @@
                                     </div>
                                     <div class="grid gap-3 border-b border-slate-200 px-5 py-4 md:grid-cols-3">
                                         <article class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4">
-                                            <p class="text-sm text-emerald-800">Total realisasi pengadaan</p>
+                                            <p class="text-sm text-emerald-800">Total mutasi masuk</p>
                                             <p class="mt-2 text-3xl font-semibold text-emerald-900" x-text="new Intl.NumberFormat('id-ID').format(selected?.movement_summary?.total_in ?? 0)"></p>
                                         </article>
                                         <article class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-4">
-                                            <p class="text-sm text-rose-800">Total mutasi obat keluar</p>
+                                            <p class="text-sm text-rose-800">Total mutasi keluar</p>
                                             <p class="mt-2 text-3xl font-semibold text-rose-900" x-text="new Intl.NumberFormat('id-ID').format(selected?.movement_summary?.total_out ?? 0)"></p>
                                         </article>
                                     </div>
@@ -208,7 +208,7 @@
                                                                 class="whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold"
                                                                 :class="movement.type === 'realisasi_pengadaan'
                                                                     ? 'bg-emerald-100 text-emerald-800'
-                                                                    : (movement.type === 'distribusi_obat'
+                                                                    : (movement.type === 'mutasi_stok'
                                                                         ? 'bg-rose-100 text-rose-800'
                                                                         : 'bg-sky-100 text-sky-800')"
                                                                 x-text="movement.type_label"

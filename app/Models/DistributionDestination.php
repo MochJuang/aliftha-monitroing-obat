@@ -37,8 +37,8 @@ class DistributionDestination extends Model
         ];
     }
 
-    public function stockDistributions(): HasMany
+    public function stockMutations(): HasMany
     {
-        return $this->hasMany(StockDistribution::class, 'destination_id');
+        return $this->hasMany(StockMutation::class, 'distribution_destination_id');
     }
 }

@@ -54,29 +54,14 @@ class Medicine extends Model
         return $this->belongsTo(Unit::class);
     }
 
-    public function stockReceiptItems(): HasMany
-    {
-        return $this->hasMany(StockReceiptItem::class);
-    }
-
-    public function batches(): HasMany
-    {
-        return $this->hasMany(MedicineBatch::class);
-    }
-
-    public function stockDistributionItems(): HasMany
-    {
-        return $this->hasMany(StockDistributionItem::class);
-    }
-
-    public function stockAdjustmentItems(): HasMany
-    {
-        return $this->hasMany(StockAdjustmentItem::class);
-    }
-
     public function rkoDetails(): HasMany
     {
         return $this->hasMany(RkoDetail::class);
+    }
+
+    public function procurementRealizations(): HasMany
+    {
+        return $this->hasMany(ProcurementRealization::class);
     }
 
     public function stocks(): HasMany

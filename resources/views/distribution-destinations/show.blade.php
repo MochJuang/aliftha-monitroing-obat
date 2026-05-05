@@ -39,8 +39,8 @@
         <aside class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
             <div class="space-y-4">
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
-                    <p class="text-sm text-slate-500">Jumlah distribusi terkait</p>
-                    <p class="mt-1 text-2xl font-semibold text-slate-900">{{ $destination->stock_distributions_count }}</p>
+                    <p class="text-sm text-slate-500">Jumlah mutasi terkait</p>
+                    <p class="mt-1 text-2xl font-semibold text-slate-900">{{ $destination->stock_mutations_count }}</p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
                     <p class="text-sm text-slate-500">Dibuat</p>

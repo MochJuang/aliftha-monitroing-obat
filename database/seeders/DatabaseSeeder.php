@@ -19,12 +19,11 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             MedicineCategorySeeder::class,
             UnitSeeder::class,
-            StockSourceSeeder::class,
             DistributionDestinationSeeder::class,
+            FundingSourceSeeder::class,
             MedicineSeeder::class,
             RkoSeeder::class,
-            StockReceiptSeeder::class,
-            StockDistributionSeeder::class,
+            ProcurementRealizationSeeder::class,
             MonitoringSnapshotSeeder::class,
         ]);
     }

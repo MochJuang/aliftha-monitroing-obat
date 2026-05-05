@@ -56,7 +56,7 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">
-                                    {{ number_format($user->stock_receipts_count + $user->stock_distributions_count) }}
+                                    {{ number_format($user->stock_mutations_count) }}
                                 </td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ optional($user->last_login_at)->format('d M Y H:i') ?? '-' }}</td>
                                 <td class="px-4 py-3">

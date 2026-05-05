@@ -33,6 +33,7 @@ class RkoHeaderRequest extends FormRequest
             ],
             'period_month' => ['required', 'integer', 'between:1,12'],
             'period_year' => ['required', 'integer', 'min:2020', 'max:2100'],
+            'funding_source_id' => ['required', 'exists:funding_sources,id'],
             'total_budget' => ['required', 'numeric', 'min:0'],
             'status' => ['required', 'in:draft,submitted,approved,rejected'],
             'submitted_at' => ['nullable', 'date'],

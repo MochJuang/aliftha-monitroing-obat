@@ -24,15 +24,6 @@ return new class extends Migration {
             $table->string('priority', 20)->default('sedang')->after('total_estimate');
         });
 
-        Schema::table('stock_sources', function (Blueprint $table) {
-            $table->text('notes')->nullable()->after('contact_person');
-            $table->boolean('is_active')->default(true)->after('notes');
-        });
-
-        Schema::table('stock_receipt_items', function (Blueprint $table) {
-            $table->decimal('total_realization', 15, 2)->default(0)->after('unit_cost');
-        });
-
         Schema::create('medicine_stocks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('medicine_id')->constrained('medicines')->cascadeOnDelete();
@@ -65,14 +56,6 @@ return new class extends Migration {
     {
         Schema::dropIfExists('stock_mutations');
         Schema::dropIfExists('medicine_stocks');
-
-        Schema::table('stock_receipt_items', function (Blueprint $table) {
-            $table->dropColumn('total_realization');
-        });
-
-        Schema::table('stock_sources', function (Blueprint $table) {
-            $table->dropColumn(['notes', 'is_active']);
-        });
 
         Schema::table('rko_details', function (Blueprint $table) {
             $table->dropColumn(['estimated_unit_price', 'total_estimate', 'priority']);

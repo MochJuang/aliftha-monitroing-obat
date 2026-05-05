@@ -54,7 +54,7 @@ class DistributionDestinationController extends Controller
 
     public function show(DistributionDestination $distributionDestination): View
     {
-        $distributionDestination->loadCount('stockDistributions');
+        $distributionDestination->loadCount('stockMutations');
 
         return view('distribution-destinations.show', ['destination' => $distributionDestination]);
     }

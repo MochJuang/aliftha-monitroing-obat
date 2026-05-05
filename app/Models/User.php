@@ -61,24 +61,14 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    public function stockReceipts(): HasMany
-    {
-        return $this->hasMany(StockReceipt::class, 'received_by');
-    }
-
-    public function stockDistributions(): HasMany
-    {
-        return $this->hasMany(StockDistribution::class, 'distributed_by');
-    }
-
-    public function stockAdjustments(): HasMany
-    {
-        return $this->hasMany(StockAdjustment::class, 'created_by');
-    }
-
     public function activityLogs(): HasMany
     {
         return $this->hasMany(ActivityLog::class);
+    }
+
+    public function stockMutations(): HasMany
+    {
+        return $this->hasMany(StockMutation::class, 'created_by');
     }
 
     public function submittedRkoHeaders(): HasMany

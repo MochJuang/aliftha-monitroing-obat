@@ -20,6 +20,7 @@ class RkoHeader extends Model
         'rko_number',
         'period_month',
         'period_year',
+        'funding_source_id',
         'total_budget',
         'status',
         'submitted_at',
@@ -50,9 +51,19 @@ class RkoHeader extends Model
         return $this->hasMany(RkoDetail::class);
     }
 
-    public function stockReceipts(): HasMany
+    public function fundingSource(): BelongsTo
     {
-        return $this->hasMany(StockReceipt::class, 'rko_header_id');
+        return $this->belongsTo(FundingSource::class);
+    }
+
+    public function stockMutations(): HasMany
+    {
+        return $this->hasMany(StockMutation::class, 'rko_header_id');
+    }
+
+    public function procurementRealizations(): HasMany
+    {
+        return $this->hasMany(ProcurementRealization::class);
     }
 
     public function submitter(): BelongsTo

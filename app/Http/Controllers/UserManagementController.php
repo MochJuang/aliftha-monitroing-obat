@@ -26,7 +26,7 @@ class UserManagementController extends Controller
 
         $users = User::query()
             ->with('role')
-            ->withCount(['stockReceipts', 'stockDistributions'])
+            ->withCount('stockMutations')
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
                     $inner->where('name', 'like', "%{$search}%")
@@ -73,7 +73,7 @@ class UserManagementController extends Controller
     public function show(User $user): View
     {
         $user->load('role');
-        $user->loadCount(['stockReceipts', 'stockDistributions', 'activityLogs']);
+        $user->loadCount(['stockMutations', 'activityLogs']);
 
         return view('users.show', compact('user'));
     }

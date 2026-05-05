@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\MedicineRequest;
 use App\Models\Medicine;
-use App\Models\MedicineBatch;
+use App\Models\MedicineStock;
+use App\Models\StockMutation;
 use App\Models\MedicineCategory;
 use App\Models\Unit;
 use Illuminate\Database\QueryException;
@@ -21,15 +22,18 @@ class MedicineController extends Controller
     {
         $search = trim((string) $request->string('search'));
         $status = (string) $request->string('status');
-        $today = now()->toDateString();
-
         $medicines = Medicine::query()
             ->with(['category', 'unit'])
-            ->withSum([
-                'batches as current_stock' => fn ($query) => $query
-                    ->where('qty_remaining', '>', 0)
-                    ->whereDate('expired_at', '>=', $today),
-            ], 'qty_remaining')
+            ->select('medicines.*')
+            ->selectSub(
+                MedicineStock::query()
+                    ->select('quantity')
+                    ->whereColumn('medicine_id', 'medicines.id')
+                    ->orderByDesc('period')
+                    ->orderByDesc('id')
+                    ->limit(1),
+                'current_stock'
+            )
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
                     $inner->where('name', 'like', "%{$search}%")
@@ -104,7 +108,7 @@ class MedicineController extends Controller
                 ->with('success', 'Data obat berhasil dihapus.');
         } catch (QueryException) {
             return back()->withErrors([
-                'delete' => 'Data obat tidak bisa dihapus karena masih dipakai transaksi atau batch.',
+                'delete' => 'Data obat tidak bisa dihapus karena masih dipakai pada RKO, mutasi stok, atau monitoring.',
             ]);
         }
     }
@@ -151,65 +155,28 @@ class MedicineController extends Controller
      */
     private function buildMedicineMovements(int $medicineId): Collection
     {
-        $receiptMovements = DB::table('stock_receipt_items')
-            ->join('stock_receipts', 'stock_receipts.id', '=', 'stock_receipt_items.receipt_id')
-            ->join('stock_sources', 'stock_sources.id', '=', 'stock_receipts.source_id')
-            ->where('stock_receipt_items.medicine_id', $medicineId)
-            ->where('stock_receipts.status', 'posted')
-            ->get([
-                'stock_receipts.received_date as movement_date',
-                'stock_receipts.receipt_number as reference_number',
-                'stock_receipt_items.batch_number',
-                'stock_receipt_items.quantity',
-                'stock_receipt_items.notes',
-                'stock_sources.name as counterpart_name',
+        return DB::table('stock_mutation_items')
+            ->join('stock_mutations', 'stock_mutations.id', '=', 'stock_mutation_items.stock_mutation_id')
+            ->where('stock_mutation_items.medicine_id', $medicineId)
+            ->orderByDesc('mutation_date')
+            ->orderByDesc('stock_mutation_items.id')
+            ->get()
+            ->map(fn ($mutation) => [
+                'movement_date' => Carbon::parse($mutation->mutation_date)->format('d M Y'),
+                'type' => $mutation->mutation_type === 'MASUK' ? 'realisasi_pengadaan' : 'mutasi_stok',
+                'reference_number' => $mutation->mutation_number ?: $mutation->reference,
+                'counterpart_name' => null,
+                'notes' => $mutation->notes,
+                'qty_in' => $mutation->mutation_type === 'MASUK' ? (int) $mutation->quantity : 0,
+                'qty_out' => $mutation->mutation_type === 'KELUAR' ? (int) $mutation->quantity : 0,
+                'sort_date' => $mutation->mutation_date,
             ])
-            ->map(fn ($item) => [
-                'movement_date' => Carbon::parse($item->movement_date)->format('d M Y'),
-                'type' => 'realisasi_pengadaan',
-                'reference_number' => $item->reference_number,
-                'batch_number' => $item->batch_number,
-                'counterpart_name' => $item->counterpart_name,
-                'notes' => $item->notes,
-                'qty_in' => (int) $item->quantity,
-                'qty_out' => 0,
-                'sort_date' => $item->movement_date,
-            ]);
-
-        $distributionMovements = DB::table('stock_distribution_items')
-            ->join('stock_distributions', 'stock_distributions.id', '=', 'stock_distribution_items.distribution_id')
-            ->join('distribution_destinations', 'distribution_destinations.id', '=', 'stock_distributions.destination_id')
-            ->join('medicine_batches', 'medicine_batches.id', '=', 'stock_distribution_items.batch_id')
-            ->where('stock_distribution_items.medicine_id', $medicineId)
-            ->where('stock_distributions.status', 'posted')
-            ->get([
-                'stock_distributions.distributed_date as movement_date',
-                'stock_distributions.distribution_number as reference_number',
-                'medicine_batches.batch_number',
-                'stock_distribution_items.quantity',
-                'stock_distribution_items.notes',
-                'distribution_destinations.name as counterpart_name',
-            ])
-            ->map(fn ($item) => [
-                'movement_date' => Carbon::parse($item->movement_date)->format('d M Y'),
-                'type' => 'distribusi_obat',
-                'reference_number' => $item->reference_number,
-                'batch_number' => $item->batch_number,
-                'counterpart_name' => $item->counterpart_name,
-                'notes' => $item->notes,
-                'qty_in' => 0,
-                'qty_out' => (int) $item->quantity,
-                'sort_date' => $item->movement_date,
-            ]);
-
-        return $receiptMovements
-            ->concat($distributionMovements)
             ->sortByDesc('sort_date')
             ->values()
             ->map(function (array $movement) {
                 $movement['type_label'] = match ($movement['type']) {
                     'realisasi_pengadaan' => 'Realisasi Pengadaan',
-                    default => 'Mutasi Obat',
+                    default => 'Mutasi Stok',
                 };
 
                 unset($movement['sort_date']);

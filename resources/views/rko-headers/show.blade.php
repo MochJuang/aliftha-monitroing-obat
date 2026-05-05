@@ -22,6 +22,10 @@
                     <p class="mt-1 font-semibold text-slate-900">{{ number_format($rkoHeader->items->count()) }}</p>
                 </div>
                 <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                    <p class="text-sm text-slate-500">Sumber dana</p>
+                    <p class="mt-1 font-semibold text-slate-900">{{ $rkoHeader->fundingSource?->name ?? '-' }}</p>
+                </div>
+                <div class="rounded-2xl bg-slate-50 px-4 py-4">
                     <p class="text-sm text-slate-500">Penyusun</p>
                     <p class="mt-1 font-semibold text-slate-900">{{ $rkoHeader->submitter?->name ?? '-' }}</p>
                 </div>
@@ -48,30 +52,40 @@
                 <p class="mt-2 text-sm leading-7 text-slate-700">{{ $rkoHeader->notes ?: 'Belum ada catatan RKO.' }}</p>
             </div>
 
-            <div class="mt-6">
-                <a href="{{ route('pengadaan.create', ['rko_header_id' => $rkoHeader->id]) }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
-                    Buat Realisasi Pengadaan dari RKO Ini
-                </a>
+            <div class="mt-6 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-600">
+                Jika dokumen ini berstatus <span class="font-semibold text-slate-900">Disetujui</span>, sistem akan otomatis membentuk <span class="font-semibold text-slate-900">Realisasi Pengadaan</span> dan <span class="font-semibold text-slate-900">Mutasi Stok MASUK</span> berdasarkan jumlah yang disetujui pada setiap item.
             </div>
         </article>
 
         <div class="space-y-6">
-            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                 <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
                     <p class="text-sm text-slate-500">Total rencana</p>
-                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($receiptSummary['total_planned_qty']) }}</p>
+                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($mutationSummary['total_planned_qty']) }}</p>
                 </article>
                 <article class="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm">
                     <p class="text-sm text-slate-500">Total disetujui</p>
-                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($receiptSummary['total_approved_qty']) }}</p>
+                    <p class="mt-2 text-3xl font-semibold text-slate-900">{{ number_format($mutationSummary['total_approved_qty']) }}</p>
                 </article>
                 <article class="rounded-[2rem] border border-sky-200 bg-sky-50 p-5 shadow-sm">
-                    <p class="text-sm text-sky-800">Total realisasi</p>
-                    <p class="mt-2 text-3xl font-semibold text-sky-900">{{ number_format($receiptSummary['total_realized_qty']) }}</p>
+                    <p class="text-sm text-sky-800">Total realisasi pengadaan</p>
+                    <p class="mt-2 text-3xl font-semibold text-sky-900">{{ number_format($realizationSummary['total_quantity']) }}</p>
                 </article>
-                <article class="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-5 shadow-sm">
-                    <p class="text-sm text-emerald-800">Pengadaan linked</p>
-                    <p class="mt-2 text-3xl font-semibold text-emerald-900">{{ number_format($receiptSummary['linked_count']) }}</p>
+                <article class="rounded-[2rem] border border-emerald-200 bg-emerald-50 p-5 shadow-sm md:col-span-2 xl:col-span-3">
+                    <div class="grid gap-4 md:grid-cols-3">
+                        <div>
+                            <p class="text-sm text-emerald-800">Realisasi linked</p>
+                            <p class="mt-2 text-3xl font-semibold text-emerald-900">{{ number_format($realizationSummary['linked_count']) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-emerald-800">Nilai realisasi</p>
+                            <p class="mt-2 text-3xl font-semibold text-emerald-900">Rp {{ number_format($realizationSummary['total_amount'], 0, ',', '.') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-emerald-800">Mutasi masuk linked</p>
+                            <p class="mt-2 text-3xl font-semibold text-emerald-900">{{ number_format($mutationSummary['linked_count']) }}</p>
+                        </div>
+                    </div>
                 </article>
             </section>
 
@@ -135,40 +149,79 @@
 
             <article class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-200 px-6 py-5">
-                    <h3 class="text-lg font-semibold text-slate-900">Realisasi Pengadaan Terkait</h3>
-                    <p class="mt-1 text-sm text-slate-500">Daftar transaksi realisasi pengadaan yang sudah dihubungkan ke dokumen RKO ini.</p>
+                    <h3 class="text-lg font-semibold text-slate-900">Realisasi Pengadaan</h3>
+                    <p class="mt-1 text-sm text-slate-500">Data realisasi pengadaan yang terbentuk dari hasil persetujuan dokumen RKO ini.</p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-[1100px] w-full divide-y divide-slate-200 text-sm">
+                        <thead class="bg-slate-50 text-left text-slate-500">
+                            <tr>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Tanggal</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Sumber Dana</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Obat</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Qty</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Harga Satuan</th>
+                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Total</th>
+                                <th class="px-4 py-3 font-semibold">Catatan</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 bg-white">
+                            @forelse ($linkedRealizations as $realization)
+                                <tr>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $realization->realization_date?->format('d M Y') ?? '-' }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $realization->fundingSource?->name ?? '-' }}</td>
+                                    <td class="px-4 py-3">
+                                        <p class="font-medium text-slate-900">{{ $realization->medicine?->name ?? '-' }}</p>
+                                        <p class="text-xs text-slate-500">{{ $realization->medicine?->code ?? '-' }}</p>
+                                    </td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($realization->realized_quantity) }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">Rp {{ number_format((float) $realization->unit_price, 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">Rp {{ number_format((float) $realization->total_amount, 0, ',', '.') }}</td>
+                                    <td class="px-4 py-3 text-slate-600">{{ $realization->notes ?: '-' }}</td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada realisasi pengadaan yang terhubung ke RKO ini.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article class="rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+                <div class="border-b border-slate-200 px-6 py-5">
+                    <h3 class="text-lg font-semibold text-slate-900">Mutasi Stok Terkait</h3>
+                    <p class="mt-1 text-sm text-slate-500">Daftar mutasi stok masuk yang dibentuk dari persetujuan dokumen RKO ini.</p>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table class="min-w-[900px] w-full divide-y divide-slate-200 text-sm">
                         <thead class="bg-slate-50 text-left text-slate-500">
                             <tr>
-                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Nomor</th>
-                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Tanggal</th>
-                                <th class="px-4 py-3 font-semibold">Sumber</th>
-                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Item</th>
-                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Qty</th>
-                                <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
-                                <th class="px-4 py-3 font-semibold text-right whitespace-nowrap">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 bg-white">
-                            @forelse ($linkedReceipts as $receipt)
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Nomor Mutasi</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Tanggal</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Jenis</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Item</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Qty</th>
+                            <th class="px-4 py-3 font-semibold text-right whitespace-nowrap">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 bg-white">
+                            @forelse ($linkedMutations as $mutation)
                                 <tr>
-                                    <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $receipt->receipt_number }}</td>
-                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $receipt->received_date->format('d M Y') }}</td>
-                                    <td class="px-4 py-3 text-slate-600">{{ $receipt->source->name }}</td>
-                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($receipt->items_count) }}</td>
-                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($receipt->items_sum_quantity ?? 0)) }}</td>
-                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ ucfirst($receipt->status) }}</td>
+                                    <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $mutation->mutation_number }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $mutation->mutation_date->format('d M Y') }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $mutation->mutation_type }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format($mutation->items_count) }}</td>
+                                    <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($mutation->items_sum_quantity ?? 0)) }}</td>
                                     <td class="px-4 py-3">
                                         <div class="flex justify-end">
-                                            <a href="{{ route('pengadaan.show', $receipt) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
+                                            <a href="{{ route('transaksi.mutasi.show', $mutation) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Belum ada realisasi pengadaan yang terhubung ke RKO ini.</td></tr>
+                                <tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Belum ada mutasi stok yang terhubung ke RKO ini.</td></tr>
                             @endforelse
                         </tbody>
                     </table>

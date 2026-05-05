@@ -24,14 +24,14 @@
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h3 class="text-lg font-semibold text-slate-900">Daftar RKO</h3>
-                <p class="mt-1 text-sm text-slate-500">Kelola dokumen rencana kebutuhan obat per periode sebelum masuk ke realisasi pengadaan.</p>
+                <p class="mt-1 text-sm text-slate-500">Kelola dokumen rencana kebutuhan obat per periode. Saat status disetujui, sistem akan membuat mutasi masuk otomatis.</p>
             </div>
             <a href="{{ route('rko.header.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
                 Tambah RKO
             </a>
         </div>
 
-        <form method="GET" action="{{ route('rko.header.index') }}" class="mt-6 grid gap-3 xl:grid-cols-[minmax(0,2fr)_220px_180px_140px] xl:items-end">
+        <form method="GET" action="{{ route('rko.header.index') }}" class="mt-6 grid gap-3 xl:grid-cols-[minmax(0,2fr)_220px_220px_180px_140px] xl:items-end">
             <input type="text" name="search" value="{{ $search }}" placeholder="Cari nomor RKO atau catatan..." class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
             <select name="status" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
                 <option value="">Semua status</option>
@@ -39,6 +39,12 @@
                 <option value="submitted" @selected($status === 'submitted')>Diajukan</option>
                 <option value="approved" @selected($status === 'approved')>Disetujui</option>
                 <option value="rejected" @selected($status === 'rejected')>Ditolak</option>
+            </select>
+            <select name="funding_source_id" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
+                <option value="">Semua sumber dana</option>
+                @foreach ($fundingSources as $fundingSource)
+                    <option value="{{ $fundingSource->id }}" @selected($fundingSourceId === (string) $fundingSource->id)>{{ $fundingSource->name }}</option>
+                @endforeach
             </select>
             <select name="period_year" class="w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500">
                 <option value="">Semua tahun</option>
@@ -51,11 +57,12 @@
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">
-                <table class="min-w-[1440px] w-full divide-y divide-slate-200 text-sm">
+                <table class="min-w-[1580px] w-full divide-y divide-slate-200 text-sm">
                     <thead class="bg-slate-50 text-left text-slate-500">
                         <tr>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Nomor RKO</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Periode</th>
+                            <th class="px-4 py-3 font-semibold whitespace-nowrap">Sumber Dana</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Status</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Jumlah Item</th>
                             <th class="px-4 py-3 font-semibold whitespace-nowrap">Total Rencana</th>
@@ -72,6 +79,7 @@
                             <tr>
                                 <td class="px-4 py-3 font-medium text-slate-900 whitespace-nowrap">{{ $header->rko_number }}</td>
                                 <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ sprintf('%02d', $header->period_month) }}/{{ $header->period_year }}</td>
+                                <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $header->fundingSource?->name ?? '-' }}</td>
                                 <td class="px-4 py-3">
                                     <span @class([
                                         'whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold',
@@ -103,7 +111,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="11" class="px-4 py-8 text-center text-slate-500">Belum ada dokumen RKO.</td></tr>
+                            <tr><td colspan="12" class="px-4 py-8 text-center text-slate-500">Belum ada dokumen RKO.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

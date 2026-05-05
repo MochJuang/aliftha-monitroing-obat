@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DistributionDestination;
 use App\Models\Medicine;
-use App\Models\MedicineBatch;
+use App\Models\MedicineStock;
 use App\Models\RkoHeader;
-use App\Models\StockAdjustment;
-use App\Models\StockDistribution;
-use App\Models\StockReceipt;
-use App\Models\StockSource;
+use App\Models\StockMutation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -23,9 +19,6 @@ class ReportController extends Controller
         $categoryId = trim((string) $request->string('category_id'));
         $status = trim((string) $request->string('status'));
 
-        $today = now()->toDateString();
-        $almostExpiredDate = now()->addDays(30)->toDateString();
-
         $baseQuery = Medicine::query()
             ->leftJoin('medicine_categories', 'medicine_categories.id', '=', 'medicines.category_id')
             ->leftJoin('units', 'units.id', '=', 'medicines.unit_id')
@@ -38,25 +31,7 @@ class ReportController extends Controller
                 'medicine_categories.name as category_name',
                 'units.name as unit_name',
             ])
-            ->selectSub($this->currentStockSubquery($today), 'current_stock')
-            ->selectSub(
-                MedicineBatch::query()
-                    ->selectRaw('COUNT(*)')
-                    ->whereColumn('medicine_id', 'medicines.id')
-                    ->where('qty_remaining', '>', 0)
-                    ->whereDate('expired_at', '>=', $today),
-                'active_batch_count'
-            )
-            ->selectSub(
-                MedicineBatch::query()
-                    ->select('expired_at')
-                    ->whereColumn('medicine_id', 'medicines.id')
-                    ->where('qty_remaining', '>', 0)
-                    ->whereDate('expired_at', '>=', $today)
-                    ->orderBy('expired_at')
-                    ->limit(1),
-                'nearest_expired_at'
-            )
+            ->selectSub($this->currentStockSubquery(), 'current_stock')
             ->when($search !== '', function (Builder $query) use ($search) {
                 $query->where(function (Builder $inner) use ($search) {
                     $inner->where('medicines.code', 'like', "%{$search}%")
@@ -82,13 +57,13 @@ class ReportController extends Controller
         $summaryBaseQuery = Medicine::query()
             ->where('is_active', true)
             ->select(['medicines.id', 'medicines.minimum_stock'])
-            ->selectSub($this->currentStockSubquery($today), 'current_stock');
+            ->selectSub($this->currentStockSubquery(), 'current_stock');
 
         $summary = [
-            'total_stock_qty' => (int) MedicineBatch::query()
-                ->where('qty_remaining', '>', 0)
-                ->whereDate('expired_at', '>=', $today)
-                ->sum('qty_remaining'),
+            'total_stock_qty' => (int) DB::query()
+                ->fromSub($summaryBaseQuery->toBase(), 'stock_summary')
+                ->selectRaw('COALESCE(SUM(COALESCE(current_stock, 0)), 0) as total_stock')
+                ->value('total_stock'),
             'low_stock_count' => DB::query()
                 ->fromSub($summaryBaseQuery->toBase(), 'stock_summary')
                 ->whereRaw('COALESCE(current_stock, 0) > 0 AND COALESCE(current_stock, 0) <= minimum_stock')
@@ -97,9 +72,9 @@ class ReportController extends Controller
                 ->fromSub($summaryBaseQuery->toBase(), 'stock_summary')
                 ->whereRaw('COALESCE(current_stock, 0) = 0')
                 ->count(),
-            'almost_expired_batches' => MedicineBatch::query()
-                ->where('qty_remaining', '>', 0)
-                ->whereBetween('expired_at', [$today, $almostExpiredDate])
+            'safe_stock_count' => DB::query()
+                ->fromSub($summaryBaseQuery->toBase(), 'stock_summary')
+                ->whereRaw('COALESCE(current_stock, 0) > minimum_stock')
                 ->count(),
         ];
 
@@ -108,151 +83,50 @@ class ReportController extends Controller
         return view('reports.stock', compact('reports', 'summary', 'categories', 'search', 'categoryId', 'status'));
     }
 
-    public function receipts(Request $request): View
-    {
-        $search = trim((string) $request->string('search'));
-        $sourceId = trim((string) $request->string('source_id'));
-        $rkoHeaderId = trim((string) $request->string('rko_header_id'));
-        $status = trim((string) $request->string('status'));
-        $dateFrom = trim((string) $request->string('date_from'));
-        $dateTo = trim((string) $request->string('date_to'));
-
-        $reports = StockReceipt::query()
-            ->with(['source', 'receiver', 'rkoHeader'])
-            ->withCount('items')
-            ->withSum('items', 'quantity')
-            ->when($search !== '', function (Builder $query) use ($search) {
-                $query->where(function (Builder $inner) use ($search) {
-                    $inner->where('receipt_number', 'like', "%{$search}%")
-                        ->orWhereHas('source', fn (Builder $sourceQuery) => $sourceQuery->where('name', 'like', "%{$search}%"))
-                        ->orWhereHas('rkoHeader', fn (Builder $rkoQuery) => $rkoQuery->where('rko_number', 'like', "%{$search}%"));
-                });
-            })
-            ->when($sourceId !== '', fn (Builder $query) => $query->where('source_id', $sourceId))
-            ->when($rkoHeaderId !== '', fn (Builder $query) => $query->where('rko_header_id', $rkoHeaderId))
-            ->when(in_array($status, ['draft', 'posted', 'cancelled'], true), fn (Builder $query) => $query->where('status', $status))
-            ->when($dateFrom !== '', fn (Builder $query) => $query->whereDate('received_date', '>=', $dateFrom))
-            ->when($dateTo !== '', fn (Builder $query) => $query->whereDate('received_date', '<=', $dateTo))
-            ->latest('received_date')
-            ->latest('id')
-            ->paginate(10)
-            ->withQueryString();
-
-        $summary = [
-            'transaction_count' => $reports->total(),
-            'total_qty' => (int) DB::table('stock_receipt_items')
-                ->join('stock_receipts', 'stock_receipts.id', '=', 'stock_receipt_items.receipt_id')
-                ->when($sourceId !== '', fn ($query) => $query->where('stock_receipts.source_id', $sourceId))
-                ->when($rkoHeaderId !== '', fn ($query) => $query->where('stock_receipts.rko_header_id', $rkoHeaderId))
-                ->when(in_array($status, ['draft', 'posted', 'cancelled'], true), fn ($query) => $query->where('stock_receipts.status', $status))
-                ->when($dateFrom !== '', fn ($query) => $query->whereDate('stock_receipts.received_date', '>=', $dateFrom))
-                ->when($dateTo !== '', fn ($query) => $query->whereDate('stock_receipts.received_date', '<=', $dateTo))
-                ->sum('stock_receipt_items.quantity'),
-            'posted_count' => StockReceipt::query()
-                ->when($sourceId !== '', fn (Builder $query) => $query->where('source_id', $sourceId))
-                ->when($rkoHeaderId !== '', fn (Builder $query) => $query->where('rko_header_id', $rkoHeaderId))
-                ->when($dateFrom !== '', fn (Builder $query) => $query->whereDate('received_date', '>=', $dateFrom))
-                ->when($dateTo !== '', fn (Builder $query) => $query->whereDate('received_date', '<=', $dateTo))
-                ->where('status', 'posted')
-                ->count(),
-        ];
-
-        $sources = StockSource::query()->orderBy('name')->get(['id', 'name']);
-        $rkoHeaders = RkoHeader::query()->orderByDesc('period_year')->orderByDesc('period_month')->get(['id', 'rko_number', 'period_month', 'period_year']);
-
-        return view('reports.receipts', compact('reports', 'summary', 'sources', 'rkoHeaders', 'search', 'sourceId', 'rkoHeaderId', 'status', 'dateFrom', 'dateTo'));
-    }
-
-    public function distributions(Request $request): View
-    {
-        $search = trim((string) $request->string('search'));
-        $destinationId = trim((string) $request->string('destination_id'));
-        $status = trim((string) $request->string('status'));
-        $dateFrom = trim((string) $request->string('date_from'));
-        $dateTo = trim((string) $request->string('date_to'));
-
-        $reports = StockDistribution::query()
-            ->with(['destination', 'distributor'])
-            ->withCount('items')
-            ->withSum('items', 'quantity')
-            ->when($search !== '', function (Builder $query) use ($search) {
-                $query->where(function (Builder $inner) use ($search) {
-                    $inner->where('distribution_number', 'like', "%{$search}%")
-                        ->orWhereHas('destination', fn (Builder $destinationQuery) => $destinationQuery->where('name', 'like', "%{$search}%"));
-                });
-            })
-            ->when($destinationId !== '', fn (Builder $query) => $query->where('destination_id', $destinationId))
-            ->when(in_array($status, ['draft', 'posted', 'cancelled'], true), fn (Builder $query) => $query->where('status', $status))
-            ->when($dateFrom !== '', fn (Builder $query) => $query->whereDate('distributed_date', '>=', $dateFrom))
-            ->when($dateTo !== '', fn (Builder $query) => $query->whereDate('distributed_date', '<=', $dateTo))
-            ->latest('distributed_date')
-            ->latest('id')
-            ->paginate(10)
-            ->withQueryString();
-
-        $summary = [
-            'transaction_count' => $reports->total(),
-            'total_qty' => (int) DB::table('stock_distribution_items')
-                ->join('stock_distributions', 'stock_distributions.id', '=', 'stock_distribution_items.distribution_id')
-                ->when($destinationId !== '', fn ($query) => $query->where('stock_distributions.destination_id', $destinationId))
-                ->when(in_array($status, ['draft', 'posted', 'cancelled'], true), fn ($query) => $query->where('stock_distributions.status', $status))
-                ->when($dateFrom !== '', fn ($query) => $query->whereDate('stock_distributions.distributed_date', '>=', $dateFrom))
-                ->when($dateTo !== '', fn ($query) => $query->whereDate('stock_distributions.distributed_date', '<=', $dateTo))
-                ->sum('stock_distribution_items.quantity'),
-            'posted_count' => StockDistribution::query()
-                ->when($destinationId !== '', fn (Builder $query) => $query->where('destination_id', $destinationId))
-                ->when($dateFrom !== '', fn (Builder $query) => $query->whereDate('distributed_date', '>=', $dateFrom))
-                ->when($dateTo !== '', fn (Builder $query) => $query->whereDate('distributed_date', '<=', $dateTo))
-                ->where('status', 'posted')
-                ->count(),
-        ];
-
-        $destinations = DistributionDestination::query()->orderBy('name')->get(['id', 'name']);
-
-        return view('reports.distributions', compact('reports', 'summary', 'destinations', 'search', 'destinationId', 'status', 'dateFrom', 'dateTo'));
-    }
-
-    public function adjustments(Request $request): View
+    public function mutations(Request $request): View
     {
         $search = trim((string) $request->string('search'));
         $type = trim((string) $request->string('type'));
+        $medicineId = trim((string) $request->string('medicine_id'));
         $dateFrom = trim((string) $request->string('date_from'));
         $dateTo = trim((string) $request->string('date_to'));
 
-        $reports = StockAdjustment::query()
-            ->with('creator')
-            ->withCount('items')
-            ->withSum('items', 'difference_qty')
+        $reports = StockMutation::query()
+            ->with('medicine.unit')
             ->when($search !== '', function (Builder $query) use ($search) {
                 $query->where(function (Builder $inner) use ($search) {
-                    $inner->where('adjustment_number', 'like', "%{$search}%")
-                        ->orWhere('notes', 'like', "%{$search}%");
+                    $inner->where('reference', 'like', "%{$search}%")
+                        ->orWhere('notes', 'like', "%{$search}%")
+                        ->orWhereHas('medicine', function (Builder $medicineQuery) use ($search) {
+                            $medicineQuery->where('code', 'like', "%{$search}%")
+                                ->orWhere('name', 'like', "%{$search}%");
+                        });
                 });
             })
-            ->when(in_array($type, ['opname', 'koreksi', 'expired', 'rusak'], true), fn (Builder $query) => $query->where('adjustment_type', $type))
-            ->when($dateFrom !== '', fn (Builder $query) => $query->whereDate('adjustment_date', '>=', $dateFrom))
-            ->when($dateTo !== '', fn (Builder $query) => $query->whereDate('adjustment_date', '<=', $dateTo))
-            ->latest('adjustment_date')
+            ->when(in_array($type, ['MASUK', 'KELUAR'], true), fn (Builder $query) => $query->where('mutation_type', $type))
+            ->when($medicineId !== '', fn (Builder $query) => $query->where('medicine_id', $medicineId))
+            ->when($dateFrom !== '', fn (Builder $query) => $query->whereDate('mutation_date', '>=', $dateFrom))
+            ->when($dateTo !== '', fn (Builder $query) => $query->whereDate('mutation_date', '<=', $dateTo))
+            ->latest('mutation_date')
             ->latest('id')
             ->paginate(10)
             ->withQueryString();
 
+        $baseMutationQuery = StockMutation::query()
+            ->when($medicineId !== '', fn (Builder $query) => $query->where('medicine_id', $medicineId))
+            ->when($dateFrom !== '', fn (Builder $query) => $query->whereDate('mutation_date', '>=', $dateFrom))
+            ->when($dateTo !== '', fn (Builder $query) => $query->whereDate('mutation_date', '<=', $dateTo));
+
         $summary = [
             'transaction_count' => $reports->total(),
-            'total_difference' => (int) DB::table('stock_adjustment_items')
-                ->join('stock_adjustments', 'stock_adjustments.id', '=', 'stock_adjustment_items.adjustment_id')
-                ->when(in_array($type, ['opname', 'koreksi', 'expired', 'rusak'], true), fn ($query) => $query->where('stock_adjustments.adjustment_type', $type))
-                ->when($dateFrom !== '', fn ($query) => $query->whereDate('stock_adjustments.adjustment_date', '>=', $dateFrom))
-                ->when($dateTo !== '', fn ($query) => $query->whereDate('stock_adjustments.adjustment_date', '<=', $dateTo))
-                ->sum('stock_adjustment_items.difference_qty'),
-            'expired_count' => StockAdjustment::query()
-                ->when($dateFrom !== '', fn (Builder $query) => $query->whereDate('adjustment_date', '>=', $dateFrom))
-                ->when($dateTo !== '', fn (Builder $query) => $query->whereDate('adjustment_date', '<=', $dateTo))
-                ->where('adjustment_type', 'expired')
-                ->count(),
+            'total_in' => (int) (clone $baseMutationQuery)->where('mutation_type', 'MASUK')->sum('quantity'),
+            'total_out' => (int) (clone $baseMutationQuery)->where('mutation_type', 'KELUAR')->sum('quantity'),
+            'net_mutation' => (int) ((clone $baseMutationQuery)->where('mutation_type', 'MASUK')->sum('quantity') - (clone $baseMutationQuery)->where('mutation_type', 'KELUAR')->sum('quantity')),
         ];
 
-        return view('reports.adjustments', compact('reports', 'summary', 'search', 'type', 'dateFrom', 'dateTo'));
+        $medicines = Medicine::query()->where('is_active', true)->orderBy('name')->get(['id', 'code', 'name']);
+
+        return view('reports.mutations', compact('reports', 'summary', 'medicines', 'search', 'type', 'medicineId', 'dateFrom', 'dateTo'));
     }
 
     public function rkoRealization(Request $request): View
@@ -263,15 +137,13 @@ class ReportController extends Controller
 
         $reports = RkoHeader::query()
             ->with(['submitter', 'items.medicine.unit'])
-            ->withCount(['items', 'stockReceipts as linked_receipts_count'])
+            ->withCount(['items', 'procurementRealizations as realization_rows_count'])
             ->withSum('items', 'planned_quantity')
             ->withSum('items', 'approved_quantity')
             ->selectSub(
-                DB::table('stock_receipts')
-                    ->join('stock_receipt_items', 'stock_receipt_items.receipt_id', '=', 'stock_receipts.id')
-                    ->selectRaw('COALESCE(SUM(stock_receipt_items.quantity), 0)')
-                    ->whereColumn('stock_receipts.rko_header_id', 'rko_headers.id')
-                    ->where('stock_receipts.status', 'posted'),
+                DB::table('procurement_realizations')
+                    ->selectRaw('COALESCE(SUM(procurement_realizations.realized_quantity), 0)')
+                    ->whereColumn('procurement_realizations.rko_header_id', 'rko_headers.id'),
                 'posted_realized_quantity'
             )
             ->when($search !== '', function (Builder $query) use ($search) {
@@ -290,12 +162,10 @@ class ReportController extends Controller
 
         $headerIds = $reports->getCollection()->pluck('id')->all();
 
-        $realizationByHeaderAndMedicine = DB::table('stock_receipts')
-            ->join('stock_receipt_items', 'stock_receipt_items.receipt_id', '=', 'stock_receipts.id')
-            ->where('stock_receipts.status', 'posted')
-            ->whereIn('stock_receipts.rko_header_id', $headerIds)
-            ->groupBy('stock_receipts.rko_header_id', 'stock_receipt_items.medicine_id')
-            ->selectRaw('stock_receipts.rko_header_id, stock_receipt_items.medicine_id, SUM(stock_receipt_items.quantity) as realized_quantity')
+        $realizationByHeaderAndMedicine = DB::table('procurement_realizations')
+            ->whereIn('procurement_realizations.rko_header_id', $headerIds)
+            ->groupBy('procurement_realizations.rko_header_id', 'procurement_realizations.medicine_id')
+            ->selectRaw('procurement_realizations.rko_header_id, procurement_realizations.medicine_id, SUM(procurement_realizations.realized_quantity) as realized_quantity')
             ->get()
             ->keyBy(fn ($item) => $item->rko_header_id.'-'.$item->medicine_id);
 
@@ -340,13 +210,11 @@ class ReportController extends Controller
                 ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn ($query) => $query->where('rko_headers.status', $status))
                 ->when($periodYear !== '', fn ($query) => $query->where('rko_headers.period_year', (int) $periodYear))
                 ->sum('rko_details.approved_quantity'),
-            'total_realized_qty' => (int) DB::table('stock_receipt_items')
-                ->join('stock_receipts', 'stock_receipts.id', '=', 'stock_receipt_items.receipt_id')
-                ->join('rko_headers', 'rko_headers.id', '=', 'stock_receipts.rko_header_id')
-                ->where('stock_receipts.status', 'posted')
+            'total_realized_qty' => (int) DB::table('procurement_realizations')
+                ->join('rko_headers', 'rko_headers.id', '=', 'procurement_realizations.rko_header_id')
                 ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn ($query) => $query->where('rko_headers.status', $status))
                 ->when($periodYear !== '', fn ($query) => $query->where('rko_headers.period_year', (int) $periodYear))
-                ->sum('stock_receipt_items.quantity'),
+                ->sum('procurement_realizations.realized_quantity'),
         ];
 
         $summary['coverage_percent'] = $summary['total_approved_qty'] > 0
@@ -362,12 +230,13 @@ class ReportController extends Controller
         return view('reports.rko-realization', compact('reports', 'summary', 'availableYears', 'search', 'status', 'periodYear'));
     }
 
-    private function currentStockSubquery(string $today): Builder
+    private function currentStockSubquery(): Builder
     {
-        return MedicineBatch::query()
-            ->selectRaw('SUM(qty_remaining)')
+        return MedicineStock::query()
+            ->select('quantity')
             ->whereColumn('medicine_id', 'medicines.id')
-            ->where('qty_remaining', '>', 0)
-            ->whereDate('expired_at', '>=', $today);
+            ->orderByDesc('period')
+            ->orderByDesc('id')
+            ->limit(1);
     }
 }
