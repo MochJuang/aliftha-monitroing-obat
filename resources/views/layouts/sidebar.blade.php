@@ -1,4 +1,5 @@
 @php
+    $user = Auth::user();
     $menuGroups = [
         [
             'title' => 'Utama',
@@ -9,52 +10,62 @@
         ],
         [
             'title' => 'Faskes',
-            'items' => [
+            'items' => array_values(array_filter([
                 ['label' => 'Data Faskes', 'href' => route('faskes.index'), 'active' => request()->routeIs('faskes.index', 'faskes.create', 'faskes.show', 'faskes.edit', 'distribution-destinations.*')],
-            ],
+            ], fn ($item) => $user?->can('manage-faskes'))),
         ],
         [
             'title' => 'Master Obat',
-            'items' => [
+            'items' => array_values(array_filter([
                 ['label' => 'Kategori Obat', 'href' => route('master-obat.kategori.index'), 'active' => request()->routeIs('master-obat.kategori.*', 'medicine-categories.*')],
                 ['label' => 'Satuan', 'href' => route('master-obat.satuan.index'), 'active' => request()->routeIs('master-obat.satuan.*', 'units.*')],
                 ['label' => 'Data Obat', 'href' => route('master-obat.obat.index'), 'active' => request()->routeIs('master-obat.obat.*', 'medicines.*')],
-            ],
+            ], fn ($item) => $user?->can('manage-master-obat'))),
         ],
         [
             'title' => 'RKO',
-            'items' => [
+            'items' => array_values(array_filter([
                 ['label' => 'Sumber Dana', 'href' => route('rko.sumber-dana.index'), 'active' => request()->routeIs('rko.sumber-dana.*', 'funding-sources.*')],
                 ['label' => 'RKO Header', 'href' => route('rko.header.index'), 'active' => request()->routeIs('rko.header.*', 'rko-headers.*')],
                 ['label' => 'RKO Detail', 'href' => route('rko.detail.index'), 'active' => request()->routeIs('rko.detail.*')],
                 ['label' => 'Realisasi Pengadaan', 'href' => route('rko.realisasi.index'), 'active' => request()->routeIs('rko.realisasi.*', 'procurement-realizations.*')],
-            ],
+            ], function ($item) use ($user) {
+                return match ($item['label']) {
+                    'Sumber Dana' => $user?->can('manage-funding-sources'),
+                    'Realisasi Pengadaan' => $user?->can('view-procurement-realizations'),
+                    default => $user?->can('view-rko'),
+                };
+            })),
         ],
         [
             'title' => 'Transaksi',
-            'items' => [
+            'items' => array_values(array_filter([
                 ['label' => 'Mutasi Stok', 'href' => route('transaksi.mutasi.index'), 'active' => request()->routeIs('transaksi.mutasi.*', 'stock-mutations.*')],
-            ],
+            ], fn ($item) => $user?->can('manage-stock-mutations'))),
         ],
         [
             'title' => 'Monitoring',
-            'items' => [
+            'items' => array_values(array_filter([
                 ['label' => 'Stok Terkini', 'href' => route('monitoring.stok.index'), 'active' => request()->routeIs('monitoring.stok.*', 'stock-monitoring.current-stock')],
-            ],
+            ], fn ($item) => $user?->can('view-monitoring'))),
         ],
         [
             'title' => 'Lainnya',
             'items' => array_values(array_filter([
-                ['label' => 'Laporan', 'href' => route('laporan.stok'), 'active' => request()->routeIs('laporan.*', 'reports.*')],
-                Auth::user()?->isAdmin()
+                $user?->can('view-reports')
+                    ? ['label' => 'Laporan', 'href' => route('laporan.stok'), 'active' => request()->routeIs('laporan.*', 'reports.*')]
+                    : null,
+                $user?->can('manage-users')
                     ? ['label' => 'Pengguna', 'href' => route('users.index'), 'active' => request()->routeIs('users.*')]
                     : null,
-                (Auth::user()?->isAdmin() || Auth::user()?->hasRole('pimpinan'))
+                $user?->can('view-activity-logs')
                     ? ['label' => 'Log Aktivitas', 'href' => route('activity-logs.index'), 'active' => request()->routeIs('activity-logs.*')]
                     : null,
             ])),
         ],
     ];
+
+    $menuGroups = array_values(array_filter($menuGroups, fn ($group) => count($group['items']) > 0));
 @endphp
 
 <aside class="flex h-full w-72 flex-col border-r border-slate-200 bg-slate-950 text-slate-100">

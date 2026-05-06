@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAB IV Tanpa Gambar</title>
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            font-size: 12pt;
+            line-height: 1.7;
+            color: #111827;
+            max-width: 900px;
+            margin: 32px auto;
+            padding: 0 24px 48px;
+            background: #ffffff;
+        }
+
+        h1, h2, h3, h4 {
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        h1 + h1 {
+            margin-bottom: 28px;
+        }
+
+        h2, h3, h4 {
+            margin-top: 22px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin: 0 0 12px;
+            text-align: justify;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 18px;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        th {
+            text-align: center;
+        }
+
+        .table-title {
+            margin-top: 14px;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>BAB IV</h1>
+    <h1>HASIL, ANALISA, DAN PEMBAHASAN</h1>
+
+    <h2>4.1 Gambaran Umum Hasil Penelitian</h2>
+    <p>Hasil penelitian ini berupa aplikasi monitoring obat kontrasepsi berbasis web yang dirancang untuk membantu proses pencatatan, pemantauan, dan pelaporan data obat kontrasepsi pada Dinas Pengendalian Penduduk dan Keluarga Berencana. Aplikasi dibangun dengan framework Laravel dan menggunakan basis data MariaDB atau MySQL sehingga dapat diakses melalui browser dan digunakan oleh lebih dari satu pengguna sesuai hak akses masing-masing.</p>
+    <p>Sistem ini dikembangkan sebagai solusi atas proses pencatatan manual yang sebelumnya lebih banyak bergantung pada lembar kerja spreadsheet. Dengan adanya aplikasi ini, pengelolaan data obat, pengajuan RKO, persetujuan RKO, realisasi pengadaan, mutasi obat, monitoring stok, pelaporan, dan audit aktivitas pengguna dapat dilakukan dalam satu sistem yang terintegrasi.</p>
+
+    <h2>4.2 Analisa Sistem</h2>
+
+    <h3>4.2.1 Analisa Masalah</h3>
+    <p>Berdasarkan hasil pengamatan terhadap proses kerja yang berjalan, diketahui bahwa pengelolaan data obat kontrasepsi masih memiliki beberapa kendala. Pencatatan yang dilakukan secara manual menyebabkan data sulit dipantau secara cepat dan berisiko menimbulkan perbedaan antara data yang tercatat dengan kondisi riil di lapangan. Selain itu, proses pelacakan hubungan antara rencana kebutuhan, persetujuan, dan realisasi pengadaan juga belum terdokumentasi secara terstruktur.</p>
+    <p>Permasalahan lain yang ditemukan adalah keterlambatan dalam penyusunan laporan, kesulitan menelusuri histori mutasi obat, serta belum adanya media monitoring stok yang dapat memberikan gambaran kondisi obat secara ringkas. Kondisi tersebut menunjukkan perlunya sistem yang mampu mengelola data secara terpusat, cepat, dan mudah ditelusuri.</p>
+
+    <h3>4.2.2 Analisa Kebutuhan Fungsional</h3>
+    <p>Kebutuhan fungsional sistem disusun berdasarkan proses bisnis utama yang ada pada aplikasi. Sistem harus mampu menyediakan fasilitas login, pengelolaan data master obat, pengelolaan data faskes, pengelolaan sumber dana, pengajuan RKO, persetujuan RKO, pembentukan realisasi pengadaan, pencatatan mutasi obat, monitoring stok, penyajian laporan, manajemen pengguna, dan log aktivitas.</p>
+    <p>Selain itu, sistem juga harus mampu menghubungkan antarproses sehingga ketika RKO disetujui, data dapat diteruskan menjadi realisasi pengadaan dan mutasi masuk secara otomatis. Dengan demikian, fungsi sistem tidak hanya sebatas pencatatan, tetapi juga membantu menjaga kesinambungan alur data antar modul.</p>
+
+    <h3>4.2.3 Analisa Kebutuhan Non Fungsional</h3>
+    <p>Kebutuhan non fungsional mencakup kebutuhan perangkat keras, perangkat lunak, serta pengguna yang berinteraksi dengan sistem. Analisa ini penting agar aplikasi dapat dijalankan dengan baik pada lingkungan implementasi yang sesuai.</p>
+
+    <p class="table-title">Tabel 4.1 Spesifikasi Perangkat Keras</p>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Komponen</th>
+                <th>Spesifikasi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Processor</td>
+                <td>Minimal dual core</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Memori</td>
+                <td>Minimal 4 GB RAM</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Penyimpanan</td>
+                <td>Minimal 20 GB ruang kosong</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Layar</td>
+                <td>Resolusi minimal 1366 x 768</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p class="table-title">Tabel 4.2 Spesifikasi Perangkat Lunak</p>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Perangkat Lunak</th>
+                <th>Keterangan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Sistem Operasi</td>
+                <td>Windows, Linux, atau macOS</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Web Server</td>
+                <td>Apache atau Laravel development server</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Bahasa Pemrograman</td>
+                <td>PHP</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Framework</td>
+                <td>Laravel</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Basis Data</td>
+                <td>MariaDB atau MySQL</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Browser</td>
+                <td>Google Chrome, Edge, atau Firefox</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p class="table-title">Tabel 4.3 Pengguna Sistem</p>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Pengguna</th>
+                <th>Peran</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Admin</td>
+                <td>Mengelola seluruh modul sistem</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Petugas</td>
+                <td>Mengelola data operasional, RKO, mutasi, dan laporan</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Pimpinan</td>
+                <td>Melakukan persetujuan dan monitoring</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>4.2.4 Analisa Basis Data</h3>
+    <p>Analisa basis data dilakukan untuk memastikan bahwa seluruh data yang dibutuhkan sistem dapat tersimpan secara terstruktur dan saling terhubung. Tabel utama yang digunakan meliputi data pengguna, data obat, kategori obat, satuan, faskes, sumber dana, RKO header, RKO detail, realisasi pengadaan, mutasi obat, item mutasi, stok obat, dan log aktivitas.</p>
+    <p>Hubungan antar tabel dirancang agar alur data dapat berjalan dengan baik. Sebagai contoh, tabel RKO header terhubung dengan RKO detail, kemudian hasil persetujuan RKO berkaitan dengan realisasi pengadaan, dan proses mutasi obat berpengaruh terhadap pembaruan snapshot stok. Struktur ini mendukung kebutuhan monitoring yang menekankan konsistensi alur data dari perencanaan hingga pemantauan stok.</p>
+
+    <h3>4.2.5 Analisa Proses Bisnis</h3>
+    <p>Analisa proses bisnis dilakukan untuk menggambarkan bagaimana setiap aktivitas utama pada sistem berjalan dari awal hingga akhir. Proses tersebut mencakup login sistem, pengelolaan data master, pengajuan dan persetujuan RKO, realisasi pengadaan, mutasi obat, monitoring stok, laporan, manajemen pengguna, dan log aktivitas.</p>
+    <p>Secara umum, proses bisnis dimulai dari pengguna yang melakukan autentikasi, kemudian mengakses modul sesuai hak aksesnya. Petugas melakukan pengelolaan data operasional seperti pengajuan RKO dan mutasi obat, sedangkan pimpinan berperan dalam persetujuan. Data yang telah diproses kemudian disajikan kembali dalam bentuk monitoring dan laporan agar dapat digunakan sebagai bahan evaluasi dan pengambilan keputusan.</p>
+
+    <h2>4.3 Implementasi Sistem</h2>
+
+    <h3>4.3.1 Implementasi Perangkat Lunak</h3>
+    <p>Implementasi perangkat lunak dilakukan menggunakan Laravel sebagai framework utama, PHP sebagai bahasa pemrograman, Blade Template untuk antarmuka, serta MariaDB atau MySQL sebagai basis data. Aplikasi dijalankan dalam lingkungan web sehingga dapat diakses melalui browser oleh pengguna yang memiliki akun pada sistem.</p>
+
+    <h3>4.3.2 Implementasi Basis Data</h3>
+    <p>Implementasi basis data dilakukan dengan membangun tabel-tabel yang telah dirancang pada tahap analisa. Setiap tabel disusun agar mendukung kebutuhan transaksi maupun monitoring. Relasi antar tabel diterapkan untuk menjaga keterhubungan data antara master, perencanaan, pengadaan, mutasi, stok, dan audit aktivitas.</p>
+
+    <h3>4.3.3 Implementasi Hak Akses Pengguna</h3>
+    <p>Hak akses pengguna diterapkan berdasarkan peran yang dimiliki oleh masing-masing pengguna. Admin memiliki akses penuh terhadap seluruh menu. Petugas berfokus pada pengelolaan data operasional. Pimpinan berfokus pada monitoring dan persetujuan RKO. Dengan pembagian ini, akses terhadap fitur sistem dapat lebih terkontrol.</p>
+
+    <h3>4.3.4 Implementasi Antarmuka</h3>
+    <p>Antarmuka sistem dirancang agar mudah digunakan oleh pengguna. Setiap modul memiliki tampilan daftar data, fitur pencarian dan filter, form input, tombol aksi, serta tampilan ringkasan yang memudahkan pemantauan. Pendekatan ini dilakukan agar proses kerja dapat berlangsung lebih cepat dan konsisten.</p>
+
+    <h2>4.4 Pembahasan Sistem</h2>
+
+    <h3>4.4.1 Pembahasan Modul Login</h3>
+    <p>Modul login berfungsi sebagai gerbang awal untuk memastikan bahwa hanya pengguna yang memiliki akun yang dapat mengakses sistem. Melalui modul ini, sistem dapat membedakan hak akses antara admin, petugas, dan pimpinan.</p>
+
+    <h3>4.4.2 Pembahasan Modul Master Data</h3>
+    <p>Modul master data digunakan untuk mengelola data dasar seperti obat, faskes, dan sumber dana. Data ini menjadi acuan penting bagi modul lain karena seluruh proses operasional bergantung pada konsistensi data master yang tersedia.</p>
+
+    <h3>4.4.3 Pembahasan Modul RKO</h3>
+    <p>Modul RKO merupakan inti dari proses perencanaan kebutuhan obat. Melalui modul ini, petugas dapat menyusun kebutuhan obat untuk periode tertentu, kemudian pimpinan melakukan persetujuan terhadap usulan tersebut. Pemisahan proses pengajuan dan persetujuan membuat data usulan dan data hasil persetujuan lebih jelas.</p>
+
+    <h3>4.4.4 Pembahasan Modul Realisasi Pengadaan</h3>
+    <p>Modul realisasi pengadaan menampilkan hasil pengadaan yang terbentuk dari persetujuan RKO. Modul ini membantu pengguna melihat hubungan langsung antara rencana kebutuhan dengan realisasi yang benar-benar dicatat dalam sistem.</p>
+
+    <h3>4.4.5 Pembahasan Modul Mutasi Obat</h3>
+    <p>Modul mutasi obat digunakan untuk mencatat penyaluran obat keluar. Dengan adanya modul ini, histori perpindahan obat dapat ditelusuri dan perubahan stok dapat dipantau secara lebih sistematis.</p>
+
+    <h3>4.4.6 Pembahasan Modul Monitoring Stok</h3>
+    <p>Modul monitoring stok berfungsi untuk menampilkan kondisi stok obat secara ringkas. Informasi ini penting untuk membantu pengguna mengetahui obat mana yang masih aman, yang mendekati batas minimum, atau yang perlu mendapat perhatian lebih lanjut.</p>
+
+    <h3>4.4.7 Pembahasan Modul Laporan</h3>
+    <p>Modul laporan menyajikan data dalam bentuk yang lebih mudah dibaca dan dianalisis. Laporan membantu pengguna melihat ringkasan kondisi sistem tanpa harus membuka setiap modul satu per satu.</p>
+
+    <h3>4.4.8 Pembahasan Modul Manajemen Pengguna</h3>
+    <p>Modul manajemen pengguna memungkinkan admin mengelola akun pengguna yang terdaftar di dalam sistem. Keberadaan modul ini penting untuk menjaga kontrol akses dan keamanan aplikasi.</p>
+
+    <h3>4.4.9 Pembahasan Modul Log Aktivitas</h3>
+    <p>Modul log aktivitas berfungsi mencatat tindakan penting yang dilakukan pengguna. Catatan ini dapat digunakan sebagai media pengawasan, pelacakan perubahan data, dan bahan evaluasi bila terjadi kesalahan atau ketidaksesuaian.</p>
+
+    <h2>4.5 Pengujian Sistem</h2>
+
+    <h3>4.5.1 Metode Pengujian</h3>
+    <p>Pengujian sistem dilakukan menggunakan metode black box testing. Metode ini menekankan pengujian fungsi sistem berdasarkan masukan dan keluaran yang dihasilkan tanpa melihat kode program secara langsung.</p>
+
+    <h3>4.5.2 Hasil Pengujian Login</h3>
+    <p>Hasil pengujian pada modul login menunjukkan bahwa sistem dapat memvalidasi data pengguna dengan baik. Pengguna yang memasukkan data valid dapat masuk ke sistem, sedangkan data yang tidak valid akan ditolak oleh sistem.</p>
+
+    <h3>4.5.3 Hasil Pengujian Master Data</h3>
+    <p>Pengujian master data menunjukkan bahwa sistem mampu menyimpan, menampilkan, mengubah, dan menonaktifkan data sesuai kebutuhan. Fitur pencarian dan filter juga membantu proses pengelolaan data.</p>
+
+    <h3>4.5.4 Hasil Pengujian RKO</h3>
+    <p>Pengujian pada modul RKO menunjukkan bahwa proses draft, pengajuan, dan persetujuan dapat berjalan sesuai alur yang dirancang. Sistem juga dapat memisahkan data usulan dan data hasil persetujuan.</p>
+
+    <h3>4.5.5 Hasil Pengujian Realisasi Pengadaan</h3>
+    <p>Hasil pengujian menunjukkan bahwa data realisasi pengadaan dapat terbentuk dan ditampilkan dengan baik berdasarkan dokumen RKO yang telah disetujui.</p>
+
+    <h3>4.5.6 Hasil Pengujian Mutasi Obat</h3>
+    <p>Pengujian modul mutasi obat menunjukkan bahwa sistem dapat mencatat data mutasi keluar dan memperbarui stok sesuai transaksi yang dilakukan.</p>
+
+    <h3>4.5.7 Hasil Pengujian Monitoring</h3>
+    <p>Pengujian monitoring membuktikan bahwa sistem dapat menampilkan data stok secara ringkas dan membantu pengguna melihat kondisi persediaan obat dengan cepat.</p>
+
+    <h3>4.5.8 Hasil Pengujian Laporan</h3>
+    <p>Pengujian modul laporan menunjukkan bahwa sistem mampu menyajikan informasi sesuai filter yang dipilih pengguna. Dengan demikian, laporan dapat digunakan sebagai bahan monitoring dan evaluasi.</p>
+
+    <h3>4.5.9 Hasil Pengujian Manajemen Pengguna</h3>
+    <p>Modul manajemen pengguna berhasil diuji pada proses penambahan akun, perubahan status akun, dan penampilan data pengguna. Hal ini menunjukkan bahwa pengelolaan akses dapat berjalan sesuai kebutuhan.</p>
+
+    <h3>4.5.10 Hasil Pengujian Log Aktivitas</h3>
+    <p>Pengujian log aktivitas menunjukkan bahwa sistem dapat mencatat tindakan-tindakan penting yang dilakukan pengguna dan menampilkannya kembali saat diperlukan.</p>
+
+    <h2>4.6 Kelebihan dan Keterbatasan Sistem</h2>
+    <p>Kelebihan sistem ini terletak pada kemampuannya mengintegrasikan data perencanaan, pengadaan, mutasi, monitoring, dan pelaporan dalam satu aplikasi. Selain itu, sistem juga telah mendukung hak akses pengguna dan audit aktivitas. Adapun keterbatasannya adalah sistem belum terintegrasi dengan aplikasi eksternal lain dan masih bergantung pada proses input data yang dilakukan pengguna.</p>
+
+    <h2>4.7 Kesimpulan Bab</h2>
+    <p>Berdasarkan hasil analisa, implementasi, pembahasan, dan pengujian yang telah dilakukan, dapat disimpulkan bahwa aplikasi monitoring obat kontrasepsi mampu mendukung proses kerja pengelolaan data obat secara lebih terstruktur. Sistem ini membantu hubungan antara rencana kebutuhan, persetujuan, realisasi, mutasi, dan monitoring stok sehingga informasi dapat diakses dengan lebih mudah dan cepat.</p>
+</body>
+</html>

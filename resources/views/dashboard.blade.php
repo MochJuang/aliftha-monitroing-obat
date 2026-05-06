@@ -3,6 +3,13 @@
         Dashboard
     </x-slot>
 
+    @php
+        $canViewReports = auth()->user()?->can('view-reports');
+        $canViewMonitoring = auth()->user()?->can('view-monitoring');
+        $canViewActivityLogs = auth()->user()?->can('view-activity-logs');
+        $canManageStockMutations = auth()->user()?->can('manage-stock-mutations');
+    @endphp
+
     <section class="grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         <div class="overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-7 text-white shadow-xl shadow-slate-300/40">
             <p class="text-xs font-semibold uppercase tracking-[0.3em] text-amber-300">Ringkasan Hari Ini</p>
@@ -76,9 +83,11 @@
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">RKO Snapshot</p>
                 <h3 class="mt-2 text-xl font-semibold text-slate-900">Perbandingan rencana dan realisasi pengadaan</h3>
             </div>
-            <a href="{{ route('laporan.rko') }}" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
-                Buka Laporan RKO
-            </a>
+            @if ($canViewReports)
+                <a href="{{ route('laporan.rko') }}" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                    Buka Laporan RKO
+                </a>
+            @endif
         </div>
 
         <div class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -102,16 +111,18 @@
         </div>
     </section>
 
-    <section class="mt-6 grid gap-6 xl:grid-cols-3">
-        <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm xl:col-span-2">
+    <section class="mt-6 grid gap-6 {{ $canViewActivityLogs ? 'xl:grid-cols-3' : '' }}">
+        <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm {{ $canViewActivityLogs ? 'xl:col-span-2' : '' }}">
             <div class="flex items-center justify-between gap-4">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Peringatan Operasional</p>
                     <h3 class="mt-2 text-xl font-semibold text-slate-900">Obat yang butuh perhatian cepat</h3>
                 </div>
-                <a href="{{ route('monitoring.stok.index') }}" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
-                    Lihat Monitoring
-                </a>
+                @if ($canViewMonitoring)
+                    <a href="{{ route('monitoring.stok.index') }}" class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-slate-700">
+                        Lihat Monitoring
+                    </a>
+                @endif
             </div>
 
             <div class="mt-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
@@ -132,24 +143,27 @@
             </div>
         </article>
 
-        <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Aktivitas Terbaru</p>
-            <h3 class="mt-2 text-xl font-semibold text-slate-900">Log pengguna</h3>
-            <div class="mt-5 space-y-3 text-sm leading-6 text-slate-600">
-                @forelse ($recentActivities as $activity)
-                    <div class="rounded-2xl bg-slate-50 px-4 py-3">
-                        <p class="font-medium text-slate-900">{{ $activity->description }}</p>
-                        <p class="mt-1 text-xs text-slate-500">
-                            {{ $activity->user?->name ?? 'Sistem' }} | {{ $activity->created_at->format('d M Y H:i') }}
-                        </p>
-                    </div>
-                @empty
-                    <div class="rounded-2xl bg-slate-50 px-4 py-4 text-slate-500">Belum ada log aktivitas.</div>
-                @endforelse
-            </div>
-        </article>
+        @if ($canViewActivityLogs)
+            <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Aktivitas Terbaru</p>
+                <h3 class="mt-2 text-xl font-semibold text-slate-900">Log pengguna</h3>
+                <div class="mt-5 space-y-3 text-sm leading-6 text-slate-600">
+                    @forelse ($recentActivities as $activity)
+                        <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                            <p class="font-medium text-slate-900">{{ $activity->description }}</p>
+                            <p class="mt-1 text-xs text-slate-500">
+                                {{ $activity->user?->name ?? 'Sistem' }} | {{ $activity->created_at->format('d M Y H:i') }}
+                            </p>
+                        </div>
+                    @empty
+                        <div class="rounded-2xl bg-slate-50 px-4 py-4 text-slate-500">Belum ada log aktivitas.</div>
+                    @endforelse
+                </div>
+            </article>
+        @endif
     </section>
 
+    @if ($canManageStockMutations)
     <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex items-center justify-between gap-4">
             <div>
@@ -198,4 +212,5 @@
             </div>
         </div>
     </section>
+    @endif
 </x-app-layout>

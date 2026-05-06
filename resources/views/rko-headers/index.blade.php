@@ -26,9 +26,11 @@
                 <h3 class="text-lg font-semibold text-slate-900">Daftar RKO</h3>
                 <p class="mt-1 text-sm text-slate-500">Kelola pengajuan RKO per periode, lalu lakukan persetujuan pada form terpisah agar nilai estimasi dan nilai persetujuan tidak tercampur.</p>
             </div>
-            <a href="{{ route('rko.header.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
-                Tambah RKO
-            </a>
+            @can('create-rko')
+                <a href="{{ route('rko.header.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+                    Tambah RKO
+                </a>
+            @endcan
         </div>
 
 		        <div class="mt-6 overflow-x-auto">
@@ -103,15 +105,21 @@
                                 <td class="px-4 py-3">
                                     <div class="flex justify-end gap-2 whitespace-nowrap">
                                         <a href="{{ route('rko.header.show', $header) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
-                                        @if ($header->status !== 'approved')
-                                            <a href="{{ route('rko.header.edit', $header) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Pengajuan</a>
-                                        @endif
-                                        <a href="{{ route('rko.header.approval.edit', $header) }}" class="rounded-xl border border-emerald-300 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50">Persetujuan</a>
-                                        <form method="POST" action="{{ route('rko.header.destroy', $header) }}" onsubmit="return confirm('Hapus dokumen RKO ini?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="rounded-xl border border-rose-300 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">Hapus</button>
-                                        </form>
+                                        @can('create-rko')
+                                            @if ($header->status !== 'approved')
+                                                <a href="{{ route('rko.header.edit', $header) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Pengajuan</a>
+                                            @endif
+                                        @endcan
+                                        @can('approve-rko')
+                                            <a href="{{ route('rko.header.approval.edit', $header) }}" class="rounded-xl border border-emerald-300 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50">Persetujuan</a>
+                                        @endcan
+                                        @can('create-rko')
+                                            <form method="POST" action="{{ route('rko.header.destroy', $header) }}" onsubmit="return confirm('Hapus dokumen RKO ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="rounded-xl border border-rose-300 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">Hapus</button>
+                                            </form>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

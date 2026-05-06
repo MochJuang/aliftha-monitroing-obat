@@ -71,9 +71,11 @@
             </div>
 
             <div class="mt-6 flex justify-end gap-3">
-                @if (! $mutation->is_auto_generated && $mutation->mutation_type === 'KELUAR')
-                    <a href="{{ route('transaksi.mutasi.edit', $mutation) }}" class="rounded-2xl border border-amber-300 px-5 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit</a>
-                @endif
+                @can('manage-stock-mutations')
+                    @if (! $mutation->is_auto_generated && $mutation->mutation_type === 'KELUAR')
+                        <a href="{{ route('transaksi.mutasi.edit', $mutation) }}" class="rounded-2xl border border-amber-300 px-5 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                    @endif
+                @endcan
                 <a href="{{ route('transaksi.mutasi.index') }}" class="rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Kembali</a>
             </div>
         </article>

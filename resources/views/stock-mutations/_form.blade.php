@@ -96,8 +96,8 @@
                 </div>
 
 	                <div class="mt-4 overflow-x-auto">
-	                    <div class="grid grid-cols-6 gap-4 min-w-[860px]">
-	                        <div class="col-span-4">
+	                    <div class="grid gap-4" style="min-width: 860px; grid-template-columns: minmax(420px, 2fr) 160px minmax(260px, 1fr);">
+	                        <div>
 	                            <label class="block text-sm font-medium text-slate-700">Obat</label>
 	                            <select class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][medicine_id]`" x-model="item.medicine_id" required>
 	                                <option value="">Pilih obat</option>
@@ -106,11 +106,11 @@
 	                                </template>
 	                            </select>
 	                        </div>
-	                        <div class="col-span-1">
+	                        <div>
 	                            <label class="block text-sm font-medium text-slate-700">Jumlah</label>
 	                            <input type="number" min="1" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][quantity]`" x-model="item.quantity" required>
 	                        </div>
-	                        <div class="col-span-1">
+	                        <div>
 	                            <label class="block text-sm font-medium text-slate-700">Catatan item</label>
 	                            <input type="text" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][notes]`" x-model="item.notes">
 	                        </div>

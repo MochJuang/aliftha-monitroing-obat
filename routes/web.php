@@ -30,7 +30,7 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::middleware('role:admin')->group(function () {
+    Route::middleware('can:manage-users')->group(function () {
         Route::resource('users', UserManagementController::class)->except(['destroy']);
         Route::patch('users/{user}/toggle-status', [UserManagementController::class, 'toggleStatus'])->name('users.toggle-status');
     });
@@ -39,7 +39,6 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::resource('medicine-categories', MedicineCategoryController::class);
         Route::resource('units', UnitController::class);
         Route::resource('medicines', MedicineController::class);
-        Route::resource('rko-headers', RkoHeaderController::class);
         Route::resource('funding-sources', FundingSourceController::class);
         Route::resource('distribution-destinations', DistributionDestinationController::class);
         Route::resource('stock-mutations', StockMutationController::class);
@@ -89,18 +88,6 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::get('sumber-dana/{fundingSource}/edit', [FundingSourceController::class, 'edit'])->name('sumber-dana.edit');
             Route::match(['put', 'patch'], 'sumber-dana/{fundingSource}', [FundingSourceController::class, 'update'])->name('sumber-dana.update');
             Route::delete('sumber-dana/{fundingSource}', [FundingSourceController::class, 'destroy'])->name('sumber-dana.destroy');
-
-            Route::get('header', [RkoHeaderController::class, 'index'])->name('header.index');
-            Route::get('header/create', [RkoHeaderController::class, 'create'])->name('header.create');
-            Route::post('header', [RkoHeaderController::class, 'store'])->name('header.store');
-            Route::get('header/{rkoHeader}', [RkoHeaderController::class, 'show'])->name('header.show');
-            Route::get('header/{rkoHeader}/edit', [RkoHeaderController::class, 'edit'])->name('header.edit');
-            Route::match(['put', 'patch'], 'header/{rkoHeader}', [RkoHeaderController::class, 'update'])->name('header.update');
-            Route::get('header/{rkoHeader}/persetujuan', [RkoHeaderController::class, 'editApproval'])->name('header.approval.edit');
-            Route::match(['put', 'patch'], 'header/{rkoHeader}/persetujuan', [RkoHeaderController::class, 'updateApproval'])->name('header.approval.update');
-            Route::delete('header/{rkoHeader}', [RkoHeaderController::class, 'destroy'])->name('header.destroy');
-
-            Route::get('detail', [RkoDetailController::class, 'index'])->name('detail.index');
         });
 
         Route::prefix('transaksi')->name('transaksi.')->group(function () {
@@ -114,29 +101,52 @@ Route::middleware(['auth', 'active'])->group(function () {
         });
     });
 
-    Route::middleware('role:admin,petugas_gudang,pimpinan')->group(function () {
-        Route::get('procurement-realizations', [ProcurementRealizationController::class, 'index'])->name('procurement-realizations.index');
-        Route::get('stock-monitoring/current-stock', [StockMonitoringController::class, 'currentStock'])->name('stock-monitoring.current-stock');
-        Route::get('reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
-        Route::get('reports/mutations', [ReportController::class, 'mutations'])->name('reports.mutations');
-        Route::get('reports/rko-realization', [ReportController::class, 'rkoRealization'])->name('reports.rko-realization');
+    Route::middleware('can:create-rko')->prefix('rko')->name('rko.')->group(function () {
+        Route::get('header/create', [RkoHeaderController::class, 'create'])->name('header.create');
+        Route::post('header', [RkoHeaderController::class, 'store'])->name('header.store');
+        Route::get('header/{rkoHeader}/edit', [RkoHeaderController::class, 'edit'])->name('header.edit');
+        Route::match(['put', 'patch'], 'header/{rkoHeader}', [RkoHeaderController::class, 'update'])->name('header.update');
+        Route::delete('header/{rkoHeader}', [RkoHeaderController::class, 'destroy'])->name('header.destroy');
+    });
 
+    Route::middleware('can:approve-rko')->prefix('rko')->name('rko.')->group(function () {
+        Route::get('header/{rkoHeader}/persetujuan', [RkoHeaderController::class, 'editApproval'])->name('header.approval.edit');
+        Route::match(['put', 'patch'], 'header/{rkoHeader}/persetujuan', [RkoHeaderController::class, 'updateApproval'])->name('header.approval.update');
+    });
+
+    Route::middleware('can:view-rko')->prefix('rko')->name('rko.')->group(function () {
+        Route::get('header', [RkoHeaderController::class, 'index'])->name('header.index');
+        Route::get('header/{rkoHeader}', [RkoHeaderController::class, 'show'])->name('header.show');
+        Route::get('detail', [RkoDetailController::class, 'index'])->name('detail.index');
+    });
+
+    Route::middleware('can:view-procurement-realizations')->group(function () {
+        Route::get('procurement-realizations', [ProcurementRealizationController::class, 'index'])->name('procurement-realizations.index');
+        Route::prefix('rko')->name('rko.')->group(function () {
+            Route::get('realisasi-pengadaan', [ProcurementRealizationController::class, 'index'])->name('realisasi.index');
+        });
+    });
+
+    Route::middleware('can:view-monitoring')->group(function () {
+        Route::get('stock-monitoring/current-stock', [StockMonitoringController::class, 'currentStock'])->name('stock-monitoring.current-stock');
         Route::prefix('monitoring')->name('monitoring.')->group(function () {
             Route::get('stok-terkini', [StockMonitoringController::class, 'currentStock'])->name('stok.index');
         });
+    });
+
+    Route::middleware('can:view-reports')->group(function () {
+        Route::get('reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
+        Route::get('reports/mutations', [ReportController::class, 'mutations'])->name('reports.mutations');
+        Route::get('reports/rko-realization', [ReportController::class, 'rkoRealization'])->name('reports.rko-realization');
 
         Route::prefix('laporan')->name('laporan.')->group(function () {
             Route::get('stok', [ReportController::class, 'stock'])->name('stok');
             Route::get('mutasi-stok', [ReportController::class, 'mutations'])->name('mutasi');
             Route::get('rko-vs-realisasi', [ReportController::class, 'rkoRealization'])->name('rko');
         });
-
-        Route::prefix('rko')->name('rko.')->group(function () {
-            Route::get('realisasi-pengadaan', [ProcurementRealizationController::class, 'index'])->name('realisasi.index');
-        });
     });
 
-    Route::middleware('role:admin,pimpinan')->group(function () {
+    Route::middleware('can:view-activity-logs')->group(function () {
         Route::get('activity-logs', [ActivityLogController::class, 'index'])->name('activity-logs.index');
     });
 });

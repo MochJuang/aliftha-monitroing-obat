@@ -19,9 +19,11 @@
     <section class="mt-6 rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <p class="text-sm text-slate-500">Transaksi manual pada halaman ini hanya untuk mutasi keluar. Mutasi masuk dibentuk otomatis dari persetujuan RKO.</p>
-            <a href="{{ route('transaksi.mutasi.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
-                Tambah Mutasi Keluar
-            </a>
+            @can('manage-stock-mutations')
+                <a href="{{ route('transaksi.mutasi.create') }}" class="inline-flex rounded-2xl bg-slate-950 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800">
+                    Tambah Mutasi Keluar
+                </a>
+            @endcan
         </div>
 
 	        <div class="mt-6 overflow-x-auto">
@@ -72,14 +74,16 @@
                                 <td class="px-4 py-3">
                                     <div class="flex justify-end gap-2 whitespace-nowrap">
                                         <a href="{{ route('transaksi.mutasi.show', $mutation) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
-                                        @if (! $mutation->is_auto_generated && $mutation->mutation_type === 'KELUAR')
-                                            <a href="{{ route('transaksi.mutasi.edit', $mutation) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
-                                            <form method="POST" action="{{ route('transaksi.mutasi.destroy', $mutation) }}" onsubmit="return confirm('Hapus mutasi ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="rounded-xl border border-rose-300 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">Hapus</button>
-                                            </form>
-                                        @endif
+                                        @can('manage-stock-mutations')
+                                            @if (! $mutation->is_auto_generated && $mutation->mutation_type === 'KELUAR')
+                                                <a href="{{ route('transaksi.mutasi.edit', $mutation) }}" class="rounded-xl border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50">Edit</a>
+                                                <form method="POST" action="{{ route('transaksi.mutasi.destroy', $mutation) }}" onsubmit="return confirm('Hapus mutasi ini?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="rounded-xl border border-rose-300 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-50">Hapus</button>
+                                                </form>
+                                            @endif
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

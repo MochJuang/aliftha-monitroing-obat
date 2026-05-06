@@ -10,10 +10,14 @@
                     <p class="mt-2 text-sm text-slate-500">Periode {{ sprintf('%02d', $rkoHeader->period_month) }}/{{ $rkoHeader->period_year }}</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    @if ($rkoHeader->status !== 'approved')
-                        <a href="{{ route('rko.header.edit', $rkoHeader) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit Pengajuan</a>
-                    @endif
-                    <a href="{{ route('rko.header.approval.edit', $rkoHeader) }}" class="rounded-2xl border border-emerald-300 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-50">Form Persetujuan</a>
+                    @can('create-rko')
+                        @if ($rkoHeader->status !== 'approved')
+                            <a href="{{ route('rko.header.edit', $rkoHeader) }}" class="rounded-2xl border border-amber-300 px-4 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50">Edit Pengajuan</a>
+                        @endif
+                    @endcan
+                    @can('approve-rko')
+                        <a href="{{ route('rko.header.approval.edit', $rkoHeader) }}" class="rounded-2xl border border-emerald-300 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-50">Form Persetujuan</a>
+                    @endcan
                 </div>
             </div>
 
@@ -227,7 +231,11 @@
                                     <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ number_format((int) ($mutation->items_sum_quantity ?? 0)) }}</td>
                                     <td class="px-4 py-3">
                                         <div class="flex justify-end">
-                                            <a href="{{ route('transaksi.mutasi.show', $mutation) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
+                                            @can('manage-stock-mutations')
+                                                <a href="{{ route('transaksi.mutasi.show', $mutation) }}" class="rounded-xl border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50">Detail</a>
+                                            @else
+                                                <span class="text-xs text-slate-400">Detail terbatas</span>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>
