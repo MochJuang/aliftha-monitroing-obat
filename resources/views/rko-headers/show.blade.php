@@ -16,7 +16,9 @@
                         @endif
                     @endcan
                     @can('approve-rko')
-                        <a href="{{ route('rko.header.approval.edit', $rkoHeader) }}" class="rounded-2xl border border-emerald-300 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-50">Form Persetujuan</a>
+                        @if ($rkoHeader->status === 'submitted')
+                            <a href="{{ route('rko.header.approval.edit', $rkoHeader) }}" class="rounded-2xl border border-emerald-300 px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-50">Form Persetujuan</a>
+                        @endif
                     @endcan
                 </div>
             </div>

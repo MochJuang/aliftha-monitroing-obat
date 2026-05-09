@@ -9,6 +9,7 @@ use App\Models\FundingSource;
 use App\Models\Medicine;
 use App\Models\RkoHeader;
 use App\Models\StockMutation;
+use App\Support\SimpleXlsxExporter;
 use App\Http\Controllers\StockMutationController;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -20,25 +21,7 @@ class RkoHeaderController extends Controller
 {
     public function index(Request $request): View
     {
-        $search = trim((string) $request->string('search'));
-        $status = trim((string) $request->string('status'));
-        $periodYear = trim((string) $request->string('period_year'));
-        $fundingSourceId = trim((string) $request->string('funding_source_id'));
-
-        $baseQuery = RkoHeader::query()
-            ->with(['submitter', 'approver', 'fundingSource'])
-            ->withCount('items')
-            ->withSum('items', 'planned_quantity')
-            ->withSum('items', 'approved_quantity')
-            ->when($search !== '', function (Builder $query) use ($search) {
-                $query->where(function (Builder $inner) use ($search) {
-                    $inner->where('rko_number', 'like', "%{$search}%")
-                        ->orWhere('notes', 'like', "%{$search}%");
-                });
-            })
-            ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn (Builder $query) => $query->where('status', $status))
-            ->when($periodYear !== '', fn (Builder $query) => $query->where('period_year', (int) $periodYear))
-            ->when($fundingSourceId !== '', fn (Builder $query) => $query->where('funding_source_id', $fundingSourceId));
+        [$baseQuery, $search, $status, $periodYear, $fundingSourceId] = $this->filteredIndexQuery($request);
 
         $headers = (clone $baseQuery)
             ->orderByDesc('period_year')
@@ -63,6 +46,52 @@ class RkoHeaderController extends Controller
         $fundingSources = FundingSource::query()->where('is_active', true)->orderBy('name')->get(['id', 'name']);
 
         return view('rko-headers.index', compact('headers', 'summary', 'search', 'status', 'periodYear', 'fundingSourceId', 'availableYears', 'fundingSources'));
+    }
+
+    public function exportExcel(Request $request)
+    {
+        [$baseQuery] = $this->filteredIndexQuery($request);
+
+        $headers = (clone $baseQuery)
+            ->orderByDesc('period_year')
+            ->orderByDesc('period_month')
+            ->orderByDesc('id')
+            ->get();
+
+        $title = 'Daftar RKO';
+        $headings = [
+            'Nomor RKO',
+            'Periode',
+            'Sumber Dana',
+            'Status',
+            'Jumlah Item',
+            'Total Rencana',
+            'Total Disetujui',
+            'Total Anggaran',
+            'Tanggal Pengajuan',
+            'Tanggal Persetujuan',
+            'Penyusun',
+        ];
+        $rows = $headers->map(fn (RkoHeader $header) => [
+            $header->rko_number,
+            sprintf('%02d', $header->period_month).'/'.$header->period_year,
+            $header->fundingSource?->name ?? '-',
+            match ($header->status) {
+                'draft' => 'Draft',
+                'submitted' => 'Diajukan',
+                'approved' => 'Disetujui',
+                default => 'Ditolak',
+            },
+            number_format((int) $header->items_count).' item',
+            number_format((int) ($header->items_sum_planned_quantity ?? 0)),
+            number_format((int) ($header->items_sum_approved_quantity ?? 0)),
+            'Rp '.number_format((float) $header->total_budget, 0, ',', '.'),
+            $header->submitted_at?->format('d M Y') ?? '-',
+            $header->approved_at?->format('d M Y') ?? '-',
+            $header->submitter?->name ?? '-',
+        ])->all();
+
+        return SimpleXlsxExporter::download($title, $headings, $rows, 'daftar-rko');
     }
 
     public function create(): View
@@ -294,6 +323,34 @@ class RkoHeaderController extends Controller
         return redirect()
             ->route('rko.header.index')
             ->with('success', 'RKO berhasil dihapus.');
+    }
+
+    /**
+     * @return array{0: Builder, 1: string, 2: string, 3: string, 4: string}
+     */
+    private function filteredIndexQuery(Request $request): array
+    {
+        $search = trim((string) $request->string('search'));
+        $status = trim((string) $request->string('status'));
+        $periodYear = trim((string) $request->string('period_year'));
+        $fundingSourceId = trim((string) $request->string('funding_source_id'));
+
+        $baseQuery = RkoHeader::query()
+            ->with(['submitter', 'approver', 'fundingSource'])
+            ->withCount('items')
+            ->withSum('items', 'planned_quantity')
+            ->withSum('items', 'approved_quantity')
+            ->when($search !== '', function (Builder $query) use ($search) {
+                $query->where(function (Builder $inner) use ($search) {
+                    $inner->where('rko_number', 'like', "%{$search}%")
+                        ->orWhere('notes', 'like', "%{$search}%");
+                });
+            })
+            ->when(in_array($status, ['draft', 'submitted', 'approved', 'rejected'], true), fn (Builder $query) => $query->where('status', $status))
+            ->when($periodYear !== '', fn (Builder $query) => $query->where('period_year', (int) $periodYear))
+            ->when($fundingSourceId !== '', fn (Builder $query) => $query->where('funding_source_id', $fundingSourceId));
+
+        return [$baseQuery, $search, $status, $periodYear, $fundingSourceId];
     }
 
     /**

@@ -37,6 +37,7 @@
 	            <button type="submit" class="w-28 shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Filter</button>
 	        </form>
 	        </div>
+            @include('reports._export_buttons', ['routeName' => 'laporan.stok.export'])
 
         <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
             <div class="overflow-x-auto">

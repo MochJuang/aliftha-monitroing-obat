@@ -116,6 +116,7 @@ Route::middleware(['auth', 'active'])->group(function () {
 
     Route::middleware('can:view-rko')->prefix('rko')->name('rko.')->group(function () {
         Route::get('header', [RkoHeaderController::class, 'index'])->name('header.index');
+        Route::get('header/export/excel', [RkoHeaderController::class, 'exportExcel'])->name('header.export.excel');
         Route::get('header/{rkoHeader}', [RkoHeaderController::class, 'show'])->name('header.show');
         Route::get('detail', [RkoDetailController::class, 'index'])->name('detail.index');
     });
@@ -141,8 +142,11 @@ Route::middleware(['auth', 'active'])->group(function () {
 
         Route::prefix('laporan')->name('laporan.')->group(function () {
             Route::get('stok', [ReportController::class, 'stock'])->name('stok');
+            Route::get('stok/export/{format}', [ReportController::class, 'stockExport'])->whereIn('format', ['pdf', 'excel'])->name('stok.export');
             Route::get('mutasi-stok', [ReportController::class, 'mutations'])->name('mutasi');
+            Route::get('mutasi-stok/export/{format}', [ReportController::class, 'mutationsExport'])->whereIn('format', ['pdf', 'excel'])->name('mutasi.export');
             Route::get('rko-vs-realisasi', [ReportController::class, 'rkoRealization'])->name('rko');
+            Route::get('rko-vs-realisasi/export/{format}', [ReportController::class, 'rkoRealizationExport'])->whereIn('format', ['pdf', 'excel'])->name('rko.export');
         });
     });
 

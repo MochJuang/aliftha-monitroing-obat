@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('manage-funding-sources', fn (User $user) => $user->hasAnyRole('admin', 'petugas_gudang'));
         Gate::define('view-rko', fn (User $user) => $user->hasAnyRole('admin', 'petugas_gudang', 'pimpinan'));
         Gate::define('create-rko', fn (User $user) => $user->hasAnyRole('admin', 'petugas_gudang'));
-        Gate::define('approve-rko', fn (User $user) => $user->hasAnyRole('admin', 'pimpinan'));
+        Gate::define('approve-rko', fn (User $user) => $user->hasRole('pimpinan'));
         Gate::define('manage-stock-mutations', fn (User $user) => $user->hasAnyRole('admin', 'petugas_gudang'));
         Gate::define('view-procurement-realizations', fn (User $user) => $user->hasAnyRole('admin', 'petugas_gudang', 'pimpinan'));
         Gate::define('view-monitoring', fn (User $user) => $user->hasAnyRole('admin', 'petugas_gudang', 'pimpinan'));

@@ -15,7 +15,7 @@
             padding: 0 20px 48px;
         }
 
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             text-align: center;
             margin: 0;
         }
@@ -24,7 +24,7 @@
             margin-bottom: 28px;
         }
 
-        h2, h3 {
+        h2, h3, h4 {
             text-align: left;
             margin-top: 22px;
             margin-bottom: 10px;
@@ -97,231 +97,83 @@
     <h1>BAB IV</h1>
     <h1>HASIL DAN PEMBAHASAN</h1>
 
-    <h2>4.1 Gambaran Umum Hasil Penelitian</h2>
-    <p>Hasil dari penelitian ini adalah sebuah aplikasi monitoring obat kontrasepsi berbasis web yang dibangun untuk mendukung proses pencatatan, pemantauan, dan pelaporan data obat kontrasepsi pada Dinas Pengendalian Penduduk dan Keluarga Berencana Kota Sukabumi. Aplikasi dikembangkan menggunakan framework Laravel dan basis data MariaDB/MySQL sehingga dapat diakses melalui browser dan digunakan oleh lebih dari satu pengguna sesuai hak akses masing-masing.</p>
-    <p>Berbeda dengan sistem pencatatan manual yang sebelumnya banyak bergantung pada lembar kerja spreadsheet, aplikasi yang dibangun pada penelitian ini menempatkan data dalam satu sistem terintegrasi. Dengan demikian, proses pengelolaan data obat, penyusunan RKO, pencatatan realisasi pengadaan, pencatatan mutasi obat, monitoring stok, dan penyusunan laporan dapat dilakukan secara lebih terstruktur, lebih cepat, dan lebih mudah ditelusuri.</p>
-    <p>Secara umum, modul utama yang berhasil diimplementasikan dalam aplikasi ini meliputi:</p>
+    <h2>4.1 Analisa dan Perancangan Sistem</h2>
+    <p>Bagian ini menjelaskan hasil analisa kebutuhan serta rancangan sistem usulan yang digunakan sebagai dasar pembangunan aplikasi monitoring obat kontrasepsi. Analisa dan perancangan dilakukan agar kebutuhan pengguna, fungsi sistem, serta alur kerja antar aktor dapat tergambar secara jelas sebelum masuk ke tahap implementasi.</p>
+
+    <h3>4.1.1 Analisa Kebutuhan</h3>
+    <p>Analisa kebutuhan dilakukan untuk mengidentifikasi kebutuhan utama dari pengguna dan sistem pada aplikasi monitoring obat kontrasepsi. Hasil analisa ini digunakan sebagai acuan dalam menentukan fitur, hak akses, dan alur proses pada aplikasi.</p>
+
+    <h4>Kebutuhan Pengguna</h4>
+    <p>Kebutuhan pengguna pada aplikasi monitoring obat kontrasepsi dibedakan berdasarkan peran masing-masing aktor, yaitu admin, pimpinan, dan gudang.</p>
     <ul>
-        <li>autentikasi pengguna,</li>
-        <li>dashboard monitoring,</li>
-        <li>manajemen data faskes,</li>
-        <li>manajemen master obat,</li>
-        <li>rencana kebutuhan obat (RKO),</li>
-        <li>realisasi pengadaan,</li>
-        <li>mutasi obat,</li>
-        <li>monitoring stok,</li>
-        <li>laporan,</li>
-        <li>manajemen pengguna, dan</li>
-        <li>log aktivitas.</li>
+        <li><b>Admin</b> membutuhkan akses untuk mengelola data faskes, data obat, sumber dana, pengguna, laporan, monitoring, serta melakukan pengawasan terhadap aktivitas sistem.</li>
+        <li><b>Gudang</b> membutuhkan fitur untuk mengelola data operasional seperti pengajuan RKO, pencatatan mutasi obat, peninjauan realisasi pengadaan, monitoring stok, dan penyusunan laporan.</li>
+        <li><b>Pimpinan</b> membutuhkan fitur untuk meninjau pengajuan RKO, memberikan persetujuan, memantau kondisi stok, serta melihat laporan dan log aktivitas sebagai bahan pengambilan keputusan.</li>
     </ul>
 
-    <h2>4.2 Perancangan Aplikasi</h2>
-    <p>Perancangan aplikasi pada penelitian ini disusun dengan menyesuaikan tingkat kompleksitas proses pada sistem. Proses yang bersifat kompleks, yaitu RKO, digambarkan menggunakan sequence diagram karena melibatkan interaksi antarpengguna pada tahap pengajuan, pemeriksaan, dan persetujuan. Sementara itu, proses yang lebih sederhana digambarkan menggunakan activity diagram agar alurnya lebih ringkas dan mudah dipahami.</p>
-
-    <h3>4.2.1 Identifikasi Aktor</h3>
-    <p>Aktor pada sistem diidentifikasi untuk menunjukkan pihak-pihak yang terlibat langsung dalam penggunaan aplikasi serta peran masing-masing terhadap proses monitoring obat kontrasepsi.</p>
-    <p>Aktor yang terlibat dalam aplikasi monitoring obat kontrasepsi terdiri dari:</p>
+    <h4>Kebutuhan Sistem</h4>
+    <p>Kebutuhan sistem pada aplikasi monitoring obat kontrasepsi meliputi fungsi-fungsi utama yang harus tersedia agar proses monitoring dapat berjalan dengan baik.</p>
     <ul>
-        <li><b>Admin</b>, berwenang mengelola seluruh modul sistem.</li>
-        <li><b>Petugas</b>, berfokus pada pengelolaan data master, pengajuan RKO, pencatatan mutasi keluar, monitoring, dan laporan.</li>
-        <li><b>Pimpinan</b>, berfokus pada persetujuan RKO serta melihat ringkasan monitoring dan laporan.</li>
+        <li>Sistem harus menyediakan autentikasi login dan pembatasan hak akses berdasarkan peran pengguna.</li>
+        <li>Sistem harus mampu mengelola data master seperti faskes, kategori obat, satuan, obat, dan sumber dana.</li>
+        <li>Sistem harus menyediakan proses pengajuan RKO dan persetujuan RKO secara terpisah agar data usulan dan data persetujuan tidak tercampur.</li>
+        <li>Sistem harus membatasi proses persetujuan RKO hanya untuk pengguna dengan role pimpinan.</li>
+        <li>Sistem harus dapat membentuk data realisasi pengadaan berdasarkan hasil persetujuan RKO.</li>
+        <li>Sistem harus mampu mencatat mutasi obat keluar dan memperbarui stok terkini secara otomatis.</li>
+        <li>Sistem harus menyediakan fitur monitoring stok, laporan, cetak laporan PDF/Excel, manajemen pengguna, serta log aktivitas.</li>
     </ul>
 
-    <h3>4.2.2 Use Case Diagram Proses RKO</h3>
-    <p>Subbab ini menjelaskan fungsi-fungsi utama yang terlibat pada proses RKO. Use case diagram digunakan untuk menunjukkan hubungan antara aktor dengan aktivitas inti mulai dari penyusunan usulan kebutuhan obat sampai persetujuan dokumen.</p>
-    <p>Pada use case ini terlihat bahwa petugas dan admin dapat menyusun serta mengajukan dokumen RKO, sedangkan pimpinan dan admin memiliki peran dalam proses peninjauan dan persetujuan. Hasil dari persetujuan tersebut kemudian berlanjut ke pembentukan realisasi pengadaan dan mutasi masuk otomatis.</p>
-    <pre class="diagram-code"><code>@startuml
-left to right direction
-skinparam actorStyle awesome
+    <h3>4.1.2 Rancangan Use Case Diagram Usulan</h3>
+    <p>Rancangan use case diagram usulan digunakan untuk menggambarkan hubungan antara aktor dengan fungsi-fungsi utama yang tersedia pada aplikasi. Diagram ini menunjukkan bahwa setiap aktor memiliki hak akses dan tanggung jawab yang berbeda sesuai dengan peran masing-masing dalam proses monitoring obat kontrasepsi.</p>
+    <p>Use case diagram usulan pada penelitian ini dibuat menggunakan Draw.io dan disimpan pada file <a href="/Users/mochjuang/projects/php/gudang-obat-kb/docs/bab-4-perancangan.drawio">bab-4-perancangan.drawio</a>.</p>
+    <p class="figure-title">Gambar 4.1. Rancangan use case diagram usulan.</p>
 
-actor Admin
-actor Petugas
-actor Pimpinan
+    <h3>4.1.3 Rancangan Diagram Aktivitas</h3>
+    <p>Rancangan diagram aktivitas pada penelitian ini dibuat dalam bentuk flowmap agar alur interaksi antara admin, pimpinan, gudang, dan sistem dapat terlihat dengan lebih jelas. Setiap flowmap menggambarkan tahapan aktivitas pada fitur utama aplikasi, mulai dari input data oleh pengguna hingga respons yang diberikan oleh sistem.</p>
+    <p>Seluruh diagram aktivitas pada subbab ini dibuat menggunakan Draw.io dan disimpan pada file <a href="/Users/mochjuang/projects/php/gudang-obat-kb/docs/bab-4-perancangan.drawio">bab-4-perancangan.drawio</a>.</p>
 
-rectangle "Sistem Monitoring Obat Kontrasepsi" {
-  usecase "Simpan Draft RKO" as UC1
-  usecase "Ajukan RKO" as UC2
-  usecase "Review Pengajuan RKO" as UC3
-  usecase "Setujui RKO" as UC4
-  usecase "Tolak RKO" as UC5
-  usecase "Bentuk Realisasi Pengadaan" as UC6
-  usecase "Bentuk Mutasi Masuk Otomatis" as UC7
-}
+    <h4>4.1.3.1 Flowmap Login</h4>
+    <p>Flowmap login menggambarkan proses ketika admin, pimpinan, atau gudang membuka halaman login, memasukkan kredensial, lalu sistem melakukan validasi sebelum mengarahkan pengguna ke dashboard sesuai hak aksesnya.</p>
+    <p class="figure-title">Gambar 4.2. Flowmap login.</p>
 
-Petugas --> UC1
-Petugas --> UC2
-Admin --> UC1
-Admin --> UC2
-Admin --> UC3
-Admin --> UC4
-Admin --> UC5
-Pimpinan --> UC3
-Pimpinan --> UC4
-Pimpinan --> UC5
+    <h4>4.1.3.2 Flowmap Kelola Master Data</h4>
+    <p>Flowmap kelola master data menggambarkan proses admin atau gudang saat mengelola data referensi seperti faskes, obat, dan sumber dana. Pada alur ini sistem menerima aksi tambah, ubah, atau nonaktifkan data, lalu menyimpan perubahan sesuai input pengguna.</p>
+    <p class="figure-title">Gambar 4.3. Flowmap kelola master data.</p>
 
-UC4 .&gt; UC6 : &lt;&lt;include&gt;&gt;
-UC6 .&gt; UC7 : &lt;&lt;include&gt;&gt;
-@enduml</code></pre>
-    <p class="figure-title">Gambar 4.1. Use case diagram proses RKO.</p>
+    <h4>4.1.3.3 Flowmap Pengajuan RKO</h4>
+    <p>Flowmap pengajuan RKO menggambarkan proses gudang saat membuat draft RKO, mengisi data header dan detail kebutuhan obat, lalu mengajukan dokumen agar dapat diproses lebih lanjut oleh pimpinan melalui sistem.</p>
+    <p class="figure-title">Gambar 4.4. Flowmap pengajuan RKO.</p>
 
-    <h3>4.2.3 Sequence Diagram Proses RKO</h3>
-    <p>Subbab ini menjelaskan alur interaksi pada proses RKO sebagai proses inti yang paling kompleks dalam aplikasi. Fokus utamanya adalah hubungan antara petugas sebagai pengusul, pimpinan sebagai pihak penyetuju, dan sistem sebagai pengolah data pengadaan.</p>
-    <p>Sequence diagram pada bagian ini difokuskan pada proses RKO karena proses tersebut melibatkan interaksi antara petugas, pimpinan, sistem, dan basis data pada tahap pengajuan sampai persetujuan. Ketika RKO disetujui, sistem secara otomatis membentuk realisasi pengadaan dan mutasi masuk.</p>
-    <div class="mermaid">
-sequenceDiagram
-    participant P as Petugas
-    participant S as Sistem
-    participant DB as Database
-    participant M as Pimpinan
+    <h4>4.1.3.4 Flowmap Persetujuan RKO</h4>
+    <p>Flowmap persetujuan RKO menggambarkan proses pimpinan saat meninjau usulan RKO, memeriksa jumlah dan harga yang disetujui, lalu memberikan keputusan pada dokumen. Sistem kemudian memperbarui status dokumen dan membentuk data lanjutan apabila pengajuan disetujui.</p>
+    <p class="figure-title">Gambar 4.5. Flowmap persetujuan RKO.</p>
 
-    P->>S: Input header dan detail RKO
-    S->>DB: Simpan draft RKO
-    DB-->>S: Draft tersimpan
-    S-->>P: Notifikasi draft berhasil
+    <h4>4.1.3.5 Flowmap Realisasi Pengadaan</h4>
+    <p>Flowmap realisasi pengadaan menggambarkan alur admin, pimpinan, atau gudang saat membuka data realisasi pengadaan dan menggunakan filter tertentu, kemudian sistem menampilkan hasil realisasi pengadaan berdasarkan parameter yang dimasukkan.</p>
+    <p class="figure-title">Gambar 4.6. Flowmap realisasi pengadaan.</p>
 
-    P->>S: Ajukan RKO
-    S->>DB: Update status menjadi diajukan
-    DB-->>S: Status diperbarui
-    S-->>M: Dokumen siap direview
+    <h4>4.1.3.6 Flowmap Mutasi Obat</h4>
+    <p>Flowmap mutasi obat menggambarkan proses gudang saat mencatat penyaluran obat keluar, menambahkan item obat dan jumlah distribusi, lalu sistem menyimpan mutasi dan memperbarui stok terkini.</p>
+    <p class="figure-title">Gambar 4.7. Flowmap mutasi obat.</p>
 
-    M->>S: Buka detail pengajuan RKO
-    S->>DB: Ambil header dan detail RKO
-    DB-->>S: Data RKO
-    S-->>M: Tampilkan data pengajuan
+    <h4>4.1.3.7 Flowmap Monitoring Stok</h4>
+    <p>Flowmap monitoring stok menggambarkan proses admin, pimpinan, atau gudang saat membuka menu monitoring untuk melihat kondisi stok per obat, kemudian sistem menampilkan data stok terkini beserta detail informasi obat yang dipilih.</p>
+    <p class="figure-title">Gambar 4.8. Flowmap monitoring stok.</p>
 
-    M->>S: Setujui RKO
-    S->>DB: Simpan hasil persetujuan
-    S->>DB: Bentuk realisasi pengadaan
-    S->>DB: Bentuk mutasi masuk otomatis
-    DB-->>S: Proses selesai
-    S-->>M: Notifikasi persetujuan berhasil
-    </div>
-    <p>Pada sequence diagram tersebut, petugas berperan sebagai pihak yang memasukkan data header dan detail RKO ke dalam sistem. Sistem kemudian menyimpan data tersebut ke basis data sebagai draft sehingga usulan kebutuhan obat dapat dicatat terlebih dahulu sebelum diajukan secara resmi.</p>
-    <p>Setelah draft tersimpan, petugas melakukan pengajuan RKO. Pada tahap ini sistem memperbarui status dokumen menjadi diajukan, lalu menyiapkan dokumen agar dapat direview oleh pimpinan. Bagian ini menunjukkan bahwa pengajuan tidak langsung dianggap disetujui, tetapi harus melalui tahapan pemeriksaan terlebih dahulu.</p>
-    <p>Pimpinan selanjutnya membuka detail pengajuan RKO untuk meninjau isi dokumen. Sistem mengambil data header dan detail RKO dari basis data, kemudian menampilkannya agar proses evaluasi dapat dilakukan berdasarkan data usulan yang telah dimasukkan oleh petugas.</p>
-    <p>Tahap akhir pada diagram menunjukkan proses persetujuan. Ketika pimpinan menyetujui RKO, sistem menyimpan hasil persetujuan, membentuk data realisasi pengadaan, dan secara otomatis membentuk mutasi masuk. Dengan demikian, sequence diagram ini memperlihatkan keterkaitan langsung antara proses perencanaan kebutuhan obat dengan proses pengadaan dan pencatatan stok.</p>
-    <p class="figure-title">Gambar 4.2. Sequence diagram proses RKO.</p>
+    <h4>4.1.3.8 Flowmap Laporan</h4>
+    <p>Flowmap laporan menggambarkan proses admin, pimpinan, atau gudang saat memilih jenis laporan dan parameter filter, kemudian sistem memproses data dan menampilkan hasil laporan sesuai kebutuhan pengguna.</p>
+    <p class="figure-title">Gambar 4.9. Flowmap laporan.</p>
 
-    <h3>4.2.4 Activity Diagram Login</h3>
-    <p>Subbab ini menunjukkan proses autentikasi awal yang harus dilalui pengguna sebelum dapat mengakses fitur-fitur pada aplikasi.</p>
-    <p>Activity diagram berikut menggambarkan alur login pengguna ke dalam sistem.</p>
-    <div class="mermaid">
-flowchart TD
-    A["Pengguna membuka halaman login"] --> B["Input email atau username dan password"]
-    B --> C["Klik Login"]
-    C --> D{Validasi kredensial}
-    D -->|Tidak valid| E["Tampilkan pesan error"]
-    D -->|Valid| F["Buat sesi login"]
-    F --> G["Arahkan ke Dashboard"]
-    </div>
-    <p class="figure-title">Gambar 4.3. Activity diagram proses login.</p>
+    <h4>4.1.3.9 Flowmap Manajemen Pengguna</h4>
+    <p>Flowmap manajemen pengguna menggambarkan proses admin saat membuka daftar pengguna, menambah akun baru, mengubah status akun, atau melihat detail pengguna, lalu sistem memvalidasi dan menyimpan perubahan tersebut.</p>
+    <p class="figure-title">Gambar 4.10. Flowmap manajemen pengguna.</p>
 
-    <h3>4.2.5 Activity Diagram Kelola Master Data</h3>
-    <p>Subbab ini menjelaskan alur dasar pengelolaan data referensi yang menjadi fondasi bagi modul-modul lain di dalam sistem.</p>
-    <p>Activity diagram berikut menggambarkan alur pengelolaan data master seperti obat, faskes, dan sumber dana.</p>
-    <div class="mermaid">
-flowchart TD
-    A["Buka menu master data"] --> B["Tampilkan daftar dan filter"]
-    B --> C{Pilih aksi}
-    C -->|Tambah| D["Isi form data"]
-    C -->|Ubah| E["Buka form edit"]
-    C -->|Hapus atau Nonaktif| F["Konfirmasi tindakan"]
-    D --> G["Validasi dan simpan"]
-    E --> G
-    F --> H["Eksekusi perubahan"]
-    G --> I["Tampilkan notifikasi berhasil"]
-    H --> I
-    I --> B
-    </div>
-    <p class="figure-title">Gambar 4.4. Activity diagram kelola master data.</p>
+    <h4>4.1.3.10 Flowmap Log Aktivitas</h4>
+    <p>Flowmap log aktivitas menggambarkan proses ketika sistem mencatat aktivitas penting pengguna secara otomatis, kemudian admin atau pimpinan membuka menu log aktivitas untuk meninjau riwayat tersebut melalui daftar dan filter yang tersedia.</p>
+    <p class="figure-title">Gambar 4.11. Flowmap log aktivitas.</p>
 
-    <h3>4.2.6 Activity Diagram Realisasi Pengadaan</h3>
-    <p>Subbab ini menggambarkan bagaimana pengguna meninjau data realisasi pengadaan yang terbentuk dari hasil persetujuan RKO.</p>
-    <p>Activity diagram berikut menggambarkan alur pengguna saat melihat data realisasi pengadaan yang telah dibentuk dari hasil persetujuan RKO.</p>
-    <div class="mermaid">
-flowchart TD
-    A["Buka menu Realisasi Pengadaan"] --> B["Tampilkan daftar realisasi"]
-    B --> C{Gunakan filter?}
-    C -->|Ya| D["Input tahun, sumber dana, atau kata kunci"]
-    C -->|Tidak| E["Selesai"]
-    D --> F["Tampilkan hasil sesuai filter"]
-    F --> E
-    </div>
-    <p class="figure-title">Gambar 4.5. Activity diagram realisasi pengadaan.</p>
-
-    <h3>4.2.7 Activity Diagram Mutasi Keluar</h3>
-    <p>Subbab ini menjelaskan alur pencatatan penyaluran obat keluar agar pergerakan stok dapat tetap terpantau secara sistematis.</p>
-    <p>Activity diagram berikut menggambarkan pencatatan mutasi keluar obat ke faskes tujuan.</p>
-    <div class="mermaid">
-flowchart TD
-    A["Petugas membuka menu Mutasi Stok"] --> B["Klik Tambah Mutasi Keluar"]
-    B --> C["Isi nomor dan tanggal mutasi"]
-    C --> D["Pilih tujuan, referensi, dan keterangan"]
-    D --> E["Tambah item obat dan jumlah"]
-    E --> F["Simpan mutasi"]
-    F --> G["Update snapshot stok"]
-    G --> H["Tampilkan daftar mutasi"]
-    </div>
-    <p class="figure-title">Gambar 4.6. Activity diagram mutasi keluar.</p>
-
-    <h3>4.2.8 Activity Diagram Monitoring Stok</h3>
-    <p>Subbab ini menunjukkan proses pemantauan stok berjalan yang menjadi inti fungsi monitoring pada aplikasi.</p>
-    <p>Activity diagram berikut menggambarkan alur monitoring stok obat pada sistem.</p>
-    <div class="mermaid">
-flowchart TD
-    A["Buka menu Monitoring Stok"] --> B["Sistem mengambil data stok berjalan"]
-    B --> C["Tampilkan daftar stok per obat"]
-    C --> D{Lihat detail?}
-    D -->|Ya| E["Buka popup detail obat"]
-    D -->|Tidak| F["Selesai"]
-    E --> F
-    </div>
-    <p class="figure-title">Gambar 4.7. Activity diagram monitoring stok.</p>
-
-    <h3>4.2.9 Activity Diagram Laporan</h3>
-    <p>Subbab ini menjelaskan alur penyajian laporan sebagai hasil akhir dari proses pencatatan, pengolahan, dan monitoring data.</p>
-    <p>Activity diagram berikut menggambarkan proses pengguna saat menampilkan laporan monitoring.</p>
-    <div class="mermaid">
-flowchart TD
-    A["Buka menu Laporan"] --> B["Pilih jenis laporan"]
-    B --> C["Masukkan parameter filter"]
-    C --> D["Sistem memproses data laporan"]
-    D --> E["Tampilkan hasil laporan"]
-    </div>
-    <p class="figure-title">Gambar 4.8. Activity diagram laporan.</p>
-
-    <h3>4.2.10 Activity Diagram Manajemen Pengguna</h3>
-    <p>Subbab ini menggambarkan proses pengelolaan akun pengguna untuk menjaga pengaturan akses sistem tetap terkontrol.</p>
-    <p>Activity diagram berikut menggambarkan proses pengelolaan akun pengguna oleh admin.</p>
-    <div class="mermaid">
-flowchart TD
-    A["Admin membuka menu Pengguna"] --> B["Tampilkan daftar pengguna"]
-    B --> C{Pilih aksi}
-    C -->|Tambah| D["Input data pengguna dan role"]
-    C -->|Ubah status| E["Aktifkan atau nonaktifkan akun"]
-    C -->|Lihat detail| F["Tampilkan profil pengguna"]
-    D --> G["Validasi dan simpan"]
-    E --> H["Simpan perubahan status"]
-    F --> I["Selesai"]
-    G --> B
-    H --> B
-    </div>
-    <p class="figure-title">Gambar 4.9. Activity diagram manajemen pengguna.</p>
-
-    <h3>4.2.11 Activity Diagram Log Aktivitas</h3>
-    <p>Subbab ini menjelaskan bagaimana aktivitas penting pengguna dicatat oleh sistem dan kemudian dapat ditinjau kembali untuk kebutuhan pengawasan.</p>
-    <p>Activity diagram berikut menggambarkan alur pencatatan dan penayangan log aktivitas sistem.</p>
-    <div class="mermaid">
-flowchart TD
-    A["Pengguna melakukan aksi pada modul"] --> B["Sistem mencatat log aktivitas"]
-    B --> C["Admin atau petugas membuka menu Log Aktivitas"]
-    C --> D["Tampilkan daftar log dan filter"]
-    D --> E["Selesai"]
-    </div>
-    <p class="figure-title">Gambar 4.10. Activity diagram log aktivitas.</p>
-
-<h2>4.3 Implementasi Sistem</h2>
-    <h3>4.3.1 Implementasi Perangkat Lunak</h3>
+<h2>4.2 Implementasi Sistem</h2>
+    <h3>4.2.1 Implementasi Perangkat Lunak</h3>
     <p>Implementasi perangkat lunak pada penelitian ini menggunakan pendekatan pengembangan aplikasi web. Sistem dibangun menggunakan bahasa pemrograman PHP dengan framework Laravel, sedangkan antarmuka dikembangkan menggunakan Blade Template, CSS, dan JavaScript yang terintegrasi pada ekosistem Laravel. Basis data yang digunakan adalah MariaDB/MySQL.</p>
     <p>Perangkat lunak yang digunakan dalam implementasi sistem ini meliputi:</p>
     <ul>
@@ -343,9 +195,9 @@ flowchart LR
     D --> F["Dashboard, Monitoring, dan Laporan"]
     D --> G["Autentikasi dan Hak Akses"]
     </div>
-    <p class="figure-title">Gambar 4.11. Arsitektur umum implementasi perangkat lunak aplikasi.</p>
+    <p class="figure-title">Gambar 4.12. Arsitektur umum implementasi perangkat lunak aplikasi.</p>
 
-    <h3>4.3.2 Implementasi Basis Data</h3>
+    <h3>4.2.2 Implementasi Basis Data</h3>
     <p>Basis data pada aplikasi ini dirancang untuk mendukung kebutuhan monitoring obat kontrasepsi, mulai dari data master, perencanaan kebutuhan, realisasi pengadaan, mutasi obat, hingga pemantauan stok per periode. Struktur basis data tidak hanya menyimpan data pokok, tetapi juga menyediakan relasi yang memudahkan proses pencarian, penyaringan, dan penyusunan laporan.</p>
     <p>Secara umum, kelompok tabel yang digunakan dalam implementasi sistem ini meliputi:</p>
     <ul>
@@ -378,87 +230,309 @@ erDiagram
     STOCK_MUTATIONS ||--o{ STOCK_MUTATION_ITEMS : memiliki
     MEDICINES ||--o{ STOCK_MUTATION_ITEMS : dimutasi
     </div>
-    <p class="figure-title">Gambar 4.12. Diagram konseptual relasi data pada aplikasi.</p>
+    <p class="figure-title">Gambar 4.13. Diagram konseptual relasi data pada aplikasi.</p>
 
-    <h3>4.3.3 Implementasi Hak Akses Pengguna</h3>
+    <h4>4.2.2.1 Struktur Tabel Utama</h4>
+    <p>Untuk memperjelas implementasi basis data, berikut disajikan struktur beberapa tabel utama yang digunakan pada aplikasi monitoring obat kontrasepsi. Penyajian struktur tabel ini memudahkan pembaca memahami atribut, tipe data, panjang data, serta nilai bawaan yang digunakan pada masing-masing tabel.</p>
+
+    <p class="table-title">Tabel 4.1. Struktur tabel <code>roles</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Roles</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td></td><td>name</td><td>Varchar</td><td>50</td><td>Not Null</td></tr>
+        <tr><td>3</td><td></td><td>description</td><td>Varchar</td><td>255</td><td>Null</td></tr>
+        <tr><td>4</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>5</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.2. Struktur tabel <code>users</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Users</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td>FK</td><td>role_id</td><td>BigInt</td><td>20</td><td>Null</td></tr>
+        <tr><td>3</td><td></td><td>name</td><td>Varchar</td><td>255</td><td>Not Null</td></tr>
+        <tr><td>4</td><td></td><td>username</td><td>Varchar</td><td>50</td><td>Null</td></tr>
+        <tr><td>5</td><td></td><td>email</td><td>Varchar</td><td>255</td><td>Not Null</td></tr>
+        <tr><td>6</td><td></td><td>phone</td><td>Varchar</td><td>20</td><td>Null</td></tr>
+        <tr><td>7</td><td></td><td>email_verified_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>8</td><td></td><td>password</td><td>Varchar</td><td>255</td><td>Not Null</td></tr>
+        <tr><td>9</td><td></td><td>is_active</td><td>Boolean</td><td>1</td><td>1</td></tr>
+        <tr><td>10</td><td></td><td>remember_token</td><td>Varchar</td><td>100</td><td>Null</td></tr>
+        <tr><td>11</td><td></td><td>last_login_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>12</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>13</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.3. Struktur tabel <code>medicine_categories</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Medicine Categories</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td></td><td>name</td><td>Varchar</td><td>100</td><td>Not Null</td></tr>
+        <tr><td>3</td><td></td><td>description</td><td>Varchar</td><td>255</td><td>Null</td></tr>
+        <tr><td>4</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>5</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.4. Struktur tabel <code>units</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Units</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td></td><td>name</td><td>Varchar</td><td>50</td><td>Not Null</td></tr>
+        <tr><td>3</td><td></td><td>symbol</td><td>Varchar</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>4</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>5</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.5. Struktur tabel <code>medicines</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Medicines</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td>FK</td><td>category_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>3</td><td>FK</td><td>unit_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>4</td><td></td><td>code</td><td>Varchar</td><td>50</td><td>Not Null</td></tr>
+        <tr><td>5</td><td></td><td>name</td><td>Varchar</td><td>150</td><td>Not Null</td></tr>
+        <tr><td>6</td><td></td><td>medicine_type</td><td>Varchar</td><td>100</td><td>Null</td></tr>
+        <tr><td>7</td><td></td><td>brand</td><td>Varchar</td><td>100</td><td>Null</td></tr>
+        <tr><td>8</td><td></td><td>dosage</td><td>Varchar</td><td>100</td><td>Null</td></tr>
+        <tr><td>9</td><td></td><td>minimum_stock</td><td>Unsigned Integer</td><td>10</td><td>0</td></tr>
+        <tr><td>10</td><td></td><td>standard_price</td><td>Decimal</td><td>15,2</td><td>0</td></tr>
+        <tr><td>11</td><td></td><td>description</td><td>Text</td><td>-</td><td>Null</td></tr>
+        <tr><td>12</td><td></td><td>is_active</td><td>Boolean</td><td>1</td><td>1</td></tr>
+        <tr><td>13</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>14</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.6. Struktur tabel <code>funding_sources</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Funding Sources</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td></td><td>code</td><td>Varchar</td><td>50</td><td>Not Null</td></tr>
+        <tr><td>3</td><td></td><td>name</td><td>Varchar</td><td>150</td><td>Not Null</td></tr>
+        <tr><td>4</td><td></td><td>source_type</td><td>Varchar</td><td>100</td><td>Null</td></tr>
+        <tr><td>5</td><td></td><td>notes</td><td>Text</td><td>-</td><td>Null</td></tr>
+        <tr><td>6</td><td></td><td>is_active</td><td>Boolean</td><td>1</td><td>1</td></tr>
+        <tr><td>7</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>8</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.7. Struktur tabel <code>distribution_destinations</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Distribution Destinations</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td></td><td>code</td><td>Varchar</td><td>50</td><td>Not Null</td></tr>
+        <tr><td>3</td><td></td><td>name</td><td>Varchar</td><td>150</td><td>Not Null</td></tr>
+        <tr><td>4</td><td></td><td>destination_type</td><td>Varchar</td><td>50</td><td>Not Null</td></tr>
+        <tr><td>5</td><td></td><td>address</td><td>Text</td><td>-</td><td>Null</td></tr>
+        <tr><td>6</td><td></td><td>phone</td><td>Varchar</td><td>20</td><td>Null</td></tr>
+        <tr><td>7</td><td></td><td>contact_person</td><td>Varchar</td><td>100</td><td>Null</td></tr>
+        <tr><td>8</td><td></td><td>is_active</td><td>Boolean</td><td>1</td><td>1</td></tr>
+        <tr><td>9</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>10</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.8. Struktur tabel <code>rko_headers</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel RKO Headers</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td></td><td>rko_number</td><td>Varchar</td><td>50</td><td>Not Null</td></tr>
+        <tr><td>3</td><td>FK</td><td>funding_source_id</td><td>BigInt</td><td>20</td><td>Null</td></tr>
+        <tr><td>4</td><td></td><td>period_month</td><td>Unsigned TinyInt</td><td>3</td><td>Not Null</td></tr>
+        <tr><td>5</td><td></td><td>period_year</td><td>Unsigned SmallInt</td><td>5</td><td>Not Null</td></tr>
+        <tr><td>6</td><td></td><td>total_budget</td><td>Decimal</td><td>15,2</td><td>0</td></tr>
+        <tr><td>7</td><td></td><td>status</td><td>Enum</td><td>-</td><td>draft</td></tr>
+        <tr><td>8</td><td></td><td>submitted_at</td><td>Date</td><td>-</td><td>Null</td></tr>
+        <tr><td>9</td><td></td><td>approved_at</td><td>Date</td><td>-</td><td>Null</td></tr>
+        <tr><td>10</td><td>FK</td><td>submitted_by</td><td>BigInt</td><td>20</td><td>Null</td></tr>
+        <tr><td>11</td><td>FK</td><td>approved_by</td><td>BigInt</td><td>20</td><td>Null</td></tr>
+        <tr><td>12</td><td></td><td>notes</td><td>Text</td><td>-</td><td>Null</td></tr>
+        <tr><td>13</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>14</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.9. Struktur tabel <code>rko_details</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel RKO Details</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td>FK</td><td>rko_header_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>3</td><td>FK</td><td>medicine_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>4</td><td></td><td>planned_quantity</td><td>Unsigned Integer</td><td>10</td><td>Not Null</td></tr>
+        <tr><td>5</td><td></td><td>approved_quantity</td><td>Unsigned Integer</td><td>10</td><td>Null</td></tr>
+        <tr><td>6</td><td></td><td>estimated_unit_price</td><td>Decimal</td><td>15,2</td><td>0</td></tr>
+        <tr><td>7</td><td></td><td>approved_unit_price</td><td>Decimal</td><td>15,2</td><td>Null</td></tr>
+        <tr><td>8</td><td></td><td>total_estimate</td><td>Decimal</td><td>15,2</td><td>0</td></tr>
+        <tr><td>9</td><td></td><td>priority</td><td>Varchar</td><td>20</td><td>sedang</td></tr>
+        <tr><td>10</td><td></td><td>notes</td><td>Text</td><td>-</td><td>Null</td></tr>
+        <tr><td>11</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>12</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.10. Struktur tabel <code>procurement_realizations</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Procurement Realizations</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td>FK</td><td>rko_header_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>3</td><td>FK</td><td>funding_source_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>4</td><td>FK</td><td>medicine_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>5</td><td></td><td>period_month</td><td>Unsigned TinyInt</td><td>3</td><td>Not Null</td></tr>
+        <tr><td>6</td><td></td><td>period_year</td><td>Unsigned SmallInt</td><td>5</td><td>Not Null</td></tr>
+        <tr><td>7</td><td></td><td>realization_date</td><td>Date</td><td>-</td><td>Not Null</td></tr>
+        <tr><td>8</td><td></td><td>realized_quantity</td><td>Unsigned Integer</td><td>10</td><td>Not Null</td></tr>
+        <tr><td>9</td><td></td><td>unit_price</td><td>Decimal</td><td>15,2</td><td>0</td></tr>
+        <tr><td>10</td><td></td><td>total_amount</td><td>Decimal</td><td>15,2</td><td>0</td></tr>
+        <tr><td>11</td><td></td><td>notes</td><td>Text</td><td>-</td><td>Null</td></tr>
+        <tr><td>12</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>13</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.11. Struktur tabel <code>stock_mutations</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Stock Mutations</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td></td><td>mutation_number</td><td>Varchar</td><td>50</td><td>Null</td></tr>
+        <tr><td>3</td><td>FK</td><td>medicine_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>4</td><td>FK</td><td>rko_header_id</td><td>BigInt</td><td>20</td><td>Null</td></tr>
+        <tr><td>5</td><td>FK</td><td>distribution_destination_id</td><td>BigInt</td><td>20</td><td>Null</td></tr>
+        <tr><td>6</td><td>FK</td><td>created_by</td><td>BigInt</td><td>20</td><td>Null</td></tr>
+        <tr><td>7</td><td></td><td>is_auto_generated</td><td>Boolean</td><td>1</td><td>0</td></tr>
+        <tr><td>8</td><td></td><td>mutation_date</td><td>Date</td><td>-</td><td>Not Null</td></tr>
+        <tr><td>9</td><td></td><td>mutation_type</td><td>Enum</td><td>-</td><td>Not Null</td></tr>
+        <tr><td>10</td><td></td><td>quantity</td><td>Unsigned Integer</td><td>10</td><td>Not Null</td></tr>
+        <tr><td>11</td><td></td><td>reference</td><td>Varchar</td><td>150</td><td>Null</td></tr>
+        <tr><td>12</td><td></td><td>notes</td><td>Text</td><td>-</td><td>Null</td></tr>
+        <tr><td>13</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>14</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.12. Struktur tabel <code>stock_mutation_items</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Stock Mutation Items</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td>FK</td><td>stock_mutation_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>3</td><td>FK</td><td>medicine_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>4</td><td></td><td>quantity</td><td>Unsigned Integer</td><td>10</td><td>Not Null</td></tr>
+        <tr><td>5</td><td></td><td>notes</td><td>Text</td><td>-</td><td>Null</td></tr>
+        <tr><td>6</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>7</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.13. Struktur tabel <code>medicine_stocks</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Medicine Stocks</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td>FK</td><td>medicine_id</td><td>BigInt</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>3</td><td></td><td>period</td><td>Varchar</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>4</td><td></td><td>quantity</td><td>Unsigned Integer</td><td>10</td><td>Not Null</td></tr>
+        <tr><td>5</td><td></td><td>input_date</td><td>Date</td><td>-</td><td>Not Null</td></tr>
+        <tr><td>6</td><td></td><td>status_note</td><td>Varchar</td><td>20</td><td>Not Null</td></tr>
+        <tr><td>7</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+        <tr><td>8</td><td></td><td>updated_at</td><td>Timestamp</td><td>-</td><td>Null</td></tr>
+    </table>
+
+    <p class="table-title">Tabel 4.14. Struktur tabel <code>activity_logs</code>.</p>
+    <table>
+        <tr><th colspan="6">Tabel Activity Logs</th></tr>
+        <tr><th>No</th><th>Key</th><th>Column Name</th><th>Data Type</th><th>Length</th><th>Default</th></tr>
+        <tr><td>1</td><td>PK</td><td>id</td><td>BigInt</td><td>20</td><td>Auto Increment</td></tr>
+        <tr><td>2</td><td>FK</td><td>user_id</td><td>BigInt</td><td>20</td><td>Null</td></tr>
+        <tr><td>3</td><td></td><td>module</td><td>Varchar</td><td>100</td><td>Not Null</td></tr>
+        <tr><td>4</td><td></td><td>action</td><td>Varchar</td><td>50</td><td>Not Null</td></tr>
+        <tr><td>5</td><td></td><td>description</td><td>Text</td><td>-</td><td>Null</td></tr>
+        <tr><td>6</td><td></td><td>ip_address</td><td>Varchar</td><td>45</td><td>Null</td></tr>
+        <tr><td>7</td><td></td><td>created_at</td><td>Timestamp</td><td>-</td><td>Current Timestamp</td></tr>
+    </table>
+
+    <h3>4.2.3 Implementasi Hak Akses Pengguna</h3>
     <p>Hak akses pengguna pada aplikasi ini dibedakan berdasarkan peran masing-masing pengguna. Pembagian hak akses dilakukan agar pengguna hanya dapat mengakses menu dan fungsi yang sesuai dengan tugasnya.</p>
     <p>Hak akses utama dalam aplikasi ini terdiri atas:</p>
     <ul>
-        <li><code>admin</code>, yaitu pengguna yang memiliki akses penuh terhadap seluruh modul sistem,</li>
+        <li><code>admin</code>, yaitu pengguna yang berfokus pada pengelolaan data master, sumber dana, pengguna, monitoring, laporan, dan pengawasan aktivitas sistem,</li>
         <li><code>petugas_gudang</code>, yaitu pengguna yang berfokus pada pengelolaan data master, RKO, realisasi pengadaan, mutasi obat, monitoring, dan laporan,</li>
-        <li><code>pimpinan</code>, yaitu pengguna yang berfokus pada pemantauan dashboard, monitoring, laporan, dan log aktivitas.</li>
+        <li><code>pimpinan</code>, yaitu pengguna yang berfokus pada pemantauan dashboard, persetujuan RKO, monitoring, laporan, dan log aktivitas.</li>
     </ul>
-    <p>Implementasi hak akses dilakukan melalui autentikasi dan middleware pada Laravel, sehingga sistem dapat membatasi route, menu, dan tindakan tertentu berdasarkan role pengguna.</p>
+    <p>Implementasi hak akses dilakukan melalui autentikasi, middleware, dan gate pada Laravel, sehingga sistem dapat membatasi route, menu, dan tindakan tertentu berdasarkan role pengguna. Khusus proses persetujuan RKO, sistem hanya memberikan akses kepada role <code>pimpinan</code> agar proses approval tidak dilakukan oleh admin maupun petugas gudang.</p>
     <div class="mermaid">
 flowchart TD
     A["Pengguna Login"] --> B{"Role Pengguna"}
-    B -->|Admin| C["Akses seluruh modul"]
+    B -->|Admin| C["Master data, pengguna, monitoring, laporan"]
     B -->|Petugas Gudang| D["Master data, RKO, pengadaan, mutasi, monitoring"]
-    B -->|Pimpinan| E["Dashboard, monitoring, laporan, log"]
+    B -->|Pimpinan| E["Approval RKO, dashboard, laporan, log"]
     </div>
-    <p class="figure-title">Gambar 4.13. Diagram pembagian hak akses pengguna.</p>
+    <p class="figure-title">Gambar 4.14. Diagram pembagian hak akses pengguna.</p>
 
-    <h2>4.4 Pembahasan Fitur Aplikasi</h2>
-    <h3>4.4.1 Halaman Login</h3>
+<h2>4.3 Pembahasan Fitur Aplikasi</h2>
+    <h3>4.3.1 Halaman Login</h3>
     <p>Halaman login berfungsi sebagai pintu masuk pengguna ke dalam sistem. Pada halaman ini, pengguna harus memasukkan kredensial yang sesuai agar dapat mengakses aplikasi. Fitur login penting untuk menjaga keamanan data dan memastikan bahwa hanya pengguna yang berwenang yang dapat menggunakan sistem.</p>
     <p>Ketika proses login berhasil, pengguna akan diarahkan ke dashboard sesuai hak akses yang dimilikinya. Sebaliknya, apabila data login tidak sesuai, sistem akan menampilkan pesan kesalahan.</p>
     <div class="placeholder">Tempat screenshot halaman login</div>
-    <p class="figure-title">Gambar 4.14. Tampilan halaman login aplikasi.</p>
+    <p class="figure-title">Gambar 4.15. Tampilan halaman login aplikasi.</p>
     <div class="placeholder">Tempat screenshot halaman dashboard</div>
-    <p class="figure-title">Gambar 4.15. Tampilan dashboard setelah login berhasil.</p>
+    <p class="figure-title">Gambar 4.16. Tampilan dashboard setelah login berhasil.</p>
 
-    <h3>4.4.2 Dashboard Monitoring</h3>
+    <h3>4.3.2 Dashboard Monitoring</h3>
     <p>Dashboard merupakan halaman utama setelah pengguna berhasil login. Dashboard menampilkan ringkasan informasi penting yang dibutuhkan pengguna secara cepat, seperti jumlah obat aktif, total stok yang tercatat, jumlah dokumen RKO, realisasi pengadaan, mutasi obat, serta indikator kondisi stok.</p>
     <p>Dashboard membantu pengguna memperoleh gambaran umum kondisi obat kontrasepsi tanpa harus membuka setiap halaman secara terpisah. Dengan demikian, dashboard berfungsi sebagai media monitoring awal bagi admin, petugas, maupun pimpinan.</p>
 
-    <h3>4.4.3 Manajemen Data Faskes</h3>
+    <h3>4.3.3 Manajemen Data Faskes</h3>
     <p>Modul data faskes digunakan untuk menyimpan data fasilitas kesehatan yang menjadi tujuan mutasi obat. Data ini meliputi identitas faskes, jenis faskes, informasi kontak, serta status aktif atau nonaktif.</p>
     <p>Data faskes penting karena menjadi acuan pada proses mutasi obat. Dengan data faskes yang terkelola dengan baik, proses pencatatan mutasi menjadi lebih rapi dan tujuan penyaluran obat dapat ditelusuri dengan lebih mudah.</p>
     <div class="placeholder">Tempat screenshot halaman data faskes</div>
-    <p class="figure-title">Gambar 4.16. Halaman manajemen data faskes.</p>
+    <p class="figure-title">Gambar 4.17. Halaman manajemen data faskes.</p>
 
-    <h3>4.4.4 Manajemen Master Obat</h3>
+    <h3>4.3.4 Manajemen Master Obat</h3>
     <p>Modul master obat digunakan untuk mengelola data obat kontrasepsi yang akan dipantau dalam sistem. Data yang dikelola meliputi kode obat, nama obat, jenis obat, kategori, satuan, harga standar, status aktif, dan stok minimum.</p>
     <p>Ketersediaan master obat yang akurat sangat berpengaruh terhadap modul lain, terutama RKO, realisasi pengadaan, mutasi obat, monitoring stok, dan laporan. Oleh karena itu, modul ini menjadi fondasi utama dalam implementasi sistem.</p>
     <div class="placeholder">Tempat screenshot halaman data obat</div>
-    <p class="figure-title">Gambar 4.17. Halaman manajemen data obat.</p>
+    <p class="figure-title">Gambar 4.18. Halaman manajemen data obat.</p>
     <div class="placeholder">Tempat screenshot form tambah data obat</div>
-    <p class="figure-title">Gambar 4.18. Form tambah data obat.</p>
+    <p class="figure-title">Gambar 4.19. Form tambah data obat.</p>
     <div class="placeholder">Tempat screenshot halaman sumber dana</div>
-    <p class="figure-title">Gambar 4.19. Halaman manajemen sumber dana.</p>
+    <p class="figure-title">Gambar 4.20. Halaman manajemen sumber dana.</p>
 
-    <h3>4.4.5 Rencana Kebutuhan Obat (RKO)</h3>
+    <h3>4.3.5 Rencana Kebutuhan Obat (RKO)</h3>
     <p>Modul RKO digunakan untuk mencatat rencana kebutuhan obat pada periode tertentu. Implementasi RKO dibagi menjadi dua bagian, yaitu header dan detail. Bagian header berisi informasi umum seperti nomor RKO, periode, tahun, sumber dana, total anggaran usulan, status dokumen, tanggal pengajuan, tanggal persetujuan, dan catatan. Sementara itu, bagian detail berisi rincian item obat, jumlah rencana, estimasi harga satuan, prioritas, serta catatan item.</p>
     <p>Pada implementasi aplikasi ini, proses RKO dibuat dalam dua alur form agar data usulan dan data persetujuan tidak tercampur, yaitu form pengajuan RKO untuk memasukkan data usulan (jumlah rencana dan estimasi harga satuan) serta form persetujuan RKO untuk memasukkan data hasil persetujuan (jumlah disetujui dan harga disetujui).</p>
-    <p>Dengan adanya modul ini, proses perencanaan kebutuhan obat dapat didokumentasikan secara sistematis. RKO juga berperan sebagai acuan dalam proses realisasi pengadaan sehingga hubungan antara rencana dan pelaksanaan dapat dipantau.</p>
+    <p>Dengan adanya modul ini, proses perencanaan kebutuhan obat dapat didokumentasikan secara sistematis. Pada form RKO, nilai anggaran dan harga obat ditampilkan menggunakan format Rupiah secara otomatis agar lebih mudah dibaca pengguna. RKO juga berperan sebagai acuan dalam proses realisasi pengadaan sehingga hubungan antara rencana dan pelaksanaan dapat dipantau.</p>
     <div class="placeholder">Tempat screenshot halaman daftar RKO</div>
-    <p class="figure-title">Gambar 4.20. Halaman daftar RKO.</p>
+    <p class="figure-title">Gambar 4.21. Halaman daftar RKO.</p>
     <div class="placeholder">Tempat screenshot form input RKO</div>
-    <p class="figure-title">Gambar 4.21. Form input RKO.</p>
+    <p class="figure-title">Gambar 4.22. Form input RKO.</p>
 
-    <h3>4.4.6 Realisasi Pengadaan</h3>
+    <h3>4.3.6 Realisasi Pengadaan</h3>
     <p>Modul realisasi pengadaan digunakan untuk menampilkan data obat yang terealisasi pada suatu periode berdasarkan hasil persetujuan RKO. Pada implementasi ini, realisasi pengadaan dibentuk otomatis saat RKO disetujui, sehingga pengguna tidak perlu melakukan input transaksi pengadaan secara manual.</p>
     <p>Informasi yang ditampilkan pada modul ini meliputi nomor RKO, periode, sumber dana, item obat, jumlah realisasi, harga satuan disetujui, total nilai, serta catatan item. Dengan demikian, modul ini menjadi jembatan antara perencanaan dan kondisi persetujuan yang kemudian digunakan untuk monitoring.</p>
     <div class="placeholder">Tempat screenshot halaman realisasi pengadaan</div>
-    <p class="figure-title">Gambar 4.22. Halaman daftar realisasi pengadaan.</p>
+    <p class="figure-title">Gambar 4.23. Halaman daftar realisasi pengadaan.</p>
     <div class="placeholder">Tempat screenshot form realisasi pengadaan</div>
-    <p class="figure-title">Gambar 4.23. Form input realisasi pengadaan.</p>
+    <p class="figure-title">Gambar 4.24. Form input realisasi pengadaan.</p>
 
-    <h3>4.4.7 Mutasi Obat</h3>
+    <h3>4.3.7 Mutasi Obat</h3>
     <p>Modul mutasi obat digunakan untuk mencatat perpindahan atau penyaluran obat ke fasilitas kesehatan. Pada implementasi ini, transaksi manual pada menu mutasi stok dibatasi untuk mutasi keluar agar aplikasi tetap fokus pada monitoring (bukan inventory detail). Mutasi masuk dibentuk otomatis saat dokumen RKO disetujui.</p>
     <p>Data mutasi obat sangat penting dalam konteks monitoring karena menunjukkan bagaimana obat yang telah diterima kemudian disalurkan. Riwayat mutasi tersebut juga menjadi salah satu sumber data bagi penyusunan snapshot stok dan histori pergerakan obat.</p>
     <div class="placeholder">Tempat screenshot halaman mutasi obat</div>
-    <p class="figure-title">Gambar 4.24. Halaman daftar mutasi obat.</p>
+    <p class="figure-title">Gambar 4.25. Halaman daftar mutasi obat.</p>
     <div class="placeholder">Tempat screenshot form mutasi obat</div>
-    <p class="figure-title">Gambar 4.25. Form input mutasi obat.</p>
+    <p class="figure-title">Gambar 4.26. Form input mutasi obat.</p>
 
-    <h3>4.4.8 Monitoring Stok</h3>
+    <h3>4.3.8 Monitoring Stok</h3>
     <p>Modul monitoring stok berfungsi untuk menampilkan kondisi stok obat secara ringkas dan terstruktur. Pada aplikasi ini, monitoring berfokus pada stok per obat dan stok per periode, bukan pada pelacakan teknis yang terlalu rinci. Dengan pendekatan ini, aplikasi lebih menekankan fungsi pemantauan, evaluasi, dan pelaporan.</p>
     <p>Monitoring stok menampilkan jumlah stok yang tersedia, status kondisi stok, dan ringkasan mutasi yang terjadi. Selain itu, pengguna juga dapat melihat detail obat melalui popup sehingga informasi penting tetap dapat diakses dengan cepat tanpa harus berpindah halaman.</p>
     <div class="placeholder">Tempat screenshot halaman stok terkini</div>
-    <p class="figure-title">Gambar 4.26. Halaman monitoring stok terkini.</p>
+    <p class="figure-title">Gambar 4.27. Halaman monitoring stok terkini.</p>
     <div class="placeholder">Tempat screenshot popup detail obat</div>
-    <p class="figure-title">Gambar 4.27. Tampilan detail obat pada monitoring.</p>
+    <p class="figure-title">Gambar 4.28. Tampilan detail obat pada monitoring.</p>
     <div class="mermaid">
 flowchart LR
     A["RKO"] --> B["Realisasi Pengadaan"]
@@ -468,36 +542,36 @@ flowchart LR
     D --> E["Dashboard Monitoring"]
     D --> F["Laporan"]
     </div>
-    <p class="figure-title">Gambar 4.28. Diagram alur utama data monitoring pada aplikasi.</p>
+    <p class="figure-title">Gambar 4.29. Diagram alur utama data monitoring pada aplikasi.</p>
 
-    <h3>4.4.9 Laporan</h3>
+    <h3>4.3.9 Laporan</h3>
     <p>Modul laporan digunakan untuk menyajikan data dalam bentuk yang lebih terstruktur dan mudah dibaca. Laporan yang tersedia pada aplikasi ini meliputi laporan stok, laporan realisasi pengadaan, laporan mutasi obat, dan laporan RKO vs realisasi.</p>
-    <p>Khusus laporan RKO vs realisasi, sistem menampilkan perbandingan antara kebutuhan yang direncanakan dan realisasi pengadaan yang telah dicatat. Fitur ini menjadi bagian penting dari monitoring karena membantu pengguna melihat capaian pengadaan serta selisih yang masih perlu ditindaklanjuti.</p>
+    <p>Khusus laporan RKO vs realisasi, sistem menampilkan perbandingan antara kebutuhan yang direncanakan dan realisasi pengadaan yang telah dicatat. Fitur ini menjadi bagian penting dari monitoring karena membantu pengguna melihat capaian pengadaan serta selisih yang masih perlu ditindaklanjuti. Setiap laporan juga dilengkapi fitur cetak PDF dan Excel agar data lebih mudah dilampirkan pada dokumen pelaporan.</p>
     <div class="placeholder">Tempat screenshot halaman laporan stok</div>
-    <p class="figure-title">Gambar 4.29. Halaman laporan stok.</p>
+    <p class="figure-title">Gambar 4.30. Halaman laporan stok.</p>
     <div class="placeholder">Tempat screenshot halaman laporan realisasi pengadaan</div>
-    <p class="figure-title">Gambar 4.30. Halaman laporan realisasi pengadaan.</p>
+    <p class="figure-title">Gambar 4.31. Halaman laporan realisasi pengadaan.</p>
     <div class="placeholder">Tempat screenshot halaman laporan mutasi obat</div>
-    <p class="figure-title">Gambar 4.31. Halaman laporan mutasi obat.</p>
+    <p class="figure-title">Gambar 4.32. Halaman laporan mutasi obat.</p>
     <div class="placeholder">Tempat screenshot halaman laporan RKO vs realisasi</div>
-    <p class="figure-title">Gambar 4.32. Halaman laporan RKO vs realisasi.</p>
+    <p class="figure-title">Gambar 4.33. Halaman laporan RKO vs realisasi.</p>
 
-    <h3>4.4.10 Manajemen Pengguna</h3>
+    <h3>4.3.10 Manajemen Pengguna</h3>
     <p>Modul manajemen pengguna digunakan untuk mengelola akun yang dapat mengakses sistem. Admin dapat menambah pengguna baru, mengubah data pengguna, melihat detail pengguna, serta mengatur status aktif atau nonaktif akun.</p>
     <p>Pengelolaan akun penting untuk menjaga keamanan sistem dan memastikan bahwa pembagian hak akses berjalan sesuai kebutuhan organisasi.</p>
     <div class="placeholder">Tempat screenshot halaman manajemen pengguna</div>
-    <p class="figure-title">Gambar 4.33. Halaman manajemen pengguna.</p>
+    <p class="figure-title">Gambar 4.34. Halaman manajemen pengguna.</p>
     <div class="placeholder">Tempat screenshot form tambah pengguna</div>
-    <p class="figure-title">Gambar 4.34. Form tambah pengguna.</p>
+    <p class="figure-title">Gambar 4.35. Form tambah pengguna.</p>
 
-    <h3>4.4.11 Log Aktivitas</h3>
+    <h3>4.3.11 Log Aktivitas</h3>
     <p>Modul log aktivitas digunakan untuk mencatat tindakan penting yang dilakukan oleh pengguna di dalam sistem. Informasi yang dicatat meliputi nama pengguna, modul yang diakses, aksi yang dilakukan, deskripsi aktivitas, waktu kejadian, dan alamat IP.</p>
     <p>Keberadaan log aktivitas membantu proses pengawasan dan audit, serta mempermudah penelusuran apabila terjadi perubahan data tertentu pada sistem.</p>
     <div class="placeholder">Tempat screenshot halaman log aktivitas</div>
-    <p class="figure-title">Gambar 4.35. Halaman log aktivitas.</p>
+    <p class="figure-title">Gambar 4.36. Halaman log aktivitas.</p>
 
-    <h2>4.5 Pengujian Sistem</h2>
-    <h3>4.5.1 Metode Pengujian</h3>
+    <h2>4.4 Pengujian Sistem</h2>
+    <h3>4.4.1 Metode Pengujian</h3>
     <p>Pengujian sistem dilakukan menggunakan metode <i>black box testing</i>. Metode ini digunakan untuk menguji fungsi sistem berdasarkan masukan dan keluaran yang dihasilkan tanpa melihat kode program secara langsung.</p>
     <p>Fokus pengujian pada penelitian ini meliputi:</p>
     <ul>
@@ -519,18 +593,18 @@ flowchart LR
     D --> E["Bandingkan dengan Hasil yang Diharapkan"]
     E --> F["Kesimpulan Pengujian"]
     </div>
-    <p class="figure-title">Gambar 4.36. Diagram alur pengujian sistem dengan metode black box.</p>
+    <p class="figure-title">Gambar 4.37. Diagram alur pengujian sistem dengan metode black box.</p>
 
-    <h3>4.5.2 Hasil Pengujian Login</h3>
-    <p class="table-title">Tabel 4.1. Hasil pengujian login.</p>
+    <h3>4.4.2 Hasil Pengujian Login</h3>
+    <p class="table-title">Tabel 4.15. Hasil pengujian login.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Login dengan data valid</td><td>Email dan password benar</td><td>Sistem menampilkan dashboard</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>2</td><td>Login dengan password salah</td><td>Email benar, password salah</td><td>Sistem menolak login dan menampilkan pesan kesalahan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>3</td><td>Login dengan akun nonaktif</td><td>Data login akun nonaktif</td><td>Sistem menolak akses</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
-	    <h3>4.5.3 Hasil Pengujian Master Data</h3>
-	    <p class="table-title">Tabel 4.2. Hasil pengujian master data.</p>
+    <h3>4.4.3 Hasil Pengujian Master Data</h3>
+	    <p class="table-title">Tabel 4.16. Hasil pengujian master data.</p>
 	    <table>
 	        <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
 	        <tr><td>1</td><td>Menambah kategori obat</td><td>Data kategori baru</td><td>Data kategori tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
@@ -544,69 +618,73 @@ flowchart LR
 	        <tr><td>9</td><td>Mengubah sumber dana</td><td>Edit data sumber dana</td><td>Data sumber dana diperbarui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
 	        <tr><td>10</td><td>Menonaktifkan sumber dana</td><td>Ubah status sumber dana menjadi nonaktif</td><td>Sumber dana tidak muncul pada pilihan sumber dana saat membuat RKO (jika sistem memfilter hanya yang aktif)</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
 	    </table>
-	    <h3>4.5.4 Hasil Pengujian RKO</h3>
-    <p class="table-title">Tabel 4.3. Hasil pengujian RKO.</p>
+    <h3>4.4.4 Hasil Pengujian RKO</h3>
+    <p class="table-title">Tabel 4.17. Hasil pengujian RKO.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Membuat pengajuan RKO</td><td>Data header dan detail item obat (rencana + estimasi)</td><td>Pengajuan RKO tersimpan dengan status draft/diajukan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>2</td><td>Menghitung total estimasi</td><td>Jumlah rencana dan estimasi harga satuan</td><td>Sistem menghitung total estimasi item</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>3</td><td>Melakukan persetujuan RKO</td><td>Status persetujuan, qty disetujui, harga disetujui</td><td>Data persetujuan tersimpan terpisah dari pengajuan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
-        <tr><td>4</td><td>Membentuk output approval</td><td>RKO disetujui</td><td>Sistem membentuk realisasi pengadaan dan mutasi masuk otomatis</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>2</td><td>Menampilkan format Rupiah pada form RKO</td><td>Mengisi total anggaran dan harga satuan</td><td>Sistem menampilkan nilai dalam format Rupiah dan menyimpan angka bersih</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>3</td><td>Menghitung total estimasi</td><td>Jumlah rencana dan estimasi harga satuan</td><td>Sistem menghitung total estimasi item</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>4</td><td>Membatasi akses persetujuan RKO</td><td>Pengguna selain pimpinan membuka form persetujuan</td><td>Sistem menolak akses persetujuan RKO</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>5</td><td>Melakukan persetujuan RKO</td><td>Status persetujuan, qty disetujui, harga disetujui</td><td>Data persetujuan tersimpan terpisah dari pengajuan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>6</td><td>Membentuk output approval</td><td>RKO disetujui</td><td>Sistem membentuk realisasi pengadaan dan mutasi masuk otomatis</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
 	    </table>
-    <h3>4.5.5 Hasil Pengujian Realisasi Pengadaan</h3>
-    <p class="table-title">Tabel 4.4. Hasil pengujian realisasi pengadaan.</p>
+    <h3>4.4.5 Hasil Pengujian Realisasi Pengadaan</h3>
+    <p class="table-title">Tabel 4.18. Hasil pengujian realisasi pengadaan.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Membentuk realisasi pengadaan otomatis</td><td>RKO disetujui</td><td>Sistem membuat baris realisasi sesuai item yang disetujui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>2</td><td>Menampilkan daftar realisasi</td><td>Membuka menu realisasi pengadaan</td><td>Sistem menampilkan daftar data realisasi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>3</td><td>Filter realisasi pengadaan</td><td>Filter sumber dana/tahun/pencarian</td><td>Sistem menampilkan data sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
 	    </table>
-    <h3>4.5.6 Hasil Pengujian Mutasi Obat</h3>
-    <p class="table-title">Tabel 4.5. Hasil pengujian mutasi obat.</p>
+    <h3>4.4.6 Hasil Pengujian Mutasi Obat</h3>
+    <p class="table-title">Tabel 4.19. Hasil pengujian mutasi obat.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Menambah mutasi keluar</td><td>Data faskes tujuan (opsional) dan item obat</td><td>Data mutasi keluar tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>2</td><td>Membatasi mutasi masuk manual</td><td>Memilih jenis mutasi masuk pada form</td><td>Sistem menolak karena mutasi masuk hanya melalui approval RKO</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>3</td><td>Menampilkan detail mutasi</td><td>Memilih transaksi mutasi tertentu</td><td>Sistem menampilkan detail mutasi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
-    <h3>4.5.7 Hasil Pengujian Monitoring</h3>
-    <p class="table-title">Tabel 4.6. Hasil pengujian monitoring.</p>
+    <h3>4.4.7 Hasil Pengujian Monitoring</h3>
+    <p class="table-title">Tabel 4.20. Hasil pengujian monitoring.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Menampilkan stok terkini</td><td>Membuka menu monitoring stok</td><td>Sistem menampilkan stok per obat</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>2</td><td>Menampilkan detail obat</td><td>Memilih tombol detail pada data obat</td><td>Sistem menampilkan popup detail obat</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>3</td><td>Menampilkan status stok</td><td>Data snapshot stok tersedia</td><td>Sistem menampilkan status aman, kurang, atau berlebih</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
-    <h3>4.5.8 Hasil Pengujian Laporan</h3>
-    <p class="table-title">Tabel 4.7. Hasil pengujian laporan.</p>
+    <h3>4.4.8 Hasil Pengujian Laporan</h3>
+    <p class="table-title">Tabel 4.21. Hasil pengujian laporan.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Menampilkan laporan stok</td><td>Filter laporan stok</td><td>Sistem menampilkan data stok sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>2</td><td>Menampilkan laporan realisasi pengadaan</td><td>Filter tanggal dan sumber</td><td>Sistem menampilkan data pengadaan sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>3</td><td>Menampilkan laporan mutasi obat</td><td>Filter tanggal dan faskes</td><td>Sistem menampilkan data mutasi sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>4</td><td>Menampilkan laporan RKO vs realisasi</td><td>Filter periode dan status</td><td>Sistem menampilkan perbandingan rencana dan realisasi</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>5</td><td>Mencetak laporan PDF</td><td>Memilih tombol cetak PDF pada laporan</td><td>Sistem menampilkan halaman cetak laporan sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
+        <tr><td>6</td><td>Mengekspor laporan Excel</td><td>Memilih tombol cetak Excel pada laporan</td><td>Sistem mengunduh file Excel sesuai data laporan yang difilter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
-    <h3>4.5.9 Hasil Pengujian Manajemen Pengguna</h3>
-    <p class="table-title">Tabel 4.8. Hasil pengujian manajemen pengguna.</p>
+    <h3>4.4.9 Hasil Pengujian Manajemen Pengguna</h3>
+    <p class="table-title">Tabel 4.22. Hasil pengujian manajemen pengguna.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Menambah pengguna baru</td><td>Data akun dan role</td><td>Data pengguna tersimpan</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>2</td><td>Mengubah status pengguna</td><td>Aktif atau nonaktif</td><td>Status pengguna diperbarui</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>3</td><td>Menampilkan detail pengguna</td><td>Memilih salah satu akun</td><td>Sistem menampilkan profil pengguna</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
-    <h3>4.5.10 Hasil Pengujian Log Aktivitas</h3>
-    <p class="table-title">Tabel 4.9. Hasil pengujian log aktivitas.</p>
+    <h3>4.4.10 Hasil Pengujian Log Aktivitas</h3>
+    <p class="table-title">Tabel 4.23. Hasil pengujian log aktivitas.</p>
     <table>
         <tr><th>No</th><th>Skenario Pengujian</th><th>Input</th><th>Hasil yang Diharapkan</th><th>Hasil Pengujian</th><th>Kesimpulan</th></tr>
         <tr><td>1</td><td>Menampilkan daftar log aktivitas</td><td>Membuka menu log aktivitas</td><td>Sistem menampilkan catatan aktivitas pengguna</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
         <tr><td>2</td><td>Filter log aktivitas</td><td>Filter modul, pengguna, dan tanggal</td><td>Sistem menampilkan log sesuai filter</td><td>Sesuai harapan</td><td>Berhasil</td></tr>
     </table>
-	    <h2>4.6 Pembahasan Hasil Sistem</h2>
+    <h2>4.5 Pembahasan Hasil Sistem</h2>
 		    <p>Berdasarkan hasil implementasi dan pengujian yang telah dilakukan, aplikasi monitoring obat kontrasepsi berbasis web ini mampu mendukung proses pencatatan dan pemantauan data secara lebih terstruktur dibandingkan dengan metode manual. Sistem tidak hanya menyimpan data master, tetapi juga menghubungkan proses perencanaan kebutuhan obat dengan realisasi pengadaan dan mutasi obat.</p>
 	    <p>Penerapan modul RKO memberikan nilai tambah karena sistem dapat digunakan bukan hanya untuk mencatat kondisi saat ini, tetapi juga untuk memantau hubungan antara rencana kebutuhan dan pengadaan yang benar-benar terjadi. Selain itu, keberadaan laporan RKO vs realisasi membantu pengguna melihat tingkat ketercapaian pengadaan secara lebih jelas.</p>
 	    <p>Fitur monitoring stok, mutasi obat, dan laporan periodik juga menunjukkan bahwa sistem telah menjalankan fungsi monitoring secara nyata. Informasi yang ditampilkan tidak lagi sekadar data mentah, tetapi telah diolah menjadi ringkasan yang dapat membantu proses evaluasi dan pengambilan keputusan.</p>
 
-	    <h2>4.7 Kelebihan dan Keterbatasan Sistem</h2>
+    <h2>4.6 Kelebihan dan Keterbatasan Sistem</h2>
 	    <p>Kelebihan aplikasi yang berhasil diimplementasikan dalam penelitian ini antara lain:</p>
 	    <ul>
 	        <li>mendukung pencatatan master data obat, faskes, dan sumber dana,</li>
@@ -615,7 +693,7 @@ flowchart LR
         <li>membentuk realisasi pengadaan otomatis berdasarkan persetujuan RKO,</li>
         <li>mendukung pencatatan mutasi keluar obat ke fasilitas kesehatan,</li>
         <li>menyediakan monitoring stok per obat dan snapshot stok per periode,</li>
-        <li>menyediakan laporan monitoring, termasuk laporan RKO vs realisasi,</li>
+        <li>menyediakan laporan monitoring, termasuk laporan RKO vs realisasi serta cetak PDF/Excel,</li>
         <li>menyediakan hak akses pengguna dan log aktivitas.</li>
     </ul>
     <p>Adapun keterbatasan sistem pada implementasi saat ini antara lain:</p>
@@ -623,10 +701,10 @@ flowchart LR
         <li>integrasi otomatis dengan sistem lain belum diterapkan, sehingga data masih diinput pada aplikasi ini,</li>
         <li>snapshot stok per periode masih bergantung pada proses pencatatan dan pembaruan data yang dilakukan pengguna,</li>
         <li>fitur notifikasi otomatis untuk status stok belum menjadi fokus utama,</li>
-        <li>ekspor laporan ke format dokumen tertentu belum menjadi fokus implementasi utama penelitian ini.</li>
+        <li>integrasi tanda tangan digital pada dokumen laporan belum menjadi fokus implementasi utama penelitian ini.</li>
     </ul>
 
-	    <h2>4.8 Kesimpulan Bab</h2>
+    <h2>4.7 Kesimpulan Bab</h2>
 	    <p>Berdasarkan pembahasan pada bab ini dapat disimpulkan bahwa aplikasi yang dibangun telah berhasil diimplementasikan sebagai aplikasi monitoring obat kontrasepsi berbasis web. Implementasi sistem telah mencakup modul utama yang dibutuhkan, yaitu master data, RKO, realisasi pengadaan, mutasi obat, monitoring stok, laporan, manajemen pengguna, dan log aktivitas.</p>
 	    <p>Hasil pengujian menunjukkan bahwa fungsi-fungsi utama sistem dapat berjalan sesuai dengan kebutuhan. Dengan demikian, aplikasi ini dapat digunakan sebagai sarana untuk membantu Dinas Pengendalian Penduduk dan Keluarga Berencana dalam memantau data obat kontrasepsi secara lebih efektif, terstruktur, dan mudah dilaporkan.</p>
 

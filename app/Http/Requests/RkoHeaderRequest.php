@@ -7,6 +7,24 @@ use Illuminate\Validation\Rule;
 
 class RkoHeaderRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $items = collect($this->input('items', []))
+            ->map(function (array $item) {
+                if (array_key_exists('estimated_unit_price', $item)) {
+                    $item['estimated_unit_price'] = $this->normalizeRupiah($item['estimated_unit_price']);
+                }
+
+                return $item;
+            })
+            ->all();
+
+        $this->merge([
+            'total_budget' => $this->normalizeRupiah($this->input('total_budget')),
+            'items' => $items,
+        ]);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -58,5 +76,14 @@ class RkoHeaderRequest extends FormRequest
             'items.min' => 'Minimal satu item obat harus diisi.',
             'items.*.medicine_id.distinct' => 'Obat pada detail RKO tidak boleh duplikat.',
         ];
+    }
+
+    private function normalizeRupiah(mixed $value): int
+    {
+        if (is_numeric($value)) {
+            return (int) floor((float) $value);
+        }
+
+        return (int) preg_replace('/[^\d]/', '', (string) ($value ?? 0));
     }
 }

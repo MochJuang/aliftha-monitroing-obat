@@ -56,6 +56,7 @@
 		                @endforeach
 		                </select>
 		                <button type="submit" class="w-28 shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">Filter</button>
+		                <a href="{{ route('rko.header.export.excel', request()->query()) }}" class="w-32 shrink-0 rounded-2xl border border-slate-300 px-5 py-2 text-center text-sm font-medium text-slate-700 hover:bg-slate-50">Cetak Excel</a>
 		            </form>
 		        </div>
 
@@ -111,7 +112,9 @@
                                             @endif
                                         @endcan
                                         @can('approve-rko')
-                                            <a href="{{ route('rko.header.approval.edit', $header) }}" class="rounded-xl border border-emerald-300 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50">Persetujuan</a>
+                                            @if ($header->status === 'submitted')
+                                                <a href="{{ route('rko.header.approval.edit', $header) }}" class="rounded-xl border border-emerald-300 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50">Persetujuan</a>
+                                            @endif
                                         @endcan
                                         @can('create-rko')
                                             <form method="POST" action="{{ route('rko.header.destroy', $header) }}" onsubmit="return confirm('Hapus dokumen RKO ini?')">

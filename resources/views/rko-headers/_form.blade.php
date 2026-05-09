@@ -30,6 +30,8 @@
             'notes' => '',
         ]]);
 
+    $initialTotalBudget = old('total_budget', $rkoHeader->total_budget ?? 0);
+
     $medicineOptions = $medicines->map(fn ($medicine) => [
         'id' => $medicine->id,
         'name' => $medicine->name,
@@ -50,8 +52,32 @@
 
 <div
     x-data='{
+        totalBudget: @json($initialTotalBudget),
         items: @json($initialItems),
         medicines: @json($medicineOptions),
+        normalizeMoney(value) {
+            const raw = String(value ?? 0).trim();
+
+            if (/^\d+(\.\d+)?$/.test(raw)) {
+                return Math.floor(Number(raw));
+            }
+
+            return Number(raw.replace(/[^\d]/g, "")) || 0;
+        },
+        formatRupiah(value) {
+            const amount = this.normalizeMoney(value);
+            return new Intl.NumberFormat("id-ID", {
+                style: "currency",
+                currency: "IDR",
+                maximumFractionDigits: 0,
+            }).format(amount);
+        },
+        parseRupiah(value) {
+            return this.normalizeMoney(value);
+        },
+        setRupiahValue(target, value) {
+            target.value = this.formatRupiah(value);
+        },
         addItem() {
             this.items.push({
                 medicine_id: "",
@@ -115,7 +141,18 @@
 
         <div>
             <label for="total_budget" class="block text-sm font-medium text-slate-700">Total anggaran</label>
-            <input id="total_budget" name="total_budget" type="number" min="0" step="0.01" value="{{ old('total_budget', $rkoHeader->total_budget ?? 0) }}" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" required>
+            <input id="total_budget" name="total_budget" type="hidden" x-model="totalBudget">
+            <input
+                id="total_budget_display"
+                type="text"
+                inputmode="numeric"
+                x-ref="totalBudgetDisplay"
+                x-init="setRupiahValue($refs.totalBudgetDisplay, totalBudget)"
+                @input="totalBudget = parseRupiah($event.target.value); setRupiahValue($event.target, totalBudget)"
+                @focus="$event.target.select()"
+                class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                required
+            >
         </div>
 
         <div class="lg:col-span-2">
@@ -165,7 +202,16 @@
 		
 		                            <div>
 		                                <label class="block text-sm font-medium text-slate-700">Estimasi harga satuan</label>
-		                                <input type="number" min="0" step="0.01" class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500" :name="`items[${index}][estimated_unit_price]`" x-model="item.estimated_unit_price" required>
+		                                <input type="hidden" :name="`items[${index}][estimated_unit_price]`" x-model="item.estimated_unit_price">
+                                        <input
+                                            type="text"
+                                            inputmode="numeric"
+                                            class="mt-2 w-full rounded-2xl border-slate-300 text-sm shadow-sm focus:border-amber-500 focus:ring-amber-500"
+                                            :value="formatRupiah(item.estimated_unit_price)"
+                                            @input="item.estimated_unit_price = parseRupiah($event.target.value); setRupiahValue($event.target, item.estimated_unit_price)"
+                                            @focus="$event.target.select()"
+                                            required
+                                        >
 		                            </div>
 		                        </div>
 		                        </div>
@@ -193,7 +239,7 @@
 	                                <span class="font-medium text-slate-900" x-text="selectedMedicine(item.medicine_id)?.code"></span>
 	                                <span x-text="' | ' + (selectedMedicine(item.medicine_id)?.category || '-')"></span>
 	                                <span x-text="' | ' + (selectedMedicine(item.medicine_id)?.unit || '-')"></span>
-	                                <span class="block mt-2 text-slate-700" x-text="'Total estimasi: ' + new Intl.NumberFormat('id-ID').format(Number(item.planned_quantity || 0) * Number(item.estimated_unit_price || 0))"></span>
+	                                <span class="block mt-2 text-slate-700" x-text="'Total estimasi: ' + formatRupiah(Number(item.planned_quantity || 0) * Number(item.estimated_unit_price || 0))"></span>
 	                            </div>
 	                        </div>
 	                    </div>
