@@ -2,7 +2,7 @@
 
 namespace App\Support;
 
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use ZipArchive;
 
 class SimpleXlsxExporter
@@ -11,7 +11,7 @@ class SimpleXlsxExporter
      * @param  array<int, string>  $headings
      * @param  array<int, array<int, mixed>>  $rows
      */
-    public static function download(string $title, array $headings, array $rows, string $filename): Response
+    public static function download(string $title, array $headings, array $rows, string $filename): BinaryFileResponse
     {
         $path = tempnam(sys_get_temp_dir(), 'xlsx_');
         $zip = new ZipArchive();
